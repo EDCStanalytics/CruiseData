@@ -1,0 +1,119 @@
+﻿Terminal,Date,Vessel Name,EmbarkPAX,DebarkPAX,TransitPAX,Berth,ShorePowered, kWh ,connectionDuration,ShorePowerNote
+BCT,12/20/2021,Queen Mary 2,517,777,587,, N/A ,0,0:00:00,N/A
+BCT,2/22/2022,Queen Mary 2,489,380,"1,093",, No ,0,0:00:00,No connection due to feeder out of service
+BCT,3/8/2022,Queen Mary 2,498,493,"1,076",, No ,0,0:00:00,No connection due to feeder out of service
+BCT,3/27/2022,Queen Mary 2,255,452,"1,025",, No ,0,0:00:00,No connection due to feeder out of service
+BCT,4/17/2022,Queen Mary 2,416,220,"1,104",, No ,0,0:00:00,No connection due to feeder out of service
+BCT,4/24/2022,Seven Seas Navigator,0,0,98,, N/A ,0,0:00:00,N/A
+BCT,5/1/2022,Queen Mary 2,"1,334","1,338",272,, Yes ,"46,393",5:57:22,N/A
+BCT,5/15/2022,Queen Mary 2,"1,346","1,511",313,, Yes ,"43,033",5:52:34,N/A
+BCT,6/5/2022,Queen Mary 2,"1,637","1,543",262,, Yes ,"26,637",3:45:57,N/A
+BCT,7/1/2022,Queen Mary 2,"1,466","1,549",396,, Yes ,"58,271",6:50:33,N/A
+BCT,7/8/2022,Queen Mary 2,"1,399","1,447",404,, Yes ,"58,067",7:03:02,N/A
+BCT,7/27/2022,Caribbean Princess,16,14,"2,605",, N/A ,0,0:00:00,N/A
+BCT,8/5/2022,Caribbean Princess,"2,555","2,372",97,, N/A ,0,0:00:00,N/A
+BCT,8/5/2022,Queen Mary 2,"1,615","1,751",329,, Yes ,"64,907",7:21:30,N/A
+BCT,8/28/2022,Queen Mary 2,"1,773","1,795",264,, Yes ,"55,951",6:30:16,N/A
+BCT,8/31/2022,Caribbean Princess,"1,865","2,565",91,, N/A ,0,0:00:00,N/A
+BCT,9/17/2022,Caribbean Princess,"1,878","1,976",60,, N/A ,0,0:00:00,N/A
+BCT,9/17/2022,Enchanted Princess,"3,025","2,253",62,, N/A ,0,0:00:00,N/A
+BCT,9/23/2022,Queen Mary 2,"1,337","1,457",660,, Yes ,"38,519",4:42:48,N/A
+BCT,9/24/2022,Enchanted Princess,"2,905","3,037",38,, N/A ,0,0:00:00,N/A
+BCT,10/1/2022,Enchanted Princess,"2,911","2,916",26,, N/A ,0,0:00:00,N/A
+BCT,10/6/2022,Sky Princess,304,159,"2,910",, N/A ,0,0:00:00,N/A
+BCT,10/7/2022,Queen Mary 2,"1,387","1,320",798,, N/A ,0,0:00:00,N/A
+BCT,10/8/2022,Enchanted Princess,"3,126","2,915",21,, N/A ,0,0:00:00,N/A
+BCT,10/10/2022,Caribbean Princess,"2,001","1,743",28,, N/A ,0,0:00:00,N/A
+BCT,10/15/2022,Enchanted Princess,"2,703","3,112",31,, N/A ,0,0:00:00,N/A
+BCT,10/22/2022,Enchanted Princess,"2,056","2,686",41,, N/A ,0,0:00:00,N/A
+BCT,10/25/2022,Queen Mary 2,"1,867","1,910",271,, Yes ,"39,519",5:15:26,N/A
+BCT,10/29/2022,Enchanted Princess,"1,669","2,072",23,, N/A ,0,0:00:00,N/A
+BCT,10/30/2022,Caribbean Princess,2,20,"1,961",, N/A ,0,0:00:00,N/A
+BCT,11/5/2022,Enchanted Princess,"2,739","1,593",105,, N/A ,0,0:00:00,N/A
+BCT,11/20/2022,Queen Mary 2,"1,661","1,618",587,, Yes ,"40,149",5:20:48,N/A
+BCT,12/3/2022,Queen Mary 2,"1,643","1,699",538,, N/A ,0,0:00:00,N/A
+BCT,12/22/2022,Queen Mary 2,"1,395","1,323",883,, Yes ,"40,771",5:33:37,N/A
+BCT,1/3/2023,Queen Mary 2,"1,332","1,449",832,, Yes ,"49,091",6:30:17,N/A
+BCT,4/22/2023,MSC Meraviglia,"4,557","3,349",0,, N/A ,0,0:00:00,N/A
+BCT,4/29/2023,MSC Meraviglia,"4,300","4,448",1,, N/A ,0,0:00:00,N/A
+BCT,5/7/2023,MSC Meraviglia,"4,228","4,283",3,, N/A ,0,0:00:00,N/A
+BCT,5/14/2023,MSC Meraviglia,"4,151","4,223",4,, N/A ,0,0:00:00,N/A
+BCT,5/21/2023,MSC Meraviglia,"4,432","4,151",0,, N/A ,0,0:00:00,N/A
+BCT,5/26/2023,Queen Mary 2,"2,238","2,192",167,, Yes ,"57,404",7:13:41,N/A
+BCT,5/28/2023,MSC Meraviglia,"4,663","4,229",0,, N/A ,0,0:00:00,N/A
+BCT,6/4/2023,MSC Meraviglia,"4,597","4,650",,, N/A ,0,0:00:00,N/A
+BCT,6/11/2023,MSC Meraviglia,"4,706","4,593",,, N/A ,0,0:00:00,N/A
+BCT,6/18/2023,MSC Meraviglia,"5,022","4,705",6,, N/A ,0,0:00:00,N/A
+BCT,6/25/2023,MSC Meraviglia,"5,395","5,025",6,, N/A ,0,0:00:00,N/A
+BCT,6/30/2023,Queen Mary 2,"2,060","2,090",368,, Yes ,"27,594",3:11:53,N/A
+BCT,7/2/2023,MSC Meraviglia,"5,353","5,393",3,, N/A ,0,0:00:00,N/A
+BCT,7/7/2023,Queen Mary 2,"2,033","2,019",411,, No ,0,0:00:00,Ship did not connect due to delayed arrival
+BCT,7/9/2023,MSC Meraviglia,"5,339","5,346",0,, N/A ,0,0:00:00,N/A
+BCT,7/16/2023,MSC Meraviglia,"5,294","5,343",,, N/A ,0,0:00:00,N/A
+BCT,7/21/2023,Queen Mary 2,"2,082","2,058",407,, No ,0,0:00:00,Extreme weather
+BCT,7/23/2023,MSC Meraviglia,"5,356","5,305",,, N/A ,0,0:00:00,N/A
+BCT,7/26/2023,Caribbean Princess,5,8,"3,158",, Yes ,"77,117",8:36:56,N/A
+BCT,7/30/2023,MSC Meraviglia,"5,323","5,350",,, N/A ,0,0:00:00,N/A
+BCT,8/6/2023,MSC Meraviglia,"5,387","5,324",,, N/A ,0,0:00:00,N/A
+BCT,8/13/2023,MSC Meraviglia,"5,324","5,382",,, N/A ,0,0:00:00,N/A
+BCT,8/14/2023,Caribbean Princess,"2,830","3,057",81,, N/A ,0,0:00:00,N/A
+BCT,8/18/2023,Queen Mary 2,"2,191","2,160",320,, Yes ,"40,369",5:24:53,N/A
+BCT,8/21/2023,MSC Meraviglia,"4,826","4,955",353,, N/A ,0,0:00:00,N/A
+BCT,8/27/2023,MSC Meraviglia,"5,447","5,128",51,, N/A ,0,0:00:00,N/A
+BCT,8/30/2023,Caribbean Princess,"2,709","2,814",100,, N/A ,0,0:00:00,N/A
+BCT,9/4/2023,MSC Meraviglia,"4,352","5,451",31,, N/A ,0,0:00:00,N/A
+BCT,9/9/2023,Emerald Princess,"2,780","2,329",451,, N/A ,0,0:00:00,N/A
+BCT,9/10/2023,MSC Meraviglia,"3,959","4,316",63,, N/A ,0,0:00:00,N/A
+BCT,9/11/2023,Queen Mary 2,"2,053","2,088",311,, No ,0,0:00:00,Unresolved rate issue
+BCT,9/16/2023,Emerald Princess,"2,833","2,764",29,, N/A ,0,0:00:00,N/A
+BCT,9/17/2023,Silver Shadow,,,313,, N/A ,0,0:00:00,N/A
+BCT,9/18/2023,MSC Meraviglia,"4,286","3,966",55,, N/A ,0,0:00:00,N/A
+BCT,9/19/2023,Caribbean Princess,"2,719","2,637",120,, Yes ,"77,345",9:43:57,N/A
+BCT,9/20/2023,Marella Discovery,,2,"1,762",, N/A ,0,0:00:00,N/A
+BCT,9/23/2023,Emerald Princess,"2,921","2,758",12,, No ,0,0:00:00,Extreme weather
+BCT,9/24/2023,MSC Meraviglia,"3,385","3,966",336,, N/A ,0,0:00:00,N/A
+BCT,9/29/2023,Queen Mary 2,"1,501","1,478",883,, No ,0,0:00:00,Extreme weather
+BCT,9/30/2023,Emerald Princess,"2,857","2,918",15,, No ,0,0:00:00,Extreme weather
+BCT,10/4/2023,MSC Meraviglia,"3,890","3,710",0,, N/A ,0,0:00:00,N/A
+BCT,10/7/2023,Emerald Princess,"2,982","2,956",9,, Yes ,"68,166",7:41:54,N/A
+BCT,10/9/2023,Caribbean Princess,"2,730","2,617",42,, Yes ,"71,008",9:16:29,N/A
+BCT,10/13/2023,Queen Mary 2,"1,325","1,398",902,, Yes ,"41,767",5:20:19,N/A
+BCT,10/14/2023,Emerald Princess,"2,919","2,971",17,, Yes ,"67,382",8:26:54,N/A
+BCT,10/15/2023,MSC Meraviglia,"3,741","3,877",2,, N/A ,0,0:00:00,N/A
+BCT,10/21/2023,Emerald Princess,"2,937","2,938",11,, Yes ,"66,437",8:03:56,N/A
+BCT,10/25/2023,MSC Meraviglia,"3,060","3,327",410,, N/A ,0,0:00:00,N/A
+BCT,10/27/2023,Caribbean Princess,1,33,"2,394",, Yes ,"93,310",0:31:00,N/A
+BCT,10/28/2023,Emerald Princess,"2,707","2,921",26,, Yes ,"47,420",5:42:14,N/A
+BCT,10/30/2023,Crystal Serenity,1,16,198,, Yes ,20,0:11:00,Ship was getting their shore power retrofit cerfied by their class and insurance
+BCT,11/4/2023,Emerald Princess,"2,619","2,637",95,, Yes ,"66,439",8:18:59,N/A
+BCT,11/5/2023,MSC Meraviglia,"4,136","3,457",3,, N/A ,0,0:00:00,N/A
+BCT,11/13/2023,MSC Meraviglia,"3,937","3,989",148,, N/A ,0,0:00:00,N/A
+BCT,11/19/2023,MSC Meraviglia,"4,091","4,005",63,, N/A ,0,0:00:00,N/A
+BCT,11/26/2023,Queen Mary 2,"1,746","1,545",645,, No ,0,0:00:00,Cancelled shore power connection due to USCG inspection of the vessel 
+BCT,11/27/2023,MSC Meraviglia,"4,320","4,086",57,, N/A ,0,0:00:00,N/A
+BCT,12/2/2023,MSC Meraviglia,"4,068","4,256",120,, N/A ,0,0:00:00,N/A
+BCT,12/8/2023,Queen Mary 2,"1,647","1,740",650,, Partial ,0,0:00:00,Cancelled due to technical issue with the ship's shore power system
+BCT,12/9/2023,MSC Meraviglia,"4,215","4,187",3,, N/A ,0,0:00:00,N/A
+BCT,12/16/2023,MSC Meraviglia,"2,886","4,206",5,, N/A ,0,0:00:00,N/A
+BCT,12/22/2023,Queen Mary 2,"1,775","1,634",728,, No ,0,0:00:00,Ongoing technical issue with the ship's shore power system
+BCT,12/23/2023,MSC Meraviglia,"5,552","2,871",7,, N/A ,0,0:00:00,N/A
+BCT,12/30/2023,MSC Meraviglia,"5,226","5,535",11,, N/A ,0,0:00:00,N/A
+BCT,1/3/2024,Queen Mary 2,"1,592","1,811",673,, No ,0,0:00:00,Ongoing technical issue with the ship's shore power system
+BCT,1/6/2024,MSC Meraviglia,"2,891","5,205",26,, N/A ,0,0:00:00,N/A
+BCT,1/15/2024,MSC Meraviglia,"3,959","2,855",48,, N/A ,0,0:00:00,N/A
+BCT,1/26/2024,MSC Meraviglia,"2,325","3,928",55,, N/A ,0,0:00:00,N/A
+BCT,2/4/2024,MSC Meraviglia,"3,148","2,349",25,, N/A ,0,0:00:00,N/A
+BCT,2/11/2024,MSC Meraviglia,"3,925","3,161",6,, N/A ,0,0:00:00,N/A
+BCT,2/18/2024,MSC Meraviglia,"5,477","3,918",6,, N/A ,0,0:00:00,N/A
+BCT,2/25/2024,MSC Meraviglia,"4,372","5,471",2,, N/A ,0,0:00:00,N/A
+BCT,3/3/2024,MSC Meraviglia,"5,139","4,363",2,, N/A ,0,0:00:00,N/A
+BCT,3/10/2024,MSC Meraviglia,"4,723","5,122",11,, N/A ,0,0:00:00,N/A
+BCT,3/17/2024,MSC Meraviglia,"4,421","4,728",13,, N/A ,0,0:00:00,N/A
+BCT,3/24/2024,MSC Meraviglia,"4,900","4,415",6,, N/A ,0,0:00:00,N/A
+MCT,9/24/2022,Arcadia,4,4,"1,132",, N/A ,0,0:00:00,N/A
+MCT,4/9/2023,Amera,0,0,610,2, N/A ,0,0:00:00,N/A
+MCT,9/11/2023,Amera,1,1,679,, N/A ,0,0:00:00,N/A
+MCT,10/27/2023,Artania,4,0,961,4, N/A ,0,0:00:00,N/A
+MCT,4/29/2024,Amera,0,0,765,1, N/A ,0,0:00:00,N/A
+MCT,6/3/2024,Asuka II,63,13,475,2, N/A ,0,0:00:00,N/A
+MCT,9/18/2024,Arcadia,5,5,"1,926",2, N/A ,0,0:00:00,N/A
