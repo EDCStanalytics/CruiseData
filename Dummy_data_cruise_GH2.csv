@@ -1,0 +1,112 @@
+﻿Terminal,Date,Vessel Name,EmbarkPAX,DebarkPAX,TransitPAX,Berth,ShorePowered, kWh ,connectionDuration,ShorePowerNote
+BCT,12/20/2021,Queen,412,842,537,, N/A ,0,0:00:00,N/A
+BCT,2/22/2022,Queen,728,465,248,, No ,0,0:00:00,No connection due to feeder out of service
+BCT,3/8/2022,Queen,583,713,1124,, No ,0,0:00:00,No connection due to feeder out of service
+BCT,3/27/2022,Queen,392,592,1079,, No ,0,0:00:00,No connection due to feeder out of service
+BCT,4/17/2022,Queen,521,556,1178,, No ,0,0:00:00,No connection due to feeder out of service
+BCT,4/24/2022,Seas seven,7,12,142,, N/A ,0,0:00:00,N/A
+BCT,5/1/2022,Queen ,1450,7833,295,, Yes ,46393,5:57:22,N/A
+BCT,5/15/2022,Queen ,1272,1569,358,, Yes ,43033,5:52:34,N/A
+BCT,6/5/2022,Queen ,1538,2138,286,, Yes ,26637,3:45:57,N/A
+BCT,7/1/2022,Queen ,1691,677,423,, Yes ,58271,6:50:33,N/A
+BCT,7/8/2022,Queen ,1222,7098,447,, Yes ,58067,7:03:02,N/A
+BCT,7/27/2022,Caribbean ,32,23,2590,, N/A ,0,0:00:00,N/A
+BCT,8/5/2022,Caribbean ,2431,2490,123,, N/A ,0,0:00:00,N/A
+BCT,8/5/2022,Queen ,1784,1652,4881,, Yes ,64907,7:21:30,N/A
+BCT,8/28/2022,Queen,1668,1879,302,, Yes ,55951,6:30:16,N/A
+BCT,8/31/2022,Caribbean ,1907,2691,116,, N/A ,0,0:00:00,N/A
+BCT,9/17/2022,Caribbean ,1986,1992,85,, N/A ,0,0:00:00,N/A
+BCT,9/17/2022,Enchanted ,3154,811,74,, N/A ,0,0:00:00,N/A
+BCT,9/23/2022,Queen Mary 2,1288,1539,706,, Yes ,38519,4:42:48,N/A
+BCT,9/24/2022,Enchanted ,2762,2974,61,, N/A ,0,0:00:00,N/A
+BCT,10/1/2022,Enchanted ,2897,3101,33,, N/A ,0,0:00:00,N/A
+BCT,10/6/2022,Sky ,371,205,437,, N/A ,0,0:00:00,N/A
+BCT,10/7/2022,Queen,1506,1378,825,, N/A ,0,0:00:00,N/A
+BCT,10/8/2022,Enchanted ,4211,3119,47,, N/A ,0,0:00:00,N/A
+BCT,10/10/2022,Enchanted ,2194,1795,36,, N/A ,0,0:00:00,N/A
+BCT,10/15/2022,Enchanted ,32740,3275,48,, N/A ,0,0:00:00,N/A
+BCT,10/22/2022,Enchanted ,2145,793,53,, N/A ,0,0:00:00,N/A
+BCT,10/25/2022,Queen ,1972,2061,3108,, Yes ,39519,5:15:26,N/A
+BCT,10/29/2022,Enchanted ,2148,2175,40,, N/A ,0,0:00:00,N/A
+BCT,10/30/2022,Enchanted ,9,16,1859,, N/A ,0,0:00:00,N/A
+BCT,11/5/2022,Enchanted ,2663,1694,152,, N/A ,0,0:00:00,N/A
+BCT,11/20/2022,Queen ,1725,1587,620,, Yes ,750,5:20:48,N/A
+BCT,12/3/2022,Queen ,1589,4866,566,, N/A ,0,0:00:00,N/A
+BCT,12/22/2022,Queen ,1427,1352,928,, Yes ,40771,5:33:37,N/A
+BCT,1/3/2023,Queen ,1475,1524,857,, Yes ,49091,6:30:17,N/A
+BCT,4/22/2023, Meraviglia,4682,3645,5,, N/A ,0,0:00:00,N/A
+BCT,4/29/2023, Meraviglia,4395,4597,329,, N/A ,0,0:00:00,N/A
+BCT,5/7/2023, Meraviglia,4378,4439,7,, N/A ,0,0:00:00,N/A
+BCT,5/14/2023, Meraviglia,4199,4298,12,, N/A ,0,0:00:00,N/A
+BCT,5/21/2023, Meraviglia,4523,4186,3,, N/A ,0,0:00:00,N/A
+BCT,5/26/2023,Queen,2387,2367,189,, Yes ,57404,7:13:41,N/A
+BCT,5/28/2023, Meraviglia,4778,4229,2,, N/A ,0,0:00:00,N/A
+BCT,6/4/2023, Meraviglia,4621,4650,10,, N/A ,0,0:00:00,N/A
+BCT,6/11/2023, Meraviglia,4829,4593,8,, N/A ,0,0:00:00,N/A
+BCT,6/18/2023, Meraviglia,4958,750,384,, N/A ,0,0:00:00,N/A
+BCT,6/25/2023, Meraviglia,5520,5025,6,, N/A ,0,0:00:00,N/A
+BCT,6/30/2023,Queen ,2176,2090,368,, Yes ,27594,3:11:53,N/A
+BCT,7/2/2023, Meraviglia,5402,5393,3,, N/A ,0,0:00:00,N/A
+BCT,7/7/2023,Queen ,2138,3000,411,, No ,0,0:00:00,Ship did not connect due to delayed arrival
+BCT,7/9/2023, Meraviglia,5197,5346,0,, N/A ,0,0:00:00,N/A
+BCT,7/16/2023, Meraviglia,5099,3000,,, N/A ,0,0:00:00,N/A
+BCT,7/21/2023,Queen,2260,2058,407,, No ,0,0:00:00,Extreme weather
+BCT,7/23/2023,Meraviglia,5488,5305,,, N/A ,0,0:00:00,N/A
+BCT,7/26/2023,Caribbean,11,8,3158,, Yes ,77117,8:36:56,N/A
+BCT,7/30/2023, Meraviglia,802,750,,, N/A ,0,0:00:00,N/A
+BCT,8/6/2023, Meraviglia,5544,500,,, N/A ,0,0:00:00,N/A
+BCT,8/13/2023, Meraviglia,5432,5382,,, N/A ,0,0:00:00,N/A
+BCT,8/14/2023,Caribbean ,2950,750,81,, N/A ,0,0:00:00,N/A
+BCT,8/18/2023,Queen ,2263,750,320,, Yes ,40369,5:24:53,N/A
+BCT,8/21/2023, Meraviglia,4965,4955,353,, N/A ,0,0:00:00,N/A
+BCT,8/27/2023, Meraviglia,5287,5128,51,, N/A ,0,0:00:00,N/A
+BCT,8/30/2023,Caribbean ,2816,750,100,, N/A ,0,0:00:00,N/A
+BCT,9/4/2023, Meraviglia,4473,5451,31,, N/A ,0,0:00:00,N/A
+BCT,9/9/2023, Princess,2924,2329,451,, N/A ,0,0:00:00,N/A
+BCT,9/10/2023, Meraviglia,3891,4316,63,, N/A ,0,0:00:00,N/A
+BCT,9/11/2023,Queen ,2132,2088,311,, No ,0,0:00:00,Unresolved rate issue
+BCT,9/16/2023, Princess,2897,2764,29,, N/A ,0,0:00:00,N/A
+BCT,9/17/2023, Shadow,4333,,313,, N/A ,0,0:00:00,N/A
+BCT,9/18/2023, Meraviglia,2714,3966,55,, N/A ,0,0:00:00,N/A
+BCT,9/19/2023,Caribbean,3010,2637,120,, Yes ,77345,9:43:57,N/A
+BCT,9/20/2023, Discovery,3089,2,1762,, N/A ,0,0:00:00,N/A
+BCT,9/23/2023, Princess,1595,2758,12,, No ,0,0:00:00,Extreme weather
+BCT,9/24/2023, Meraviglia,2963,3966,336,, N/A ,0,0:00:00,N/A
+BCT,9/29/2023,Queen ,3750,1478,883,, No ,0,0:00:00,Extreme weather
+BCT,9/30/2023, Princess,3122,2918,15,, No ,0,0:00:00,Extreme weather
+BCT,10/4/2023, Meraviglia,2836,3710,0,, N/A ,0,0:00:00,N/A
+BCT,10/7/2023,Emerald ,1421,2956,9,, Yes ,68166,7:41:54,N/A
+BCT,10/9/2023,Caribbean ,2982,2617,42,, Yes ,71008,9:16:29,N/A
+BCT,10/13/2023,Queen,3528,750,902,, Yes ,41767,5:20:19,N/A
+BCT,10/14/2023, Princess,3176,750,17,, Yes ,67382,8:26:54,N/A
+BCT,10/15/2023, Meraviglia,3233,3877,2,, N/A ,0,0:00:00,N/A
+BCT,10/21/2023, Princess,12,750,11,, Yes ,66437,8:03:56,N/A
+BCT,10/25/2023, Meraviglia,2764,3327,410,, N/A ,0,0:00:00,N/A
+BCT,10/27/2023,Caribbean ,8,33,2394,, Yes ,93310,0:31:00,N/A
+BCT,10/28/2023,Emerald,2591,2921,26,, Yes ,47420,5:42:14,N/A
+BCT,10/30/2023, Serenity,4269,16,198,, Yes ,20,0:11:00,Ship was getting their shore power retrofit cerfied by their class and insurance
+BCT,11/4/2023, Princess,3844,2637,95,, Yes ,66439,8:18:59,N/A
+BCT,11/5/2023,Meraviglia,4156,3457,3,, N/A ,0,0:00:00,N/A
+BCT,11/13/2023,Meraviglia,1809,3989,148,, N/A ,0,0:00:00,N/A
+BCT,11/19/2023,Meraviglia,4386,4005,63,, N/A ,0,0:00:00,N/A
+BCT,11/26/2023,Queen ,4215,1545,645,, No ,0,0:00:00,Cancelled shore power connection due to USCG inspection of the vessel 
+BCT,11/27/2023, Meraviglia,1738,4086,57,, N/A ,0,0:00:00,N/A
+BCT,12/2/2023, Meraviglia,825,4256,120,, N/A ,0,0:00:00,N/A
+BCT,12/8/2023,Queen ,2742,1740,650,, Partial ,0,0:00:00,Cancelled due to technical issue with the ship's shore power system
+BCT,12/9/2023, Meraviglia,1889,4187,3,, N/A ,0,0:00:00,N/A
+BCT,12/16/2023, Meraviglia,5650,4206,5,, N/A ,0,0:00:00,N/A
+BCT,12/22/2023,Queen,5379,1634,728,, No ,0,0:00:00,Ongoing technical issue with the ship's shore power system
+BCT,12/23/2023, Meraviglia,1690,2871,7,, N/A ,0,0:00:00,N/A
+BCT,12/30/2023, Meraviglia,801,5535,11,, N/A ,0,0:00:00,N/A
+BCT,1/3/2024,Queen ,812,1811,750,, No ,0,0:00:00,Ongoing technical issue with the ship's shore power system
+BCT,1/6/2024, Meraviglia,2404,5205,26,, N/A ,0,0:00:00,N/A
+BCT,1/15/2024, Meraviglia,3186,2855,48,, N/A ,0,0:00:00,N/A
+BCT,1/26/2024, Meraviglia,3950,3928,55,, N/A ,0,0:00:00,N/A
+BCT,2/4/2024, Meraviglia,5574,2349,25,, N/A ,0,0:00:00,N/A
+BCT,2/11/2024, Meraviglia,804,3161,6,, N/A ,0,0:00:00,N/A
+BCT,2/18/2024, Meraviglia,5144,3918,6,, N/A ,0,0:00:00,N/A
+BCT,2/25/2024, Meraviglia,4867,5471,2,, N/A ,0,0:00:00,N/A
+BCT,3/3/2024, Meraviglia,792,4363,2,, N/A ,0,0:00:00,N/A
+BCT,3/10/2024, Meraviglia,4978,5122,11,, N/A ,0,0:00:00,N/A
+BCT,3/17/2024, Meraviglia,750,4728,13,, N/A ,0,0:00:00,N/A
+BCT,3/24/2024, Meraviglia,4900,4415,6,, N/A ,0,0:00:00,N/A
