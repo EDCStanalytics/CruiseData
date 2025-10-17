@@ -1,0 +1,117 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "A basic scatter plot example depicting automobile statistics.",
+  "width": 800,
+  "height": 400,
+  "padding": 5,
+  "data": [
+    {
+      "name": "source",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Boats.csv",
+      "format": {"type": "csv", "delimiter": ","},
+      "transform": [
+        {"type": "formula", "as": "year", "expr": "year(datum.Year )"}
+      ]
+    },
+    {
+      "name": "YoY",
+      "source": "source",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["TotalPAX"],
+          "ops": ["sum"],
+          "as": ["total"],
+          "groupby": ["Year of Construction", "Cruise Line"]
+        }
+      ]
+    },
+    {
+      "name": "fleet",
+      "source": "source",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["Gross Tonnage (GRT)"],
+          "ops": ["average"],
+          "as": ["AVG"],
+          "groupby": ["Year of Construction", "Cruise Line"]
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "round": true,
+      "nice": true,
+      "zero": false,
+      "domain": {"data": "fleet", "field": "Year of Construction"},
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "round": true,
+      "nice": true,
+      "zero": true,
+      "domain": {"data": "fleet", "field": "AVG"},
+      "range": "height"
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": {"data": "fleet", "field": "Cruise Line"},
+      "range": ["#fe5bd6", "#2196f3, #eb9830", "#574407", "#b80454", "#1d190a"]
+    }
+  ],
+  "axes": [
+    {
+      "scale": "x",
+      "grid": true,
+      "domain": false,
+      "orient": "bottom",
+      "tickCount": 5,
+      "title": "Year of Construction"
+    },
+    {
+      "scale": "y",
+      "grid": true,
+      "domain": false,
+      "orient": "left",
+      "titlePadding": 5,
+      "title": "GRT"
+    }
+  ],
+  "legends": [
+    {
+      "fill": "color",
+      "title": "Cruise Lines",
+      "symbolStrokeWidth": 2,
+      "symbolOpacity": 1,
+      "symbolType": "circle"
+    }
+  ],
+  "marks": [
+    {
+      "name": "marks",
+      "type": "symbol",
+      "from": {"data": "fleet"},
+      "encode": {
+        "update": {
+          "x": {"scale": "x", "field": "Year of Construction"},
+          "y": {"scale": "y", "field": "AVG"},
+          "size": {"value": 100},
+          "shape": {"value": "circle"},
+          "strokeWidth": {"value": 2},
+          "opacity": {"value": 1},
+          "stroke": {"value": "#4682b4"},
+          "fill": {"scale": "color", "field": "Cruise Line"},
+          "tooltip": {"signal": "'Cruise: ' + datum.CruiseLine"}
+        }
+      }
+    }
+  ],
+  "config": {}
+}
