@@ -1,0 +1,163 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "A basic stacked bar chart example.",
+  "width": 600,
+  "height": 300,
+  "padding": 15,
+  "title": {"text": "Cruise Passenger Volume"},
+  "signals": [
+    {
+      "name": "Vessel",
+      "bind": {
+        "input": "select",
+        "options": [
+          "Queen",
+          "Seas seven",
+          "Queen ",
+          "Caribbean ",
+          "Enchanted ",
+          "Queen Mary 2",
+          "Sky ",
+          " Meraviglia",
+          "Meraviglia",
+          "Caribbean",
+          " Princess Shadow",
+          " Discovery",
+          "Emerald ",
+          "Emerald",
+          " Serenity",
+          "Norwegian "
+        ]
+      }
+    }
+  ],
+  "data": [
+    {
+      "name": "table",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Dummy_datacruise_BctMctGH.csv",
+      "format": {"type": "csv", "delimiter": ","},
+      "transform": [
+        {"type": "formula", "as": "year", "expr": "year(datum.Date)"}
+      ]
+    },
+    {
+      "name": "YoY",
+      "source": "table",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["EmbarkPAX"],
+          "ops": ["sum"],
+          "as": ["total"],
+          "groupby": ["year", "Terminal"]
+        },
+        {
+          "type": "stack",
+          "groupby": ["year"],
+          "field": "total",
+          "sort": {"field": "Terminal", "order": "ascending"}
+        },
+        {
+          "type": "collect",
+          "sort": {
+            "field": ["year", "Terminal"],
+            "order": ["ascending", "ascending"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "totals",
+      "source": "table",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["EmbarkPAX"],
+          "ops": ["sum"],
+          "as": ["total"],
+          "groupby": ["year"]
+        },
+        {
+          "type": "formula",
+          "as": "formattedTotal",
+          "expr": "format(datum.total, ',r')"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "band",
+      "range": "width",
+      "padding": 0.3,
+      "domain": {"data": "YoY", "field": "year"}
+    },
+    {
+      "name": "y",
+      "range": "height",
+      "nice": false,
+      "zero": true,
+      "domain": [0, 200000]
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "range": ["#419ede", "#00008b"],
+      "domain": {"data": "YoY", "field": "Terminal"}
+    }
+  ],
+  "axes": [
+    {"orient": "bottom", "scale": "x", "zindex": 1, "title": "Year"},
+    {
+      "orient": "left",
+      "scale": "y",
+      "zindex": 1,
+      "tickCount": 7,
+      "format": ".0s",
+      "title": "Passenger Volume"
+    }
+  ],
+  "marks": [
+    {
+      "type": "rect",
+      "from": {"data": "YoY"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "x", "field": "year"},
+          "width": {"scale": "x", "band": 1, "offset": -1},
+          "y": {"scale": "y", "field": "y0"},
+          "y2": {"scale": "y", "field": "y1"},
+          "fill": {"scale": "color", "field": "Terminal"},
+          "tooltip": {"field": "total", "format": "'.0s')"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "totals"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "x", "field": "year", "band": 0.5},
+          "y": {"scale": "y", "field": "total", "offset": -5},
+          "text": {"field": "formattedTotal"},
+          "align": {"value": "center"},
+          "baseline": {"value": "bottom"},
+          "fill": {"value": "black"}
+        }
+      }
+    }
+  ],
+  "legends": [
+    {
+      "fill": "color",
+      "title": "Terminal",
+      "symbolType": "circle",
+      "direction": "horizontal",
+      "orient": "none",
+      "legendX": 250,
+      "legendY": 350
+    }
+  ],
+  "config": {}
+}

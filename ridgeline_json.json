@@ -1,0 +1,153 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "Area charts showing the density of cuisine options in Seattle's U-District.",
+  "width": 500,
+  "height": 380,
+  "padding": 5,
+  "autosize": "pad",
+  "signals": [
+    {"name": "names", "value": ["BCT", "MCT"]},
+    {"name": "colors", "value": ["#bcbd22", "#17becf"]}
+  ],
+  "data": [
+    {
+      "name": "table",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Dummy_datacruise_BctMctGH.csv",
+      "format": {"type": "csv", "delimiter": ","},
+      "transform": [
+        {"type": "formula", "as": "year", "expr": "year(datum.Date)"}
+      ]
+    },
+    {
+      "name": "YoY",
+      "source": "table",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["EmbarkPAX"],
+          "ops": ["sum"],
+          "as": ["total"],
+          "groupby": ["year", "Terminal"]
+        }
+      ]
+    }
+  ],
+  "title": {
+    "text": "Cruise Passengers",
+    "orient": "top",
+    "anchor": "start",
+    "frame": "group",
+    "encode": {"update": {"dx": {"value": -1}}}
+  },
+  "scales": [
+    {
+      "name": "x",
+      "type": "linear",
+      "range": "width",
+      "zero": false,
+      "nice": true,
+      "domain": {"data": "YoY", "field": "year"}
+    },
+    {
+      "name": "pax",
+      "type": "linear",
+      "domain": {"data": "YoY", "field": "total"},
+      "range": [0, -100]
+    },
+    {
+      "name": "y",
+      "type": "band",
+      "range": "height",
+      "padding": 0,
+      "domain": ["BCT", "MCT"]
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "domain": ["BCT", "MCT"],
+      "range": ["#e377c2", "#17becf"]
+    }
+  ],
+  "axes": [
+    {
+      "orient": "bottom",
+      "scale": "x",
+      "grid": true,
+      "tickSize": 4,
+      "gridDash": [4, 4],
+      "format": "d",
+      "tickCount": 4,
+      "title": "year",
+      "labelFontStyle": "italic"
+    },
+    {
+      "orient": "right",
+      "scale": "y",
+      "title": "terminal",
+      "domain": false,
+      "ticks": false,
+      "encode": {
+        "labels": {
+          "update": {
+            "dx": {"value": 2},
+            "dy": {"value": 2},
+            "y": {"scale": "y", "field": "value", "band": 1},
+            "baseline": {"value": "bottom"}
+          }
+        }
+      }
+    }
+  ],
+  "marks": [
+    {
+      "type": "group",
+      "from": {
+        "facet": {"name": "facet", "data": "YoY", "groupby": "Terminal"}
+      },
+      "encode": {
+        "enter": {
+          "width": {"signal": "width"},
+          "x": {"value": 0},
+          "y": {"scale": "y", "field": "Terminal"},
+          "height": {"scale": "y", "band": 1}
+        }
+      },
+      "marks": [
+        {
+          "type": "area",
+          "from": {"data": "facet"},
+          "encode": {
+            "enter": {
+              "x": {"scale": "x", "field": "year"},
+              "y": {"scale": "pax", "field": "total"},
+              "y2": {"value": 190},
+              "height": {"value": 90},
+              "fill": {"scale": "color", "field": "Terminal"},
+              "fillOpacity": {"value": 0.7},
+              "stroke": {"value": "white"},
+              "strokeWidth": {"value": 1},
+              "tooltip": {"field": "total"}
+            },
+            "update": {
+              "opacity": {"value": 0.5},
+              "interpolate": {"value": "monotone"}
+            }
+          }
+        },
+        {
+          "type": "rule",
+          "encode": {
+            "enter": {
+              "x": {"value": 0},
+              "x2": {"signal": "width"},
+              "y": {"scale": "y", "value": "MCT"},
+              "stroke": {"value": "#000"},
+              "strokeWidth": {"value": 0.2}
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "config": {}
+}
