@@ -1,11 +1,5 @@
-Terminal,Date,Cruise Line,"Embark
-PAX","Debark
-PAX","In-Transit
-PAX","Total
-PAX",Successful Full Shore Power Connection,"Usage (kWh)
-(Watts Monthly Report)","Connection Duration 
-(Watts Monthly Report)",Shore Power Connection Note,Nox (MT),SO2 (MT),PM2.5 (MT),CO2 (MT),CO2eq (MT),"Emissions Avoided in Terms of Gas-Powered Cars Driven for One Year
-(EPA GHG Equivalency Calculator)"
+Terminal,Date,CruiseLine,EmbarkPAX,DebarkPAX,In-TransitPAX,TotalPAX,SPConnect,Usage(kWh),"ConnectionDuration 
+",SPNote,Nox(MT),SO2(MT),PM2.5(MT),CO2(MT),CO2eq(MT),CarEq
 BCT,3/8/2022,Oceanic Cruises,498,493,1076,2067,No,0,0:00:00,No connection due to feeder out of service,0.00,0.00,0.00,0.00,0.00,
 BCT,3/27/2022,Pacific Cruises,255,452,1025,1732,No,0,0:00:00,No connection due to feeder out of service,0.00,0.00,0.00,0.00,0.00,
 BCT,4/17/2022,Pacific Cruises,416,220,1104,1740,No,0,0:00:00,No connection due to feeder out of service,0.00,0.00,0.00,0.00,0.00,
