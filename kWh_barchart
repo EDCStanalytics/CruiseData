@@ -1,0 +1,104 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "A basic bar chart example, with value labels shown upon pointer hover.",
+  "width": 400,
+  "height": 200,
+  "padding": 5,
+
+  "data": [
+    {
+      "name": "Cruise",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Cruise_Dummy_Data.csv",
+      "format": {"type": "csv"},
+      "transform": [
+        {"type":"formula",
+        "as": "year",
+        "expr": "year(datum.Date)"
+        }
+      ]
+    },
+    {
+      "name": "kWhbyYear",
+      "source": "Cruise",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["Usage(kWh)"],
+          "ops": ["sum"],
+          "as": ["totalkWh"],
+          "groupby": ["year", "CruiseLine"]
+
+        }
+      ]
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "tooltip",
+      "value": {},
+      "on": [
+        {"events": "rect:pointerover", "update": "datum"},
+        {"events": "rect:pointerout",  "update": "{}"}
+      ]
+    }
+  ],
+
+  "scales": [
+    {
+      "name": "xscale",
+      "type": "band",
+      "domain": {"data": "kWhbyYear", "field": "year"},
+      "range": "width",
+      "padding": 0.05,
+      "round": true
+    },
+    {
+      "name": "yscale",
+      "domain": {"data": "kWhbyYear", "field": "totalkWh"},
+      "nice": true,
+      "range": "height"
+    }
+  ],
+
+  "axes": [
+    { "orient": "bottom", "scale": "xscale" },
+    { "orient": "left", "scale": "yscale" }
+  ],
+
+  "marks": [
+    {
+      "type": "rect",
+      "from": {"data":"kWhbyYear"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "year"},
+          "width": {"scale": "xscale", "band": 1},
+          "y": {"scale": "yscale", "field": "totalkWh"},
+          "y2": {"scale": "yscale", "value": 0}
+        },
+        "update": {
+          "fill": {"value": "steelblue"}
+        },
+        "hover": {
+          "fill": {"value": "red"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "kWhbyYear"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "year", "band": 0.5},
+          "y": {"scale": "yscale", "field": "totalkWh", "offset": -2},
+          "text": {"signal": "tooltip.totalkWh"},
+          "align": {"value": "center"},
+          "baseline": {"value": "bottom"},
+          "fill": {"value": "black"}
+      
+        }
+      }
+    }
+  ]
+}
