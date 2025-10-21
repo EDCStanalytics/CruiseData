@@ -5,37 +5,12 @@
   "height": 300,
   "padding": 15,
   "title": {"text": "Cruise Passenger Volume"},
-  "signals": [
-    {
-      "name": "Vessel",
-      "bind": {
-        "input": "select",
-        "options": [
-          "Queen",
-          "Seas seven",
-          "Queen ",
-          "Caribbean ",
-          "Enchanted ",
-          "Queen Mary 2",
-          "Sky ",
-          " Meraviglia",
-          "Meraviglia",
-          "Caribbean",
-          " Princess Shadow",
-          " Discovery",
-          "Emerald ",
-          "Emerald",
-          " Serenity",
-          "Norwegian "
-        ]
-      }
-    }
-  ],
+  "signals": [],
   "data": [
     {
       "name": "table",
-      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Dummy_datacruise_BctMctGH.csv",
-      "format": {"type": "csv", "delimiter": ","},
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Cruise_Dummy_Data.csv",
+      "format": {"type": "csv"},
       "transform": [
         {"type": "formula", "as": "year", "expr": "year(datum.Date)"}
       ]
@@ -96,9 +71,9 @@
     {
       "name": "y",
       "range": "height",
-      "nice": false,
+      "nice": true,
       "zero": true,
-      "domain": [0, 200000]
+      "domain": {"data": "YoY", "field": "total"}
     },
     {
       "name": "color",
@@ -113,8 +88,8 @@
       "orient": "left",
       "scale": "y",
       "zindex": 1,
-      "tickCount": 7,
-      "format": ".0s",
+      "tickCount": 5,
+      "format": "s",
       "title": "Passenger Volume"
     }
   ],
