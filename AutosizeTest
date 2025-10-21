@@ -1,0 +1,134 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "A basic bar chart example, with value labels shown upon pointer hover.",
+  // "width": 400,
+  // "height": 200,
+  "autosize": {"type": "fit", "contains": "content"},
+  "padding": 5,
+
+  "data": [
+    {
+      "name": "Cruise",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Cruise_Dummy_Data.csv",
+      "format": {"type": "csv"},
+      "transform": [
+        {"type":"formula",
+        "as": "year",
+        "expr": "year(datum.Date)"
+        },
+        {"type": "filter",
+        "expr": "year(datum.Date) > 2021"}
+      ]
+    },
+    {
+      "name": "kWhTotals",
+      "source": "Cruise",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["Usage(kWh)"],
+          "ops": ["sum"],
+          "as": ["totalkWh"],
+          "groupby": ["year"]
+        },
+        {"type": "formula",
+        "as": "formattedTotal",
+        "expr": "format(datum.totalkWh, ',r')"}
+      ]
+    },
+    {
+      "name": "kWhYoY",
+      "source": "Cruise",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["Usage(kWh)"],
+          "ops": ["sum"],
+          "as": ["totalkWh"],
+          "groupby": ["year", "CruiseLine"]},
+        {
+          "type": "stack",
+          "groupby": ["year"],
+          "field": "totalkWh",
+          "sort": {"field": "CruiseLine", "order": "ascending"}
+        },
+        {"type": "collect",
+        "sort": {
+          "field": ["year", "CruiseLine"],
+          "order": ["ascending", "ascending"]
+        }
+        }
+      ]
+    }
+  ],
+    "signals": [
+      {
+        "name": "width",
+        "init": "containerSize()[0]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[0]" }]
+      },
+      {
+        "name": "height",
+        "init": "containerSize()[1]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[1]" }]
+      }
+  ],
+
+  "scales": [
+    {
+      "name": "xscale",
+      "type": "band",
+      "domain": {"data": "kWhTotals", "field": "year"},
+      "range": "width",
+      "padding": 0.05,
+      "round": true
+    },
+    {
+      "name": "yscale",
+      "domain": {"data": "kWhTotals", "field": "totalkWh"},
+      "nice": true,
+      "range": "height"
+    }
+  ],
+
+  "axes": [
+    { "orient": "bottom", "scale": "xscale" },
+    { "orient": "left", "scale": "yscale" }
+  ],
+
+  "marks": [
+    {
+      "type": "rect",
+      "from": {"data":"kWhTotals"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "year"},
+          "width": {"scale": "xscale", "band": 1},
+          "y": {"scale": "yscale", "field": "totalkWh"},
+          "y2": {"scale": "yscale", "value": 0}
+        },
+        "update": {
+          "fill": {"value": "steelblue"}
+        },
+        "hover": {
+          "fill": {"value": "red"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "kWhTotals"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "year", "band": 0.5},
+          "y": {"scale": "yscale", "field": "totalkWh", "offset": -2},
+          "text": {"field": "formattedTotal"},
+          "align": {"value": "center"},
+          "baseline": {"value": "bottom"},
+          "fill": {"value": "black"}
+      
+        }
+      }
+    }
+  ]
+}
