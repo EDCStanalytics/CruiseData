@@ -14,11 +14,13 @@
         {"type":"formula",
         "as": "year",
         "expr": "year(datum.Date)"
-        }
+        },
+        {"type": "filter",
+        "expr": "year(datum.Date) > 2021"}
       ]
     },
     {
-      "name": "kWhbyYear",
+      "name": "kWhTotals",
       "source": "Cruise",
       "transform": [
         {
@@ -26,36 +28,52 @@
           "fields": ["Usage(kWh)"],
           "ops": ["sum"],
           "as": ["totalkWh"],
-          "groupby": ["year", "CruiseLine"]
-
+          "groupby": ["year"]
+        },
+        {"type": "formula",
+        "as": "formattedTotal",
+        "expr": "format(datum.totalkWh, ',r')"}
+      ]
+    },
+    {
+      "name": "kWhYoY",
+      "source": "Cruise",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["Usage(kWh)"],
+          "ops": ["sum"],
+          "as": ["totalkWh"],
+          "groupby": ["year", "CruiseLine"]},
+        {
+          "type": "stack",
+          "groupby": ["year"],
+          "field": "totalkWh",
+          "sort": {"field": "CruiseLine", "order": "ascending"}
+        },
+        {"type": "collect",
+        "sort": {
+          "field": ["year", "CruiseLine"],
+          "order": ["ascending", "ascending"]
+        }
         }
       ]
     }
   ],
 
-  "signals": [
-    {
-      "name": "tooltip",
-      "value": {},
-      "on": [
-        {"events": "rect:pointerover", "update": "datum"},
-        {"events": "rect:pointerout",  "update": "{}"}
-      ]
-    }
-  ],
 
   "scales": [
     {
       "name": "xscale",
       "type": "band",
-      "domain": {"data": "kWhbyYear", "field": "year"},
+      "domain": {"data": "kWhTotals", "field": "year"},
       "range": "width",
       "padding": 0.05,
       "round": true
     },
     {
       "name": "yscale",
-      "domain": {"data": "kWhbyYear", "field": "totalkWh"},
+      "domain": {"data": "kWhTotals", "field": "totalkWh"},
       "nice": true,
       "range": "height"
     }
@@ -69,7 +87,7 @@
   "marks": [
     {
       "type": "rect",
-      "from": {"data":"kWhbyYear"},
+      "from": {"data":"kWhTotals"},
       "encode": {
         "enter": {
           "x": {"scale": "xscale", "field": "year"},
@@ -87,12 +105,12 @@
     },
     {
       "type": "text",
-      "from": {"data": "kWhbyYear"},
+      "from": {"data": "kWhTotals"},
       "encode": {
         "enter": {
           "x": {"scale": "xscale", "field": "year", "band": 0.5},
           "y": {"scale": "yscale", "field": "totalkWh", "offset": -2},
-          "text": {"signal": "tooltip.totalkWh"},
+          "text": {"field": "formattedTotal"},
           "align": {"value": "center"},
           "baseline": {"value": "bottom"},
           "fill": {"value": "black"}
