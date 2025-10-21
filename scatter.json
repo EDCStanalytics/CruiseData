@@ -10,19 +10,10 @@
       "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Boats.csv",
       "format": {"type": "csv", "delimiter": ","},
       "transform": [
-        {"type": "formula", "as": "year", "expr": "year(datum.Year )"}
-      ]
-    },
-    {
-      "name": "YoY",
-      "source": "source",
-      "transform": [
         {
-          "type": "aggregate",
-          "fields": ["TotalPAX"],
-          "ops": ["sum"],
-          "as": ["total"],
-          "groupby": ["Year of Construction", "Cruise Line"]
+          "type": "formula",
+          "as": "year1",
+          "expr": "year(datum.YearOfConstruction)"
         }
       ]
     },
@@ -32,10 +23,15 @@
       "transform": [
         {
           "type": "aggregate",
-          "fields": ["Gross Tonnage (GRT)"],
-          "ops": ["average"],
-          "as": ["AVG"],
-          "groupby": ["Year of Construction", "Cruise Line"]
+          "fields": ["GrossTonnage(GRT)", "LowerBerths"],
+          "ops": ["average", "average"],
+          "as": ["GRT_avg", "Berth_avg"],
+          "groupby": ["YearOfConstruction", "Cruise Line"]
+        },
+        {
+          "type": "formula",
+          "as": "year",
+          "expr": "year(datum.YearOfConstruction)"
         }
       ]
     }
@@ -44,10 +40,9 @@
     {
       "name": "x",
       "type": "linear",
-      "round": true,
       "nice": true,
       "zero": false,
-      "domain": {"data": "fleet", "field": "Year of Construction"},
+      "domain": {"data": "fleet", "field": "year"},
       "range": "width"
     },
     {
@@ -56,14 +51,23 @@
       "round": true,
       "nice": true,
       "zero": true,
-      "domain": {"data": "fleet", "field": "AVG"},
+      "domain": {"data": "fleet", "field": "GRT_avg"},
       "range": "height"
+    },
+    {
+      "name": "y2",
+      "type": "linear",
+      "round": true,
+      "nice": true,
+      "zero": true,
+      "domain": {"data": "fleet", "field": "Berth_avg"},
+      "range": [0, 1000]
     },
     {
       "name": "color",
       "type": "ordinal",
       "domain": {"data": "fleet", "field": "Cruise Line"},
-      "range": ["#fe5bd6", "#2196f3, #eb9830", "#574407", "#b80454", "#1d190a"]
+      "range": ["#2196f3", "#FFA500", "#800080", "#0000FF"]
     }
   ],
   "axes": [
@@ -72,7 +76,8 @@
       "grid": true,
       "domain": false,
       "orient": "bottom",
-      "tickCount": 5,
+      "tickCount": 9,
+      "format": ".0f",
       "title": "Year of Construction"
     },
     {
@@ -81,16 +86,19 @@
       "domain": false,
       "orient": "left",
       "titlePadding": 5,
-      "title": "GRT"
+      "format": "s",
+      "title": "Average of Gross Tonnage (GRT)"
     }
   ],
   "legends": [
     {
       "fill": "color",
-      "title": "Cruise Lines",
-      "symbolStrokeWidth": 2,
+      "title": "Cruise Line",
+      "symbolStrokeWidth": 3,
       "symbolOpacity": 1,
-      "symbolType": "circle"
+      "symbolType": "circle",
+      "orient": "bottom",
+      "direction": "horizontal"
     }
   ],
   "marks": [
@@ -100,15 +108,17 @@
       "from": {"data": "fleet"},
       "encode": {
         "update": {
-          "x": {"scale": "x", "field": "Year of Construction"},
-          "y": {"scale": "y", "field": "AVG"},
-          "size": {"value": 100},
+          "x": {"scale": "x", "field": "year"},
+          "y": {"scale": "y", "field": "GRT_avg"},
+          "size": {"scale": "y2", "field": "Berth_avg"},
           "shape": {"value": "circle"},
           "strokeWidth": {"value": 2},
           "opacity": {"value": 1},
           "stroke": {"value": "#4682b4"},
           "fill": {"scale": "color", "field": "Cruise Line"},
-          "tooltip": {"signal": "'Cruise: ' + datum.CruiseLine"}
+          "tooltip": {
+            "signal": "{'Year': datum.year, 'Avg of Lower Berths': datum.Berth_avg, 'CruiseLine': datum['Cruise Line']}"
+          }
         }
       }
     }
