@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href="https://fonts.googleapis.com/css?family=Damion" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet">
+    <!-- These code blocks link the site to the Vega libraries and may need to be updated as Vega publishes new versions-->
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,600,700" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
   <link rel="stylesheet" href="./resources/css/style.css">
   <title>Cruise NYC</title>
 </head>
 <body>
 
     <header>
+        <h1>Cruise NYC Data Portal</h1>
+        <h4 id="asOfDate">9/30/25</h4>
         <nav>
             <ul>
-                <li>Home Page</li>
-                <li>Our Data</li>
+                <li>Summary</li>
+                <li>Ship Calls</li>
+                <li>Passengers</li>
+                <li>Shore Power</li>
             </ul>
         </nav>
     </header>
@@ -22,6 +30,7 @@
         <h1>Executive Summary</h1>
         <p>Our data is focused around three specific efforts/concerns at the Manhattan and Brooklyn Cruise terminals: Ship Calls, Passengers, and Shore Power. Each area is explored in greater depth below, but first we'll summarize each in terms of performance year over year.</p>
         <div class="container">
+            <div id="vis"></div>
             <div class="card">
                 <h3>Ship Calls</h3>
                 <div class="dataViz" id="ship_call_sum">
