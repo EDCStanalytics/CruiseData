@@ -1,0 +1,101 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "Area chart showing cruise passenger totals by month.",
+  "width": 800,
+  "height": 320,
+  "padding": 5,
+  "autosize": "pad",
+  "signals": [{"name": "colors", "value": ["#bcbd22", "#17becf"]}],
+  "data": [
+    {
+      "name": "table",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Cruise_Dummy_Data.csv",
+      "format": {"type": "csv", "delimiter": ","}
+    },
+    {
+      "name": "YoY",
+      "source": "table",
+      "transform": [
+        {"type": "project", "fields": ["Date", "EmbarkPAX", "Terminal"]},
+        {
+          "type": "formula",
+          "as": "parsedDate",
+          "expr": "timeParse(datum.Date, '%m/%d/%Y')"
+        },
+        {
+          "type": "filter",
+          "expr": "datum.parsedDate >= datetime(2024, 12, 1) && datum.parsedDate <= datetime(2025, 10, 1)"
+        },
+        {
+          "type": "formula",
+          "as": "monthIndex",
+          "expr": "month(datum.parsedDate)"
+        },
+        {
+          "type": "formula",
+          "as": "monthName",
+          "expr": "timeFormat(datum.parsedDate, '%B')"
+        },
+        {"type": "formula", "as": "monthLabel", "expr": "datum.monthName"},
+        {
+          "type": "aggregate",
+          "fields": ["EmbarkPAX"],
+          "ops": ["sum"],
+          "as": ["total"],
+          "groupby": ["monthLabel", "monthIndex"]
+        },
+        {
+          "type": "collect",
+          "sort": {"field": "monthIndex", "order": "ascending"}
+        }
+      ]
+    }
+  ],
+  "title": {
+    "text": "2025 Cruise Passengers",
+    "orient": "top",
+    "anchor": "start",
+    "frame": "group",
+    "encode": {"update": {"dx": {"value": 300}}}
+  },
+  "scales": [
+    {
+      "name": "x",
+      "type": "point",
+      "range": "width",
+      "nice": true,
+      "zero": true,
+      "domain": {"data": "YoY", "field": "monthLabel"}
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "domain": {"data": "YoY", "field": "total"},
+      "range": "height"
+    }
+  ],
+  "axes": [
+    {"orient": "bottom", "scale": "x", "title": "Month"},
+    {"orient": "left", "scale": "y", "title": "Passenger Total"}
+  ],
+  "marks": [
+    {
+      "type": "area",
+      "from": {"data": "YoY"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "x", "field": "monthLabel"},
+          "y": {"scale": "y", "field": "total"},
+          "y2": {"scale": "y", "value": 0},
+          "fill": {"value": "pink"},
+          "tooltip": {"field": "total", "format": ".s"}
+        },
+        "update": {
+          "opacity": {"value": 0.6},
+          "interpolate": {"value": "monotone"}
+        }
+      }
+    }
+  ],
+  "config": {}
+}
