@@ -5,18 +5,23 @@
   "height": 320,
   "padding": 5,
   "autosize": "pad",
-  "signals": [{"name": "colors", "value": ["#bcbd22", "#17becf"]}],
+  "signals": [
+    { "name": "colors", "value": ["#bcbd22", "#17becf"] }
+  ],
   "data": [
     {
       "name": "table",
       "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Cruise_Dummy_Data.csv",
-      "format": {"type": "csv", "delimiter": ","}
+      "format": { "type": "csv", "delimiter": "," }
     },
     {
       "name": "YoY",
       "source": "table",
       "transform": [
-        {"type": "project", "fields": ["Date", "EmbarkPAX", "Terminal"]},
+        {
+          "type": "project",
+          "fields": ["Date", "EmbarkPAX", "Terminal"]
+        },
         {
           "type": "formula",
           "as": "parsedDate",
@@ -24,7 +29,7 @@
         },
         {
           "type": "filter",
-          "expr": "datum.parsedDate >= datetime(2024, 12, 1) && datum.parsedDate <= datetime(2025, 10, 1)"
+          "expr": "datum.parsedDate >= datetime(2024, 12, 1) && datum.parsedDate <= datetime(2025, 9, 1)"
         },
         {
           "type": "formula",
@@ -36,7 +41,11 @@
           "as": "monthName",
           "expr": "timeFormat(datum.parsedDate, '%B')"
         },
-        {"type": "formula", "as": "monthLabel", "expr": "datum.monthName"},
+        {
+          "type": "formula",
+          "as": "monthLabel",
+          "expr": "datum.monthName"
+        },
         {
           "type": "aggregate",
           "fields": ["EmbarkPAX"],
@@ -46,18 +55,21 @@
         },
         {
           "type": "collect",
-          "sort": {"field": "monthIndex", "order": "ascending"}
+          "sort": { "field": "monthIndex", "order": "ascending" }
         }
       ]
     }
   ],
-  "title": {
+
+
+    "title": {
     "text": "2025 Cruise Passengers",
     "orient": "top",
     "anchor": "start",
     "frame": "group",
     "encode": {"update": {"dx": {"value": 300}}}
   },
+
   "scales": [
     {
       "name": "x",
@@ -65,34 +77,42 @@
       "range": "width",
       "nice": true,
       "zero": true,
-      "domain": {"data": "YoY", "field": "monthLabel"}
+      "domain": { "data": "YoY", "field": "monthLabel" }
     },
     {
       "name": "y",
       "type": "linear",
-      "domain": {"data": "YoY", "field": "total"},
+      "domain": { "data": "YoY", "field": "total" },
       "range": "height"
     }
   ],
   "axes": [
-    {"orient": "bottom", "scale": "x", "title": "Month"},
-    {"orient": "left", "scale": "y", "title": "Passenger Total"}
+    {
+      "orient": "bottom",
+      "scale": "x",
+      "title": "Month"
+    },
+    {
+      "orient": "left",
+      "scale": "y",
+      "title": "Passenger Total"
+    }
   ],
   "marks": [
     {
       "type": "area",
-      "from": {"data": "YoY"},
+      "from": { "data": "YoY" },
       "encode": {
         "enter": {
-          "x": {"scale": "x", "field": "monthLabel"},
-          "y": {"scale": "y", "field": "total"},
-          "y2": {"scale": "y", "value": 0},
-          "fill": {"value": "pink"},
-          "tooltip": {"field": "total", "format": ".s"}
+          "x": { "scale": "x", "field": "monthLabel" },
+          "y": { "scale": "y", "field": "total" },
+          "y2": { "scale": "y", "value": 0 },
+          "fill": { "value": "pink" },
+          "tooltip": { "field": "total", "format": ".s" }
         },
         "update": {
-          "opacity": {"value": 0.6},
-          "interpolate": {"value": "monotone"}
+          "opacity": { "value": 0.6 },
+          "interpolate": { "value": "monotone" }
         }
       }
     }
