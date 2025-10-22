@@ -3,7 +3,7 @@
   "description": "A basic bar chart example, with value labels shown upon pointer hover.",
   // "width": 400,
   // "height": 200,
-  "autosize": {"type": "fit", "contains": "content"},
+  "autosize": {"type": "fit", "contains": "padding"},
   "padding": 5,
 
   "data": [
@@ -79,7 +79,7 @@
       "name": "xscale",
       "type": "band",
       "domain": {"data": "kWhTotals", "field": "year"},
-      "range": "width",
+      "range": [0, {"signal": "width"}],
       "padding": 0.05,
       "round": true
     },
@@ -108,7 +108,9 @@
           "y2": {"scale": "yscale", "value": 0}
         },
         "update": {
-          "fill": {"value": "steelblue"}
+          "fill": {"value": "steelblue"},
+        //  "width": {"field":{"group": "width"}},
+        //  "height": {"field":{"group":"height"}}
         },
         "hover": {
           "fill": {"value": "red"}
