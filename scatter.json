@@ -1,8 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
   "description": "A basic scatter plot example depicting automobile statistics.",
-  "width": 800,
-  "height": 400,
+  "autosize": {"type": "fit", "contains": "padding"},
   "padding": 5,
   "data": [
     {
@@ -35,6 +34,18 @@
         }
       ]
     }
+  ],
+      "signals": [
+      {
+        "name": "width",
+        "init": "containerSize()[0]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[0]" }]
+      },
+      {
+        "name": "height",
+        "init": "containerSize()[1]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[1]" }]
+      }
   ],
   "scales": [
     {
