@@ -1,18 +1,17 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
   "description": "A basic stacked bar chart example.",
-  "width": 600,
-  "height": 300,
+  "autosize": {"type": "fit", "contains": "padding"},
   "padding": 15,
   "title": {"text": "Cruise Passenger Volume"},
-  "signals": [],
   "data": [
     {
       "name": "table",
       "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Cruise_Dummy_Data.csv",
       "format": {"type": "csv"},
       "transform": [
-        {"type": "formula", "as": "year", "expr": "year(datum.Date)"}
+        {"type": "formula", "as": "year", "expr": "year(datum.Date)"},
+        {"type": "filter", "expr": "isValid(datum.year)"}
       ]
     },
     {
@@ -21,7 +20,7 @@
       "transform": [
         {
           "type": "aggregate",
-          "fields": ["EmbarkPAX"],
+          "fields": ["TotalPAX"],
           "ops": ["sum"],
           "as": ["total"],
           "groupby": ["year", "Terminal"]
@@ -47,7 +46,7 @@
       "transform": [
         {
           "type": "aggregate",
-          "fields": ["EmbarkPAX"],
+          "fields": ["TotalPAX"],
           "ops": ["sum"],
           "as": ["total"],
           "groupby": ["year"]
@@ -60,11 +59,23 @@
       ]
     }
   ],
+      "signals": [
+      {
+        "name": "width",
+        "init": "containerSize()[0]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[0]" }]
+      },
+      {
+        "name": "height",
+        "init": "containerSize()[1]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[1]" }]
+      }
+  ],
   "scales": [
     {
       "name": "x",
       "type": "band",
-      "range": "width",
+      "range": [0, {"signal": "width"}],
       "padding": 0.3,
       "domain": {"data": "YoY", "field": "year"}
     },
@@ -73,7 +84,7 @@
       "range": "height",
       "nice": true,
       "zero": true,
-      "domain": {"data": "YoY", "field": "total"}
+      "domain": {"data": "YoY", "field": "y1"}
     },
     {
       "name": "color",
@@ -88,7 +99,7 @@
       "orient": "left",
       "scale": "y",
       "zindex": 1,
-      "tickCount": 5,
+      "tickCount": 6,
       "format": "s",
       "title": "Passenger Volume"
     }
@@ -129,10 +140,10 @@
       "title": "Terminal",
       "symbolType": "circle",
       "direction": "horizontal",
-      "orient": "none",
-      "legendX": 250,
-      "legendY": 350
+      "orient": "right"
+     
     }
   ],
   "config": {}
+
 }
