@@ -1,52 +1,50 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
   "description": "Area chart showing cruise passenger totals by month.",
-  "padding": 6,
+  "padding": 8,
   "autosize": {"type": "fit", "contains": "padding"},
   "signals": [
+    { "name": "colors", "value": ["#bcbd22", "#17becf"] },
     {
-      "name": "width",
-      "init": "containerSize()[0]",
-      "on": [{"events": "window:resize", "update": "containerSize()[0]"}]
-    },
-    {
-      "name": "height",
-      "init": "containerSize()[1]",
-      "on": [{"events": "window:resize", "update": "containerSize()[1]"}]
-    }
+        "name": "width",
+        "init": "containerSize()[0]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[0]" }]
+      },
+      {
+        "name": "height",
+        "init": "containerSize()[1]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[1]" }]
+      }
   ],
   "data": [
     {
       "name": "table",
       "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Cruise_Dummy_Data.csv",
-      "format": {"type": "csv", "delimiter": ","},
+      "format": {"type": "csv"},
       "transform": [
         {"type": "formula", "as": "year", "expr": "year(datum.Date)"},
         {"type": "filter", "expr": "isValid(datum.year)"},
-        {
-          "type": "filter",
-          "expr": "datetime(datum.Date) >= datetime(year(now()), month(now())-13, date(now()))"
-        },
-        {
-          "type": "filter",
-          "expr": "datetime(datum.Date) <= datetime(year(now()), month(now())-1, date(now()))"
-        }
+       {"type": "filter", "expr": "datetime(datum.Date) >= datetime(year(now()), month(now())-12, date(now()))"},
+        {"type": "filter", "expr": "datetime(datum.Date) <= datetime(year(now()), month(now())-1, date(now()))"}
       ]
     },
     {
       "name": "YoY",
       "source": "table",
       "transform": [
-        {"type": "project", "fields": ["Date", "TotalPAX", "Terminal"]},
+        {
+          "type": "project",
+          "fields": ["Date", "TotalPAX", "Terminal"]
+        },
         {
           "type": "formula",
           "as": "parsedDate",
           "expr": "timeParse(datum.Date, '%m/%d/%Y')"
         },
-        {
-          "type": "collect",
-          "sort": {"field": "parsedDate", "order": "ascending"}
-        },
+    {
+  "type": "collect",
+  "sort": { "field": "parsedDate", "order": "ascending" }
+},
         {
           "type": "formula",
           "as": "monthIndex",
@@ -57,7 +55,13 @@
           "as": "monthName",
           "expr": "timeFormat(datum.parsedDate, '%b %Y')"
         },
-        {"type": "formula", "as": "monthLabel", "expr": "datum.monthName"},
+ 
+
+        {
+          "type": "formula",
+          "as": "monthLabel",
+          "expr": "datum.monthName" 
+        },
         {
           "type": "aggregate",
           "fields": ["ShipName"],
@@ -67,34 +71,52 @@
         },
         {
           "type": "collect",
-          "sort": {"field": "monthIndex", "order": "ascending"}
+          "sort": { "field": "monthIndex", "order": "ascending" }
         }
       ]
     }
   ],
+
+
+    "title": {
+    "text": "Ship Calls",
+    "orient": "top",
+    "anchor": "start",
+    "frame": "group",
+    "encode": {"update": {"dx": {"value": 500}}}
+  },
+
   "scales": [
     {
       "name": "x",
       "type": "band",
       "range": "width",
       "padding": 0.3,
-      "domain": {"data": "YoY", "field": "monthLabel"}
+      "domain": { "data": "YoY", "field": "monthLabel" }
     },
     {
       "name": "y",
       "type": "linear",
-      "domain": {"data": "YoY", "field": "total"},
+      "domain": { "data": "YoY", "field": "total" },
       "range": "height"
     }
   ],
   "axes": [
-    {"orient": "bottom", "scale": "x", "title": "Date"},
-    {"orient": "left", "scale": "y", "title": "Ship Count"}
+    {
+      "orient": "bottom",
+      "scale": "x",
+      "title": "Date"
+    },
+    {
+      "orient": "left",
+      "scale": "y",
+      "title": "Ship Count"
+    }
   ],
-  "marks": [
+ "marks": [
     {
       "type": "rect",
-      "from": {"data": "YoY"},
+      "from": {"data":"YoY"},
       "encode": {
         "enter": {
           "x": {"scale": "x", "field": "monthLabel"},
@@ -102,7 +124,9 @@
           "y": {"scale": "y", "field": "total"},
           "y2": {"scale": "y", "value": 0}
         },
-        "update": {"fill": {"value": "purple"}}
+        "update": {
+          "fill": {"value": "purple"}
+        }
       }
     },
     {
@@ -110,14 +134,13 @@
       "from": {"data": "YoY"},
       "encode": {
         "enter": {
-          "x": {"scale": "x", "field": "monthLabel", "band": 0.5},
+          "x": {"scale": "x", "field": "monthLabel", "band": 2},
           "y": {"scale": "y", "field": "total", "offset": -2},
           "align": {"value": "center"},
           "baseline": {"value": "bottom"},
           "fill": {"value": "black"}
+      
         }
       }
     }
-  ],
-  "config": {}
-}
+  ]}
