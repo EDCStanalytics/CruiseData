@@ -1,9 +1,11 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
   "description": "A basic bar chart example, with value labels shown upon pointer hover.",
-  "width": 400,
-  "height": 200,
+  // "width": 400,
+  // "height": 200,
+  "autosize": {"type": "fit", "contains": "padding"},
   "padding": 5,
+  "title": {"text": "Shore Power Usage (kWh)"},
 
   "data": [
     {
@@ -32,7 +34,10 @@
         },
         {"type": "formula",
         "as": "formattedTotal",
-        "expr": "format(datum.totalkWh, ',r')"}
+        "expr": "format(datum.totalkWh, '.3s')"},
+        {"type": "formula",
+        "as": "ttformattedTotal",
+        "expr": "format(datum.totalkWh, ',')"}
       ]
     },
     {
@@ -60,14 +65,25 @@
       ]
     }
   ],
-
+    "signals": [
+      {
+        "name": "width",
+        "init": "containerSize()[0]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[0]" }]
+      },
+      {
+        "name": "height",
+        "init": "containerSize()[1]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[1]" }]
+      }
+  ],
 
   "scales": [
     {
       "name": "xscale",
       "type": "band",
       "domain": {"data": "kWhTotals", "field": "year"},
-      "range": "width",
+      "range": [0, {"signal": "width"}],
       "padding": 0.05,
       "round": true
     },
@@ -81,7 +97,9 @@
 
   "axes": [
     { "orient": "bottom", "scale": "xscale" },
-    { "orient": "left", "scale": "yscale" }
+    { "orient": "left", 
+    "scale": "yscale",
+    "format": "s"}
   ],
 
   "marks": [
@@ -93,14 +111,13 @@
           "x": {"scale": "xscale", "field": "year"},
           "width": {"scale": "xscale", "band": 1},
           "y": {"scale": "yscale", "field": "totalkWh"},
-          "y2": {"scale": "yscale", "value": 0}
+          "y2": {"scale": "yscale", "value": 0},
+          "tooltip":{"field": "ttformattedTotal"}
         },
         "update": {
           "fill": {"value": "steelblue"}
-        },
-        "hover": {
-          "fill": {"value": "red"}
         }
+      
       }
     },
     {
