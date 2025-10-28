@@ -3,6 +3,7 @@
   "description": "A basic scatter plot example depicting automobile statistics.",
   "height": 400,
   "width": 400,
+  "autosize": "none", 
   "padding": 5,
   "data": [
     {
