@@ -1,10 +1,11 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
   "description": "Area chart showing cruise passenger totals by month.",
-  "height": 500,
-  "width": 1200,
+  //"height": 500,
+  //"width": 1200,
   "padding": 6,
   "autosize": {"type": "fit", "contains": "padding"},
+  "title": {"text": "T12 Shore Power Usage (kWh)"},
  
   "data": [
     {
@@ -66,15 +67,19 @@
       ]
     }
   ],
+      "signals": [
+      {
+        "name": "width",
+        "init": "containerSize()[0]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[0]" }]
+      },
+      {
+        "name": "height",
+        "init": "containerSize()[1]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[1]" }]
+      }
+  ],
  
- 
-    "title": {
-    "text": "Last 12 months of Shore Power Usage (kWh)",
-    "orient": "top",
-    "anchor": "start",
-    "frame": "group",
-    "encode": {"update": {"dx": {"value": 500}}}
-  },
  
   "scales": [
     {
