@@ -5,6 +5,7 @@
   // "height": 200,
   "autosize": {"type": "fit", "contains": "padding"},
   "padding": 5,
+  "title": {"text": "Shore Power Usage (kWh)"},
 
   "data": [
     {
@@ -33,7 +34,10 @@
         },
         {"type": "formula",
         "as": "formattedTotal",
-        "expr": "format(datum.totalkWh, ',r')"}
+        "expr": "format(datum.totalkWh, '.3s')"},
+        {"type": "formula",
+        "as": "ttformattedTotal",
+        "expr": "format(datum.totalkWh, ',')"}
       ]
     },
     {
@@ -93,7 +97,9 @@
 
   "axes": [
     { "orient": "bottom", "scale": "xscale" },
-    { "orient": "left", "scale": "yscale" }
+    { "orient": "left", 
+    "scale": "yscale",
+    "format": "s"}
   ],
 
   "marks": [
@@ -105,16 +111,13 @@
           "x": {"scale": "xscale", "field": "year"},
           "width": {"scale": "xscale", "band": 1},
           "y": {"scale": "yscale", "field": "totalkWh"},
-          "y2": {"scale": "yscale", "value": 0}
+          "y2": {"scale": "yscale", "value": 0},
+          "tooltip":{"field": "ttformattedTotal"}
         },
         "update": {
-          "fill": {"value": "steelblue"},
-        //  "width": {"field":{"group": "width"}},
-        //  "height": {"field":{"group":"height"}}
-        },
-        "hover": {
-          "fill": {"value": "red"}
+          "fill": {"value": "steelblue"}
         }
+      
       }
     },
     {
