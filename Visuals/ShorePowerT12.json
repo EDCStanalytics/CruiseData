@@ -1,8 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
   "description": "Area chart showing cruise passenger totals by month.",
-  //"height": 500,
-  //"width": 1200,
   "padding": 6,
   "autosize": {"type": "fit", "contains": "padding"},
   "title": {"text": "T12 Shore Power Usage (kWh)"},
@@ -44,10 +42,8 @@
         {
           "type": "formula",
           "as": "monthName",
-          "expr": "timeFormat(datum.parsedDate, '%B %Y')"
+          "expr": "timeFormat(datum.parsedDate, '%b %Y')"
         },
- 
- 
         {
           "type": "formula",
           "as": "monthLabel",
@@ -60,6 +56,9 @@
           "as": ["total"],
           "groupby": ["monthLabel"]
         },
+        {"type": "formula",
+        "as": "ttformattedTotal",
+        "expr": "format(datum.total, ',')"},
         {
           "type": "collect",
           "sort": { "field": "monthIndex", "order": "ascending" }
@@ -99,13 +98,13 @@
   "axes": [
     {
       "orient": "bottom",
-      "scale": "x",
-      "title": "Date"
+      "scale": "x"
     },
     {
       "orient": "left",
       "scale": "y",
-      "title": "kWh"
+      "title": "kWh",
+      "format": "s"
     }
   ],
  "marks": [
@@ -117,7 +116,8 @@
           "x": {"scale": "x", "field": "monthLabel"},
           "width": {"scale": "x", "band": 1},
           "y": {"scale": "y", "field": "total"},
-          "y2": {"scale": "y", "value": 0}
+          "y2": {"scale": "y", "value": 0},
+          "tooltip": {"field": "ttformattedTotal"}
         },
         "update": {
           "fill": {"value": "purple"}
