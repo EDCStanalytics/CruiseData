@@ -141,7 +141,7 @@
       "title": "Terminal",
       "symbolType": "circle",
       "direction": "horizontal",
-      "orient": "right"
+      "orient": "bottom"
      
     }
   ],
