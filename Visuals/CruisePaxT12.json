@@ -57,7 +57,7 @@
         {
           "type": "formula",
           "as": "monthName",
-          "expr": "timeFormat(datum.parsedDate, '%b %Y')"
+          "expr": "timeFormat(datum.parsedDate, '%b')"
         },
         {"type": "formula", "as": "monthLabel", "expr": "datum.monthName"},
         {
@@ -91,7 +91,6 @@
   ],
   "axes": [
     {"orient": "bottom", "scale": "x"
-    //, "title": "Date"
     },
     {"orient": "left", "scale": "y", "title": "Passenger Count"}
   ],
