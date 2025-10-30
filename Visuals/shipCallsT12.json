@@ -53,7 +53,7 @@
         {
           "type": "formula",
           "as": "monthName",
-          "expr": "timeFormat(datum.parsedDate, '%b %Y')"
+          "expr": "timeFormat(datum.parsedDate, '%b')"
         },
  
 
