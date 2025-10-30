@@ -3,6 +3,7 @@
   "description": "Area chart showing cruise passenger totals by month.",
   "padding": 8,
   "autosize": {"type": "fit", "contains": "padding"},
+  "title":{    "text": "Cruise Passengers "},
   "signals": [
     {"name": "colors", "value": ["#bcbd22", "#17becf"]},
     {
@@ -73,13 +74,6 @@
       ]
     }
   ],
-  "title": {
-    "text": "Cruise Passengers ",
-    "orient": "top",
-    "anchor": "start",
-    "frame": "group",
-    "encode": {"update": {"dx": {"value": 500}}}
-  },
   "scales": [
     {
       "name": "x",
@@ -96,7 +90,9 @@
     }
   ],
   "axes": [
-    {"orient": "bottom", "scale": "x", "title": "Date"},
+    {"orient": "bottom", "scale": "x"
+    //, "title": "Date"
+    },
     {"orient": "left", "scale": "y", "title": "Passenger Count"}
   ],
   "marks": [
@@ -127,5 +123,21 @@
       }
     }
   ],
-  "config": {}
+    "config":{
+ 
+    "title": {"font": "Segoe UI"},
+    "axis": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "legend": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "tooltip": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "signals": {"font": "Segoe UI"}
+  }
 }
