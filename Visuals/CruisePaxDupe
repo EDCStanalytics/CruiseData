@@ -95,7 +95,6 @@
   ],
   "axes": [
     {"orient": "bottom", "scale": "x", "zindex": 1
-    //, "title": "Year"
     },
     {
       "orient": "left",
