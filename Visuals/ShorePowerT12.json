@@ -14,7 +14,7 @@
         {"type": "formula", "as": "year", "expr": "year(datum.Date)"},
         {"type": "filter", "expr": "isValid(datum.year)"},
        {"type": "filter", "expr": "datetime(datum.Date) >= datetime(year(now()), month(now())-13, date(now()))"},
-        {"type": "filter", "expr": "datetime(datum.Date) <= datetime(year(now()), month(now())-1, date(now()))"}
+        {"type": "filter", "expr": "datetime(datum.Date) <= datetime(year(now()), month(now())-1, 1)"}
       ]
     },
     {
