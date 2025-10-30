@@ -94,7 +94,9 @@
     }
   ],
   "axes": [
-    {"orient": "bottom", "scale": "x", "zindex": 1, "title": "Year"},
+    {"orient": "bottom", "scale": "x", "zindex": 1
+    //, "title": "Year"
+    },
     {
       "orient": "left",
       "scale": "y",
@@ -144,6 +146,21 @@
      
     }
   ],
-  "config": {}
-
+    "config":{
+ 
+    "title": {"font": "Segoe UI"},
+    "axis": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "legend": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "tooltip": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "signals": {"font": "Segoe UI"}
+  }
 }
