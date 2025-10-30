@@ -79,11 +79,7 @@
 
 
     "title": {
-    "text": "Ship Calls",
-    "orient": "top",
-    "anchor": "start",
-    "frame": "group",
-    "encode": {"update": {"dx": {"value": 500}}}
+    "text": "Ship Calls"
   },
 
   "scales": [
@@ -104,8 +100,8 @@
   "axes": [
     {
       "orient": "bottom",
-      "scale": "x",
-      "title": "Date"
+      "scale": "x"
+      //"title": "Date"
     },
     {
       "orient": "left",
@@ -143,4 +139,22 @@
         }
       }
     }
-  ]}
+  ],
+    "config":{
+ 
+    "title": {"font": "Segoe UI"},
+    "axis": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "legend": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "tooltip": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "signals": {"font": "Segoe UI"}
+  }
+}
