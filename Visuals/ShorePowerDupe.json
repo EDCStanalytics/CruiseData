@@ -1,8 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
   "description": "A basic bar chart example, with value labels shown upon pointer hover.",
-  // "width": 400,
-  // "height": 200,
   "autosize": {"type": "fit", "contains": "padding"},
   "padding": 5,
   "title": {"text": "Shore Power Usage (kWh)"},
@@ -135,5 +133,22 @@
         }
       }
     }
-  ]
+  ],
+    "config":{
+ 
+    "title": {"font": "Segoe UI"},
+    "axis": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "legend": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "tooltip": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "signals": {"font": "Segoe UI"}
+  }
 }
