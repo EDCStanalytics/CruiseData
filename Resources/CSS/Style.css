@@ -1,0 +1,82 @@
+.quicksand-help> {
+  font-family: "Quicksand", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  font-family: 'Quicksand', sans-serif;
+}
+
+#asOfDate{
+    justify-self: end;
+    margin: 0px 50px;
+}
+
+header {
+    position: fixed;
+    z-index: 100;
+    width: 100%;
+    background-color: rgb(33, 116, 116);
+}
+
+header ul {
+    text-align: center;
+    margin: 30px auto;
+    padding: 0 20px;
+    display: inline-block;
+}
+
+header ul li {
+    text-decoration: none;
+    text-transform: uppercase;
+    list-style-type: none;
+    float: left;
+    width: 150px;
+    color: aliceblue;
+    margin: 20px;
+
+}
+
+#testViz {
+    height: 200px;
+    width: 100%;
+    position: relative;
+    top: 250px;
+    margin: 25px 0px;
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+#execSummary {
+    position: relative;
+    top: 10px;
+}
+
+#view2 {
+    height: 100px;
+    width: 100px;
+}
+
+#sickFlex {
+    width: 75%;
+    height: 400px;
+    
+}
+
+#sticky {
+    width: 75%;
+    height: 400px;;
+    padding: 50px;    
+}
+
+div {
+    border: solid;
+    border-color: cadetblue;
+    border-width: 3px;
+    
+}
+
