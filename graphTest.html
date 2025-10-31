@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- These code blocks link the site to the Vega libraries -->
+        <script src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+    
+    <!--This block inserts a font from Google Fonts-->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+
+    <!-- This installs Font Awesome-->
+        <script src="https://kit.fontawesome.com/14dbedf33a.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="./resources/css/testStyle.css">
+  <title>Cruise NYC</title>
+  <script type="text/javascript" src="chartEmbed.js"></script>
+</head>
+<body>
+
+    <div id="execSummary">
+        <h1>Executive Summary</h1>
+        <p>Our data is focused around three specific efforts/concerns at the Manhattan and Brooklyn Cruise terminals: Ship Calls, Passengers, and Shore Power. Each area is explored in greater depth below, but first we'll summarize each in terms of performance year over year.</p>
+        <div class="exec_card_container">
+            <div class="card">
+                <div class="card_head">
+                    <i class="fa-solid fa-ship" style="font-size: large;"></i>
+                </div>
+                <div class="card_data">
+                    <div class="quant_data">
+                        <div class="stat"></div>
+                        <div class="arrow_indicator"></div>
+                        <div class="yoy_perc_change"></div>
+                    </div>
+                    <div class="dataViz" id="ship_call_sum">
+                        <p>your chart here!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card_head">
+                    <i class="fa-solid fa-person-walking-luggage" style="font-size: large;"></i>
+                </div>
+                <div class="dataViz" id="pax_sum">
+                    <p>placeholder</p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card_head">
+                    <i class="fa-solid fa-plug-circle-bolt" style="font-size: large;"></i>
+                </div>
+                <div class="dataViz" id="power_sum">
+                    <p>placeholder</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

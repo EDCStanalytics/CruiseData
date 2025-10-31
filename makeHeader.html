@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- These code blocks link the site to the Vega libraries and may need to be updated as Vega publishes new versions-->
+    <script src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    
+    <script  src="./Resources/JavaScripts/header.js" defer></script>
+    <script  src="./Resources/JavaScripts/fetchTest.js" defer></script>
+    <script  src="./Resources/JavaScripts/chartEmbed.js" defer></script>
+
+    <link rel="stylesheet" href="./resources/css/headStyle.css">
+
+    <!-- This installs Font Awesome-->
+        <script src="https://kit.fontawesome.com/14dbedf33a.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  
+  <title>Headers</title>
+</head>
+<body>
+
+    <header>
+        <h1>Jemison Starport Harbormaster<i class="fa-solid fa-database"></i><i class="fa-solid fa-download"></i></h1>
+        <h4 id="asOfDate">Last Sync: 9/30/2287</h4>
+        <nav>
+            <ul id="navBarItems">
+                <li>Summary</li>
+                <li>Vessels</li>
+                <li>Cargo</li>
+                <li>Services</li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="report_space">
+        <div class="report_card" id="card_A">
+            <div class="tb_Card">
+                <i class="fa-solid fa-ship"></i>
+            </div>
+            
+            <div class="card_data">
+
+                <div class="block details">
+                    <h1 class="deets">Important details?</h1>
+                </div>
+
+                <div class="block summary">
+                    <div class="quant_data">
+                        <div class="stat" id="callCount_number"></div>
+                        <div class="right-side">
+                            <div class="arrow_indicator" id="callCount_kpi_icon"></div>
+                            <div class="yoy_perc_change" id="callCount_yoy"></div>
+                        </div>
+                    </div>
+                    <div class="dataViz calls sum" id="calls_sum"></div>
+                </div>
+
+                <div class="block more">
+                    <div class="quant_data">
+                        <div class="stat" id="callCount_number"></div>
+                        <div class="right-side">
+                            <div class="arrow_indicator" id="callCount_kpi_icon"></div>
+                            <div class="yoy_perc_change" id="callCount_yoy"></div>
+                        </div>
+                    </div>
+                    <div class="dataViz calls sum" id="calls_original"></div>
+                </div>
+
+            </div> 
+        </div>
+
+
+
+        <div class="report_card" id="card_B">
+            <div class="tb_Card">
+                <i class="fa-solid fa-person-walking-luggage"></i>
+            </div>
+            <div class="card_data">
+
+                <div class="block details">
+                    <h1 class="deets">Important details?</h1>
+                </div>
+            
+                <div class="block summary">
+                    <div class="quant_data">
+                        <div class="stat" id="paxCount_number"></div>
+                        <div class="right-side">
+                            <div class="arrow_indicator" id="paxCount_kpi_icon"></div>
+                            <div class="yoy_perc_change" id="paxCount_yoy"></div>
+                        </div>
+                    </div>
+                    <div class="dataViz" id="pax_sum"></div>
+                </div>
+
+                <div class="block more">
+                    <div class="quant_data">
+                        <div class="stat" id="callCount_number"></div>
+                        <div class="right-side">
+                            <div class="arrow_indicator" id="callCount_kpi_icon"></div>
+                            <div class="yoy_perc_change" id="callCount_yoy"></div>
+                        </div>
+                    </div>
+                    <div class="dataViz calls sum" id="pax_original"></div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="report_card" id="card_C">
+            <div class="tb_Card">
+                <i class="fa-solid fa-plug-circle-bolt"></i>
+            </div>
+                <div class="card_data">
+
+                    <div class="block details">
+                        <h1 class="deets">Important details?</h1>
+                    </div>
+                    
+                    <div class="block summary">
+                        <div class="quant_data">
+                            <div class="stat" id="powerCount_number"></div>
+                            <div class="right-side">
+                                <div class="arrow_indicator" id="powerCount_kpi_icon"></div>
+                                <div class="yoy_perc_change" id="powerCount_yoy"></div>
+                            </div>
+                        </div>
+
+                        <div class="dataViz" id="power_sum"></div>
+                    </div>
+
+                <div class="block more">
+                    <div class="quant_data">
+                        <div class="stat" id="callCount_number"></div>
+                        <div class="right-side">
+                            <div class="arrow_indicator" id="callCount_kpi_icon"></div>
+                            <div class="yoy_perc_change" id="callCount_yoy"></div>
+                        </div>
+                    </div>
+                    <div class="dataViz calls sum" id="power_original"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+
+    </footer>
+</body>
+</html>

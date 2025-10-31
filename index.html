@@ -2,65 +2,94 @@
 <html>
 <head>
     <!-- These code blocks link the site to the Vega libraries and may need to be updated as Vega publishes new versions-->
-    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@6"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    
+    <script  src="./Resources/JavaScripts/header.js" defer></script>
+    <script src="./Resources/JavaScripts/fetchTest.js" defer></script>
+    <script src="./Resources/JavaScripts/chartEmbed.js" defer></script>
 
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,600,700" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
-  <link rel="stylesheet" href="./resources/css/style.css">
-  <title>Cruise NYC</title>
+    <link rel="stylesheet" href="./resources/css/headStyle.css">
+
+    <!-- This installs Font Awesome-->
+        <script src="https://kit.fontawesome.com/14dbedf33a.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  <title>Concept Page</title>
 </head>
+
 <body>
 
     <header>
-        <h1>Cruise NYC Data Portal</h1>
-        <h4 id="asOfDate">9/30/25</h4>
+        <h1>Port of Hamburg Data Portal</h1>
+        <h4 id="asOfDate">Last Sync: 9/30/2025</h4>
         <nav>
-            <ul>
+            <ul id="navBarItems">
                 <li>Summary</li>
-                <li>Ship Calls</li>
-                <li>Passengers</li>
-                <li>Shore Power</li>
+                <li>Vessels</li>
+                <li>Cargo</li>
+                <li>Services</li>
             </ul>
         </nav>
     </header>
-
-    <div id="execSummary">
+   
+<div id="execSummary">
         <h1>Executive Summary</h1>
         <p>Our data is focused around three specific efforts/concerns at the Manhattan and Brooklyn Cruise terminals: Ship Calls, Passengers, and Shore Power. Each area is explored in greater depth below, but first we'll summarize each in terms of performance year over year.</p>
-        <div class="container">
-            <div id="vis"></div>
-            <div class="card">
-                <h3>Ship Calls</h3>
-                <div class="dataViz" id="ship_call_sum">
-                    <p>placeholder</p>
+        <div class="exec_card_container">
+            <div class="card" id="call_card">
+                <div class="card_head">
+                    <i class="fa-solid fa-ship" style="font-size: larger;"></i>
+                </div>
+                <div class="card_data">
+                    <div class="quant_data">
+                        <div class="stat" id="callCount_number"></div>
+                        <div class="arrow_indicator" id="callCount_kpi_icon"></div>
+                        <div class="yoy_perc_change" id="callCount_yoy"></div>
+                    </div>
+                    <div class="dataViz" id="ship_call_sum"></div>
                 </div>
             </div>
             <div class="card">
-                <h3>Passengers</h3>
-                <div class="dataViz" id="pax_sum">
-                    <p>placeholder</p>
+                <div class="card_head">
+                    <i class="fa-solid fa-person-walking-luggage" style="font-size: larger;"></i>
+                </div>
+                <div class="card_data">
+                    <div class="quant_data">
+                        <div class="stat" id="paxCount_number"></div>
+                        <div class="arrow_indicator" id="paxCount_kpi_icon"></div>
+                        <div class="yoy_perc_change" id="paxCount_yoy"></div>
+                    </div>
+                    <div class="dataViz" id="pax_sum"></div>
                 </div>
             </div>
             <div class="card">
-                <h3>Shore Power</h3>
-                <div class="dataViz" id="power_sum">
-                    <p>placeholder</p>
+                <div class="card_head">
+                    <i class="fa-solid fa-plug-circle-bolt" style="font-size: larger;"></i>
+                </div>
+                <div class="card_data">
+                    <div class="quant_data">
+                        <div class="stat" id="powerCount_number"></div>
+                        <div class="arrow_indicator" id="powerCount_kpi_icon"></div>
+                        <div class="yoy_perc_change" id="powerCount_yoy"></div>
+                    </div>
+                    <div class="dataViz" id="power_sum"></div>
                 </div>
             </div>
         </div>
     </div>
+        
+    </div>
 
-    <div id="shipCalls" class="breakout">
+    <div id="shipCalls" class="breakout" style="display: none">
         <h1>Ship Calls</h1>
     </div>
 
-    <div id="pax" class="breakout">
+    <div id="pax" class="breakout" style="display: none">
         <h1>Passengers</h1>
     </div>
 
-    <div id="power" class="breakout">
+    <div id="power" class="breakout" style="display: none">
         <h1>Shore Power</h1>
     </div>
 
