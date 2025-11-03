@@ -1,0 +1,200 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "A basic bar chart example, with value labels shown upon pointer hover.",
+  "autosize": {"type": "fit", "contains": "padding"},
+  "padding": 5,
+  "title": {"text": "Shore Power Usage (kWh)"},
+
+  "data": [
+    {
+      "name": "Cruise",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Cruise_Dummy_Data.csv",
+      "format": {"type": "csv"},
+      "transform": [
+        {"type":"formula",
+        "as": "year",
+        "expr": "year(datum.Date)"
+        },
+        {"type": "filter",
+        "expr": "year(datum.Date) > 2021"}
+      ]
+    },
+    {
+      "name": "kWhTotals",
+      "source": "Cruise",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["Usage(kWh)"],
+          "ops": ["sum"],
+          "as": ["totalkWh"],
+          "groupby": ["year"]
+        },
+        {"type": "formula",
+        "as": "formattedTotal",
+        "expr": "format(datum.totalkWh, '.3s')"},
+        {"type": "formula",
+        "as": "ttformattedTotal",
+        "expr": "format(datum.totalkWh, ',')"},
+        {"type": "formula",
+        "as": "CO2eq",
+        "expr": "datum.totalkWh*0.000431821"},
+        {"type": "formula",
+        "as": "CO2",
+        "expr": "datum.totalkWh*0.000431821*0.98049596"},
+          {"type": "formula",
+        "as": "Nox(MT)",
+        "expr": "datum.totalkWh*0.000431821*0.0058"},
+        {"type": "formula",
+        "as": "SO2(MT)",
+        "expr": "datum.totalkWh*0.000431821*0.000971942"},
+        {"type": "formula",
+        "as": "PM(MT)",
+        "expr": "datum.totalkWh*0.000431821*0.000323233"}
+      ]
+    },
+    {
+      "name": "kWhPollutes",
+      "source": "kWhTotals",
+      "transform": [
+        {"type": "fold",
+        "fields": ["Nox(MT)", "SO2(MT)", "PM(MT)"]}
+      ]
+    },
+    {
+      "name": "kWhStack",
+      "source": "kWhPollutes",
+      "transform": [
+        {"type": "stack",
+        "groupby": ["year"],
+        "field": "value",
+        "sort":{"field": "key", "order": "ascending"}}
+      ]
+    },
+    {
+      "name": "kWhYoY",
+      "source": "Cruise",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["Usage(kWh)"],
+          "ops": ["sum"],
+          "as": ["totalkWh"],
+          "groupby": ["year", "CruiseLine"]},
+        {
+          "type": "stack",
+          "groupby": ["year"],
+          "field": "totalkWh",
+          "sort": {"field": "CruiseLine", "order": "ascending"}
+        },
+        {"type": "collect",
+        "sort": {
+          "field": ["year", "CruiseLine"],
+          "order": ["ascending", "ascending"]
+        }
+        }
+      ]
+    }
+  ],
+    "signals": [
+      {
+        "name": "width",
+        "init": "containerSize()[0]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[0]" }]
+      },
+      {
+        "name": "height",
+        "init": "containerSize()[1]",
+        "on": [{ "events": "window:resize", "update": "containerSize()[1]" }]
+      }
+  ],
+
+  "scales": [
+    {
+      "name": "xscale",
+      "type": "band",
+      "domain": {"data": "kWhStack", "field": "year"},
+      "range": [0, {"signal": "width"}],
+      "padding": 0.05,
+      "round": true
+    },
+    {
+      "name": "yscale",
+      "domain": {"data": "kWhStack", "field": "value"},
+      "nice": true,
+      "range": "height"
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "range": ["#419ede", "#00008b", "#800080", "#DDA0DD"],
+      "domain": {"data": "kWhStack", "field": "key"}
+    }
+  ],
+
+  "axes": [
+    { "orient": "bottom", "scale": "xscale" },
+    { "orient": "left", 
+    "scale": "yscale",
+    "format": "s"}
+  ],
+
+  "marks": [
+    {
+      "type": "rect",
+      "from": {"data":"kWhStack"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "year"},
+          "width": {"scale": "xscale", "band": 1},
+          "y": {"scale": "yscale", "field": "y0"},
+          "y2": {"scale": "yscale", "field": "y1"},
+          "fill": {"scale": "color", "field": "key"},
+          "tooltip": {"field": "key"}
+        }
+      
+      }
+    },
+    {
+      "type": "line",
+      "from": {"data": "kWhTotals"},
+      "encode": {
+        "enter":{
+          "x": {"scale": "xscale", "field": "year"}
+        }
+      }
+    }
+    {
+      "type": "text",
+      "from": {"data": "kWhStack"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "xscale", "field": "year", "band": 0.5},
+          "y": {"scale": "yscale", "field": "totalkWh", "offset": -2},
+          "text": {"field": "formattedTotal"},
+          "align": {"value": "center"},
+          "baseline": {"value": "bottom"},
+          "fill": {"value": "black"}
+      
+        }
+      }
+    }
+  ],
+    "config":{
+ 
+    "title": {"font": "Segoe UI"},
+    "axis": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "legend": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "tooltip": {
+            "labelFont": "Segoe UI",
+            "titleFont": "Segoe UI"
+            },
+    "signals": {"font": "Segoe UI"}
+  }
+}
