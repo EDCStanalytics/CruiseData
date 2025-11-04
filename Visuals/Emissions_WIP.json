@@ -106,6 +106,15 @@
         "name": "height",
         "init": "containerSize()[1]",
         "on": [{ "events": "window:resize", "update": "containerSize()[1]" }]
+      },
+      {
+        "name": "drill",
+        "value": 0,
+        "on": [
+          {"events":{"type": "click", "marktype": "rect"},
+          "update": {"signal": "drill+1"}}
+          
+        ]
       }
   ],
 
@@ -120,7 +129,13 @@
     },
     {
       "name": "yscale",
-      "domain": {"data": "kWhStack", "field": "value"},
+      "domain": {"data": "kWhStack", "field": "y1"},
+      "nice": true,
+      "range": "height"
+    },
+    {
+      "name": "yscale2",
+      "domain": {"data": "kWhTotals", "field": "CO2"},
       "nice": true,
       "range": "height"
     },
@@ -136,6 +151,9 @@
     { "orient": "bottom", "scale": "xscale" },
     { "orient": "left", 
     "scale": "yscale",
+    "format": "s"},
+    { "orient": "right", 
+    "scale": "yscale2",
     "format": "s"}
   ],
 
@@ -160,17 +178,21 @@
       "from": {"data": "kWhTotals"},
       "encode": {
         "enter":{
-          "x": {"scale": "xscale", "field": "year"}
-        }
+          "x": {"scale": "xscale", "field": "year", "band": 0.5},
+          "width": {"value": 0},
+          "y": {"scale": "yscale2", "field": "CO2"},
+          "interpolate": {"value": "monotone"},
+          "align": {"value": "center"}
+             }
       }
-    }
+    },
     {
       "type": "text",
-      "from": {"data": "kWhStack"},
+      "from": {"data": "kWhTotals"},
       "encode": {
         "enter": {
           "x": {"scale": "xscale", "field": "year", "band": 0.5},
-          "y": {"scale": "yscale", "field": "totalkWh", "offset": -2},
+          "y": {"scale": "yscale2", "field": "totalkWh"},
           "text": {"field": "formattedTotal"},
           "align": {"value": "center"},
           "baseline": {"value": "bottom"},
