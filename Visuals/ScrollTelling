@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scroll Through Multiple Vega Charts</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: row;
+      height: 50vh;
+    }
+
+    #scrolly {
+      width: 35%;
+      overflow-y: auto;
+      background: #f9f9f9;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .step {
+      margin: 20px 0;
+      padding: 5px;
+      border-left: 4px solid #ccc;
+      background: #fff;
+      min-height: 30vh; /* Space out the steps */
+      opacity: 1; /* Hide all steps */
+    }
+    
+
+    #vis {
+      width: 65%;
+      padding: 20px;
+      box-sizing: border-box;
+      background: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="scrolly">
+    <div class="step" data-chart="chart1">Chart 1: Bar Chart</div>
+    <div class="step" data-chart="chart2">Chart 2: Line Chart</div>
+    <div class="step" data-chart="chart3">Chart 3: Scatter Plot</div>
+  </div>
+
+  <div id="vis"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/scrollama"></script>
+
+  <script>
+    const charts = {
+      chart1: {
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        description: "Bar chart example",
+        data: {
+          values: [
+            { category: "A", value: 30 },
+            { category: "B", value: 80 },
+            { category: "C", value: 45 }
+          ]
+        },
+        mark: "bar",
+        encoding: {
+          x: { field: "category", type: "ordinal" },
+          y: { field: "value", type: "quantitative" }
+        }
+      },
+      chart2: {
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        description: "Line chart example",
+        data: {
+          values: [
+            { month: "Jan", value: 50 },
+            { month: "Feb", value: 70 },
+            { month: "Mar", value: 60 }
+          ]
+        },
+        mark: "line",
+        encoding: {
+          x: { field: "month", type: "ordinal" },
+          y: { field: "value", type: "quantitative" }
+        }
+      },
+      chart3: {
+        $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+        description: "Scatter plot example",
+        data: {
+          values: [
+            { x: 10, y: 20 },
+            { x: 15, y: 35 },
+            { x: 20, y: 25 }
+          ]
+        },
+        mark: "point",
+        encoding: {
+          x: { field: "x", type: "quantitative" },
+          y: { field: "y", type: "quantitative" }
+        }
+      }
+    };
+
+    const scroller = scrollama();
+
+    scroller
+      .setup({ step: ".step" })
+      .onStepEnter(response => {
+        const chartKey = response.element.dataset.chart;
+        const spec = charts[chartKey];
+        if (spec) {
+          vegaEmbed("#vis", spec);
+        }
+      });
+
+   
+  </script>
+
+</body>
+</html>
