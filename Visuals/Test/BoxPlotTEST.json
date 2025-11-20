@@ -160,6 +160,13 @@
       "domain": {"data": "YoY", "field": "year"},
       "padding": 0
     },
+           {
+      "name": "x3",
+      "type": "band",
+      "range": "width",
+      "domain": {"data": "YoY", "field": "year"},
+      "padding": 1
+    },
     {
       "name": "y",
       "type": "utc",
@@ -169,7 +176,7 @@
     }
   ],
   "axes": [
-    {"orient": "bottom", "scale": "x2", "grid": true, "gridWidth": 3},
+    {"orient": "bottom", "scale": "x2", "grid": true, "gridWidth": 3, "gridScale": "x3"},
     {"orient": "left", "scale": "y", "title": "Hour of Day", "format": "%H%:%M", "tickCount": 9}
   ],
   "marks": [
