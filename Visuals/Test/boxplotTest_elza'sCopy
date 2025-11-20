@@ -1,0 +1,248 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "description": "A box plot example showing aggregate statistics for penguin body mass.",
+  "height": 600,
+  "width": 6000,
+  "padding": 6,
+  
+ 
+"signals": [
+  { "name": "ninetyMin", "value": 5400000},
+   {
+    "name": "selectedVessel",
+    "value": null,
+    "bind": {
+      "input": "select",
+      "options": ["daz"]
+    }}
+ 
+],
+ 
+ 
+ 
+  "data": [
+    {
+      "name": "table",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/DuneData/dune_ShipCalls.csv",
+      "format": {"type": "csv"},
+      "transform": [
+        {"type": "filter", "expr": "datum['Include?'] == 'TRUE'"},
+        {"type": "formula", "as": "year", "expr": "year(datum.Date)"},
+        {
+          "type": "formula",
+          "as": "FormatArrive",
+          "expr": "utc(1970, 0, 1, (indexof(datum.Arrive, 'PM') >= 0 ? (toNumber(split(datum.Arrive, ':')[0]) % 12 + 12) : (toNumber(split(datum.Arrive, ':')[0]) % 12)), toNumber(split(datum.Arrive, ':')[1]))"
+        },
+        {
+          "type": "formula",
+          "as": "FormatArrive2",
+          "expr": "utcParse(datum.Arrive, '%I:%M:%S %p')"
+        },
+        {
+          "type": "formula",
+          "as": "ArriveMs",
+          "expr": "(hours(datum.FormatArrive2) * 3600000) + (minutes(datum.FormatArrive2) * 60000) + (seconds(datum.FormatArrive2) * 1000)"
+        },
+        {
+          "type": "formula",
+          "as": "FormatDepart2",
+          "expr": "utcParse(datum.Depart, '%I:%M:%S %p')"
+        },
+        {
+          "type": "formula",
+          "as": "DepartMs",
+          "expr": "(hours(datum.FormatDepart2) * 3600000) + (minutes(datum.FormatDepart2) * 60000) + (seconds(datum.FormatDepart2) * 1000)"
+        },
+        {
+          "type": "formula",
+          "as": "FormatConnect",
+          "expr": "utc(1970, 0, 1, (indexof(datum.Connect, 'PM') >= 0 ? (toNumber(split(datum.Connect, ':')[0]) % 12 + 12) : (toNumber(split(datum.Connect, ':')[0]) % 12)), toNumber(split(datum.Connect, ':')[1]))"
+        },
+        {
+          "type": "formula",
+          "as": "FormatDisconnect",
+          "expr": "utc(1970, 0, 1, (indexof(datum.Disconnect, 'PM') >= 0 ? (toNumber(split(datum.Disconnect, ':')[0]) % 12 + 12) : (toNumber(split(datum.Disconnect, ':')[0]) % 12)), toNumber(split(datum.Disconnect, ':')[1]))"
+        },
+        {
+          "type": "formula",
+          "as": "FormatDepart",
+          "expr": "utc(1970, 0, 1, (indexof(datum.Depart, 'PM') >= 0 ? (toNumber(split(datum.Depart, ':')[0]) % 12 + 12) : (toNumber(split(datum.Depart, ':')[0]) % 12)), toNumber(split(datum.Depart, ':')[1]))"
+        },
+        {
+          "type": "formula",
+          "as": "parsedDate",
+          "expr": "timeParse(datum.Date, '%m/%d/%Y')"
+        },
+        {
+          "type": "formula",
+          "as": "parsedDate2",
+          "expr": "timeFormat(datum.parsedDate, '%m/%d/%Y')"
+        }
+       
+       
+      ]
+    },
+       {
+      "name": "shipRegistry",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/DuneData/dune_ShipRegistry.csv",
+      "format": {"type": "csv"}
+    },
+
+    {
+      "name": "YoY",
+      "source": ["table", "shipRegistry"],
+      "transform": [
+     {
+        "type": "lookup",
+        "from": "shipRegistry",
+        "key": "Registry",
+        "fields": ["Vessel"],
+        "values": ["Fleet"]
+        },
+        {
+          "type": "project",
+          "fields": [
+            "FormatArrive",
+            "FormatConnect",
+            "FormatDisconnect",
+            "FormatDepart",
+            "kWh",
+            "parsedDate2",
+            "Date",
+            "FormatArrive2",
+            "FormatDepart2", 
+            "Fleet"
+          ]
+        },
+
+     {
+  "type": "formula",
+  "as": "fixUpDepart",
+  "expr": "datum.FormatDepart < datum.FormatArrive ? datum.FormatDepart + 86400000 : datum.FormatDepart"
+},
+    {
+  "type": "formula",
+  "as": "fixUpDisconnect",
+  "expr": "datum.FormatDisconnect < datum.FormatConnect ? datum.FormatDisconnect + 86400000 : datum.FormatDisconnect"
+},
+ 
+ {
+  "type": "formula",
+  "as": "90After",
+  "expr": "datum.FormatArrive + ninetyMin"
+  },
+ {
+  "type": "formula",
+  "as": "90Before",
+  "expr": "datum.fixUpDepart - ninetyMin"
+},
+{
+  "type": "formula",
+  "as": "year",
+  "expr": "year(datum.Date)"
+}
+ 
+ 
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "band",
+      "range": "width",
+      "domain": {"data": "YoY", "field": "parsedDate2"},
+      "padding": 0.5
+    },
+       {
+      "name": "x2",
+      "type": "band",
+      "range": "width",
+      "domain": {"data": "YoY", "field": "year"},
+      "padding": 0
+    },
+    {
+      "name": "y",
+      "type": "utc",
+      "range": "height",
+      "nice": false,
+      "domain": [21600000,129600000]
+    }
+  ],
+  "axes": [
+    {"orient": "bottom", "scale": "x2", "grid": true, "gridWidth": 3},
+    {"orient": "left", "scale": "y", "title": "Hour of Day", "format": "%H%:%M", "tickCount": 9}
+  ],
+  "marks": [
+    {
+      "type": "rect",
+      "from": {"data": "YoY"},
+      "encode": {
+        "enter": {
+          "x": {"scale": "x", "field": "parsedDate2"},
+          "width": {"scale": "x", "band": 1},
+          "y": {"scale": "y", "field": "FormatConnect"},
+          "y2": {"scale": "y", "field": "fixUpDisconnect"},
+          "fill": {"value": "pink"},
+          "stroke": {"value": "black"},
+          "cornerRadius": {"value": 4}
+        }
+      }
+    },
+ 
+    {
+      "type": "rule",
+      "from": {"data": "YoY"},
+      "encode": {
+        "enter": {
+          "x": {
+            "scale": "x",
+            "field": "parsedDate2",
+            "offset": {"signal": "bandwidth('x')/2"}
+          },
+          "y": {"scale": "y", "field": "FormatArrive"},
+          "y2": {"scale": "y", "field": "fixUpDepart"},
+          "stroke": {"value": "black"}
+        },
+         "update": {
+        "fill": {
+          "signal": "datum.vessel == selectedVessel ? 'blue' : 'pink'"
+        }
+      }}
+    },
+ 
+      {
+      "type": "symbol",
+      "from": {"data": "YoY"},
+      "encode": {
+        "enter": {
+          "x": {
+            "scale": "x",
+            "field": "parsedDate2",
+            "offset": {"signal": "bandwidth('x')/2"}
+          },
+          "y": {"scale": "y", "field": "90After"},
+          "stroke": {"value": "black"},
+          "fill": {"value": "black"}
+        }
+      }
+    },
+      {
+      "type": "symbol",
+      "from": {"data": "YoY"},
+      "encode": {
+        "enter": {
+          "x": {
+            "scale": "x",
+            "field": "parsedDate2",
+            "offset": {"signal": "bandwidth('x')/2"}
+          },
+          "y": {"scale": "y", "field": "90Before"},
+          "stroke": {"value": "blue"},
+          "fill": {"value": "blue"}
+        }
+      }
+    }
+  ]
+}
+ 
