@@ -1,0 +1,467 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "width": 600,
+  "height": 400,
+  "data": [
+    {
+      "name": "ticks",
+      "transform": [
+        {
+          "type": "sequence",
+          "as": "data",
+          "start": {"signal": "0"},
+          "stop": {"signal": "(maxValue - minValue) + 0.1"},
+          "step": {"signal": "(maxValue - minValue)/(ticksNumber-1)"}
+        },
+        {"type": "formula", "expr": "datum.data + minValue", "as": "data_2"},
+        {
+          "type": "formula",
+          "as": "radianRef",
+          "expr": "PI * (datum.data/(maxValue - minValue))"
+        },
+        {
+          "type": "formula",
+          "as": "x",
+          "expr": "centerX - ((outerRadius - (outerRadius - innerRadius) * 0.6) * cos(datum.radianRef))"
+        },
+        {
+          "type": "formula",
+          "as": "y",
+          "expr": "centerY - ((outerRadius - (outerRadius - innerRadius) * 0.7) * sin(datum.radianRef))"
+        }
+      ]
+    },
+    {
+      "name": "table",
+      "url": "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/DuneData/dune_ShipCalls.csv%22,
+      "format": {"type": "csv"},
+      "transform": [
+        {"type": "filter", "expr": "datum['Include?'] == 'TRUE'"},
+        {"type": "formula", "as": "year", "expr": "year(datum.Date)"},
+        {
+          "type": "formula",
+          "as": "FormatArrive",
+          "expr": "utc(1970, 0, 1, (indexof(datum.Arrive, 'PM') >= 0 ? (toNumber(split(datum.Arrive, ':')[0]) % 12 + 12) : (toNumber(split(datum.Arrive, ':')[0]) % 12)), toNumber(split(datum.Arrive, ':')[1]))"
+        },
+        {
+          "type": "formula",
+          "as": "FormatArrive2",
+          "expr": "utcParse(datum.Arrive, '%I:%M:%S %p')"
+        },
+        {
+          "type": "formula",
+          "as": "ArriveMs",
+          "expr": "(hours(datum.FormatArrive2) * 3600000) + (minutes(datum.FormatArrive2) * 60000) + (seconds(datum.FormatArrive2) * 1000)"
+        },
+        {
+          "type": "formula",
+          "as": "FormatDepart2",
+          "expr": "utcParse(datum.Depart, '%I:%M:%S %p')"
+        },
+        {
+          "type": "formula",
+          "as": "DepartMs",
+          "expr": "(hours(datum.FormatDepart2) * 3600000) + (minutes(datum.FormatDepart2) * 60000) + (seconds(datum.FormatDepart2) * 1000)"
+        },
+        {
+          "type": "formula",
+          "as": "FormatConnect",
+          "expr": "utc(1970, 0, 1, (indexof(datum.Connect, 'PM') >= 0 ? (toNumber(split(datum.Connect, ':')[0]) % 12 + 12) : (toNumber(split(datum.Connect, ':')[0]) % 12)), toNumber(split(datum.Connect, ':')[1]))"
+        },
+        {
+          "type": "formula",
+          "as": "FormatDisconnect",
+          "expr": "utc(1970, 0, 1, (indexof(datum.Disconnect, 'PM') >= 0 ? (toNumber(split(datum.Disconnect, ':')[0]) % 12 + 12) : (toNumber(split(datum.Disconnect, ':')[0]) % 12)), toNumber(split(datum.Disconnect, ':')[1]))"
+        },
+        {
+          "type": "formula",
+          "as": "FormatDepart",
+          "expr": "utc(1970, 0, 1, (indexof(datum.Depart, 'PM') >= 0 ? (toNumber(split(datum.Depart, ':')[0]) % 12 + 12) : (toNumber(split(datum.Depart, ':')[0]) % 12)), toNumber(split(datum.Depart, ':')[1]))"
+        },
+        {
+          "type": "formula",
+          "as": "parsedDate",
+          "expr": "timeParse(datum.Date, '%m/%d/%Y')"
+        },
+        {
+          "type": "formula",
+          "as": "parsedDate2",
+          "expr": "timeFormat(datum.parsedDate, '%m/%d/%Y')"
+        },
+         {
+          "type": "filter",
+          "expr": "datum.parsedDate2 >= '01-01-1965' && datum.parsedDate2 <= '02-29-1965'"
+        }
+ 
+       
+      ]
+    },
+    {
+      "name": "YoY",
+      "source": "table",
+      "transform": [
+        {
+          "type": "project",
+          "fields": [
+            "FormatArrive",
+            "FormatConnect",
+            "FormatDisconnect",
+            "FormatDepart",
+            "kWh",
+            "parsedDate2",
+            "Date",
+            "FormatArrive2",
+            "FormatDepart2",
+            "ArriveMs",
+            "DepartMs"
+          ]
+        },
+        {
+          "type": "aggregate",
+          "fields": ["kWh"],
+          "ops": ["sum"],
+          "as": ["total"],
+          "groupby": [
+            "parsedDate2",
+            "FormatArrive",
+            "FormatConnect",
+            "FormatDisconnect",
+            "FormatDepart",
+            "Date",
+            "FormatArrive2",
+            "FormatDepart2"
+          ]
+        },
+        {
+          "type": "formula",
+          "as": "ttformattedTotal",
+          "expr": "format(datum.total, ',')"
+        },
+     {
+  "type": "formula",
+  "as": "fixUpDepart",
+  "expr": "datum.FormatDepart < datum.FormatArrive ? datum.FormatDepart + 86400000 : datum.FormatDepart"
+},
+    {
+  "type": "formula",
+  "as": "fixUpDisconnect",
+  "expr": "datum.FormatDisconnect < datum.FormatConnect ? datum.FormatDisconnect + 86400000 : datum.FormatDisconnect"
+},
+ 
+ {
+  "type": "formula",
+  "as": "90After",
+  "expr": "datum.FormatArrive + 5400000"
+},
+ {
+  "type": "formula",
+  "as": "90Before",
+  "expr": "datum.fixUpDepart - 5400000"
+}
+ 
+ 
+      ]
+    },
+    {
+      "name": "AverageTable",
+      "source": "YoY",
+      "transform": [
+        {
+          "type": "aggregate",
+          "fields": ["FormatConnect", "90After", "fixUpDisconnect", "90Before"],
+          "ops": ["average","average","average","average"],
+          "as": ["avgConnect", "tarConnect", "avgDisc", "tarDisc"]
+        },
+        {
+          "type": "formula",
+          "as": "ratio",
+          "expr": "(datum.avgDisc-datum.avgConnect)/(datum.tarDisc-datum.tarConnect)"
+        }
+      ]
+ 
+    }
+  ],
+    "signals": [
+    {"name": "title", "value": "Ship Performance"},
+    {"name": "showTitle", "value": true},
+    {"name": "centerX", "update": "width/2"},
+    {"name": "centerY", "update": "height/2 + outerRadius/2"},
+    {
+      "name": "outerRadius",
+      "update": "targetValue ? radiusRef * 0.9 : radiusRef * 0.95"
+    },
+    {"name": "radiusRef", "update": "min(width/2, height/2)"},
+    {"name": "innerRadius", "update": "outerRadius - outerRadius * 0.25"},
+    {"name": "ticksNumber", "value": 3},
+    {"name": "ticksColor", "value": "#000000"},
+    {"name": "showTicks", "value": false},
+    {"name": "mainValue", "update": "data('AverageTable')[0].ratio"},
+    {"name": "unit", "value": ""},
+    {"name": "hasTarget", "update": "isNumber(targetValue) === true"},
+    {
+      "name": "targetRule",
+      "update": "(showTarget && hasTarget && (minValue <= targetValue) && (targetValue <= maxValue)) ? 1 : 0"
+    },
+    {"name": "usedValue", "update": "min(max(minValue, mainValue), maxValue)"},
+    {"name": "minValue", "value": 0},
+    {"name": "maxValue", "value": 2},
+    {"name": "targetValue", "value": 1},
+    {"name": "showTarget", "value": true},
+    {"name": "fontFactor", "update": "(radiusRef/5)/25"},
+    {"name": "backgroundColor", "value": "#cbd1d6"},
+    {"name": "fillColor", "value": "#77A7FB"},
+    {
+      "name": "targetStatus",
+      "update": "mainValue === targetValue ? 0 : mainValue > targetValue ? lowIsGood ? -1 : 1 : lowIsGood ? 1 : -1"
+    },
+    {"name": "showNeedle", "value": true},
+    {"name": "needleColor", "value": "#555"},
+    {"name": "lowIsGood", "value": false},
+    {"name": "needleSize", "update": "innerRadius"},
+    {
+      "name": "alertStatus",
+      "update": "((mainValue < minValue) || (maxValue < mainValue)) ?  1 : 0 "
+    },
+    {"name": "alertColor", "value": "#FF0000"}
+  ],
+  "scales": [
+    {
+      "name": "gaugeScale",
+      "type": "linear",
+      "domain": {"data": "ticks", "field": "data_2"},
+      "zero": false,
+      "range": {"signal": "[-PI/2, PI/2]"}
+    },
+    {
+      "name": "tickScale",
+      "type": "linear",
+      "domain": {"data": "ticks", "field": "data"},
+      "range": {"signal": "[PI/2, -PI/2]"}
+    },
+    {
+      "name": "targetStatusColorScale",
+      "domain": [-1, 0, 1],
+      "range": ["red", "orange", "green"]
+    },
+    {
+      "name": "needleScale",
+      "type": "linear",
+      "domain": {"data": "ticks", "field": "data_2"},
+      "range": [-90, 90]
+    },
+    {
+      "name": "targetScale",
+      "type": "linear",
+      "domain": {"data": "ticks", "field": "data_2"},
+      "range": [0, 180]
+    }
+  ],
+  "marks": [
+    {
+      "type": "arc",
+      "name": "gauge",
+      "encode": {
+        "enter": {
+          "x": {"signal": "centerX"},
+          "y": {"signal": "centerY"},
+          "startAngle": {"signal": "-PI/2"},
+          "endAngle": {"signal": "PI/2"},
+          "outerRadius": {"signal": "outerRadius"},
+          "innerRadius": {"signal": "innerRadius"},
+          "fill": {"signal": "backgroundColor"}
+        }
+      }
+    },
+    {
+      "type": "arc",
+      "encode": {
+        "enter": {"startAngle": {"signal": "-PI/2"}},
+        "update": {
+          "x": {"signal": "centerX"},
+          "y": {"signal": "centerY"},
+          "innerRadius": {"signal": "innerRadius"},
+          "outerRadius": {"signal": "outerRadius"},
+          "endAngle": {"scale": "gaugeScale", "signal": "usedValue"},
+          "fill": {"signal": "fillColor"}
+        }
+      }
+    },
+    {
+      "type": "arc",
+      "description": "ticks on the arc",
+      "from": {"data": "ticks"},
+      "encode": {
+        "enter": {
+          "x": {"signal": "centerX"},
+          "y": {"signal": "centerY"},
+          "outerRadius": {"signal": "outerRadius"},
+          "innerRadius": {"signal": "outerRadius - (radiusRef*0.05)"},
+          "startAngle": {"scale": "tickScale", "field": "data"},
+          "endAngle": {"scale": "tickScale", "field": "data"},
+          "stroke": {"signal": "ticksColor"},
+          "opacity": {"signal": "showTicks ? 1 : 0"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {"data": "ticks"},
+      "encode": {
+        "enter": {
+          "align": {"value": "center"},
+          "baseline": {"value": "alphabetic"}
+        },
+        "update": {
+          "text": {"signal": "format(datum.data_2, '.0f')"},
+          "x": {"field": "x"},
+          "y": {"field": "y"},
+          "fontSize": {"signal": "fontFactor* 11"},
+          "fill": {"signal": "ticksColor"},
+          "opacity": {"signal": "showTicks ? 1 : 0"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "description": "displayed min value at the bottom left of gauge when showTicks is false",
+      "from": {"data": "gauge"},
+      "encode": {
+        "enter": {"align": {"value": "center"}, "baseline": {"value": "top"}},
+        "update": {
+          "text": {"signal": "minValue"},
+          "x": {
+            "signal": "centerX - outerRadius + (outerRadius - innerRadius)/2"
+          },
+          "y": {"signal": "centerY", "offset": {"signal": "fontFactor*5"}},
+          "fontSize": {"signal": "fontFactor * 11"},
+          "opacity": {"signal": "showTicks ? 0 : 1"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "description": "displayed max value at the bottom right of gauge when showTicks is false",
+      "from": {"data": "gauge"},
+      "encode": {
+        "enter": {"align": {"value": "center"}, "baseline": {"value": "top"}},
+        "update": {
+          "text": {"signal": "maxValue"},
+          "x": {
+            "signal": "centerX + innerRadius + (outerRadius - innerRadius)/2"
+          },
+          "y": {"signal": "centerY", "offset": {"signal": "fontFactor*5"}},
+          "fontSize": {"signal": "fontFactor * 11"},
+          "opacity": {"signal": "showTicks ? 0 : 1"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "description": "displayed main value at the bottom center of the gauge ",
+      "name": "gaugeValue",
+      "encode": {
+        "enter": {
+          "x": {"signal": "centerX"},
+          "baseline": {"value": "top"},
+          "align": {"value": "center"}
+        },
+        "update": {
+          "text": {"signal": "format(mainValue, '.2f') + unit "},
+          "y": {"signal": "centerY", "offset": {"signal": "fontFactor*5"}},
+          "fontSize": {"signal": "fontFactor * 14"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "name": "targetDiff",
+      "description": "add status with symbol and difference and percentage",
+      "from": {"data": "gaugeValue"},
+      "encode": {
+        "enter": {"align": {"value": "center"}, "baseline": {"value": "top"}},
+        "update": {
+          "text": {
+            "signal": "format((mainValue - targetValue), '.2f') + ' (' + format(mainValue/targetValue, '.0%') + ')'"
+          },
+          "fill": {"signal": "targetStatus", "scale": "targetStatusColorScale"},
+          "x": {"signal": "centerX + (fontFactor * 12)"},
+          "y": {"signal": "centerY + (fontFactor * 20)"},
+          "fontSize": {"signal": "fontFactor * 14"},
+          "opacity": {"signal": " targetRule ? 1 : 0"}
+        }
+      }
+    },
+    {
+      "type": "symbol",
+      "from": {"data": "targetDiff"},
+      "encode": {
+        "update": {
+          "shape": {
+            "signal": "targetStatus === 0 ? 'circle' : targetStatus === 1 ? 'triangle-up' : 'triangle-down'"
+          },
+          "x": {"signal": "centerX - (fontFactor * 40)"},
+          "y": {"signal": "centerY + (fontFactor * 26)"},
+          "size": {"signal": "pow(fontFactor * 11, 2)"},
+          "fill": {"signal": "targetStatus", "scale": "targetStatusColorScale"},
+          "opacity": {"signal": "targetRule ? 1 : 0"}
+        }
+      }
+    },
+    {
+      "type": "symbol",
+      "name": "needle",
+      "encode": {
+        "enter": {"x": {"signal": "centerX"}, "y": {"signal": "centerY"}},
+        "update": {
+          "shape": {
+            "signal": "'M-2.5 -2.5 Q 0 0 2.5 -2.5 L 0 -' + toString(needleSize) + ' Z '"
+          },
+          "angle": {"signal": "usedValue", "scale": "needleScale"},
+          "size": {"signal": "4"},
+          "opacity": {"signal": "showNeedle ? 1 : 0"},
+          "stroke": {"signal": "needleColor"},
+          "fill": {"signal": "alertStatus ? alertColor : needleColor"}
+        }
+      }
+    },
+    {
+      "type": "symbol",
+      "from": {"data": "gauge"},
+      "encode": {
+        "enter": {
+          "shape": {"value": "triangle-right"},
+          "fill": {"signal": "needleColor"}
+        },
+        "update": {
+          "angle": {"scale": "targetScale", "signal": "targetValue"},
+          "x": {
+            "signal": "centerX - ((outerRadius + (outerRadius - innerRadius) * 0.15) * cos(((targetValue - minValue)/(maxValue - minValue)) * PI))"
+          },
+          "y": {
+            "signal": "centerY - ((outerRadius + (outerRadius - innerRadius) * 0.15) * sin(((targetValue - minValue)/(maxValue - minValue)) * PI))"
+          },
+          "size": {"signal": "pow(fontFactor * 10, 2)"},
+          "opacity": {"signal": "targetRule ? 1 : 0"}
+        }
+      }
+    },
+    {
+      "type": "text",
+      "name": "title",
+      "encode": {
+        "enter": {
+          "fill": {"value": "#000000"},
+          "align": {"value": "center"},
+          "baseline": {"value": "middle"}
+        },
+        "update": {
+          "x": {"signal": "centerX"},
+          "y": {"signal": "centerY - (outerRadius * 1.2)"},
+          "text": {"signal": "title"},
+          "fontSize": {"signal": "fontFactor * 15"},
+          "opacity": {"signal": "showTitle ? 1 : 0"}
+        }
+      }
+    }
+  ]
+}
