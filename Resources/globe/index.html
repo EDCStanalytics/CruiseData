@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globe Test</title>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson-client@3"></script>
+    <script src="https://unpkg.com/d3-geo-projection@4"></script>
+    <link rel="stylesheet" href="globe.css">
+    <script src="globe.js" defer></script>
+
+  <style>
+    html, body { margin: 0; height: 100%; background: #18191b; color: #ddd; }
+    #earth svg { width: 100vw; height: 100vh; display: block; }
+    .note { position: fixed; top: 8px; left: 12px; font: 14px/1.2 system-ui, sans-serif; }
+  </style>
+
+
+</head>
+
+<body>
+    <div class="note">Wheel = zoom size, Ctrl+Wheel = camera altitude. Drag = rotate. Press L to log camera.</div>
+    <div id="earth"></div>
+</body>
+</html>
+

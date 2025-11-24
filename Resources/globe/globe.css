@@ -1,0 +1,5 @@
+#earth {
+    display: flex;
+    width: 100%;
+    border: 2px dotted grey;
+}
