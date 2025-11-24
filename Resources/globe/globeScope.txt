@@ -1,0 +1,1 @@
+this is a folder for storing all of the modular files related to creating the interactive globe on the loading page
