@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D3 Circle Hour Selector → Ship Chart</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .conn { fill: pink; stroke: black; rx: 6; ry: 6; }
+    .ad { fill: #333; }
+    .after { fill: black; }
+    .before { fill: blue; }
+    .hour-dot { fill: steelblue; cursor: pointer; }
+    .hour-dot.selected { fill: orange; }
+    .hour-label { font-size: 12px; fill: #555; }
+    .reset { cursor: pointer; fill: #007acc; }
+  </style>
+</head>
+<body>
+  <svg id="viz" width="1600" height="800"></svg>
+
+  <script>
+    const svg = d3.select("#viz"),
+          width = +svg.attr("width"),
+          height = +svg.attr("height"),
+          margin = {top: 40, right: 40, bottom: 40, left: 80};
+
+    const parseDate = d3.timeParse("%m/%d/%Y");
+    const parseTime = d3.timeParse("%I:%M:%S %p");
+    const ninetyMin = 90 * 60 * 1000;
+    const norm = v => (v == null ? "" : String(v).trim());
+
+    Promise.all([
+      d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/DuneData/dune_ShipCalls.csv"),
+      d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/DuneData/dune_ShipRegistry.csv")
+    ]).then(([calls, registry]) => {
+      const registryMap = new Map(registry.map(d => [norm(d["Registry"]), norm(d["Name"])]));
+      
+      const data = calls.filter(d => d["Include?"] === "TRUE").map(d => {
+        const dateObj = parseDate(d.Date);
+        const connectObj = parseTime(d.Connect);
+        const disconnectObj = parseTime(d.Disconnect);
+        const arriveObj = parseTime(d.Arrive);
+        const departObj = parseTime(d.Depart);
+
+        const fixDisconnect = disconnectObj < connectObj ? new Date(+disconnectObj + 86400000) : disconnectObj;
+        const fixDepart = departObj < arriveObj ? new Date(+departObj + 86400000) : departObj;
+
+        return {
+          dateObj,
+          Vessel: d.Vessel,
+          VesselName: registryMap.get(norm(d.Vessel)) || "Unknown",
+          connectObj,
+          disconnectObj: fixDisconnect,
+          arriveObj,
+          departObj: fixDepart,
+          arriveHour: arriveObj ? arriveObj.getHours() : null,
+          ninetyAfter: new Date(+arriveObj + ninetyMin),
+          ninetyBefore: new Date(+fixDepart - ninetyMin)
+        };
+      });
+
+      // === Circle view ===
+      drawCircle();
+
+      function drawCircle() {
+        svg.selectAll("*").remove();
+
+        const circleCenter = { x: width/2, y: height/2 };
+        const circleRadius = 250;
+
+        // Circle outline
+        svg.append("circle")
+          .attr("cx", circleCenter.x)
+          .attr("cy", circleCenter.y)
+          .attr("r", circleRadius)
+          .attr("fill", "none")
+          .attr("stroke", "#aaa");
+
+        // 24 hour dots
+        const hours = d3.range(24);
+        svg.selectAll("circle.hour-dot")
+          .data(hours)
+          .enter().append("circle")
+          .attr("class", "hour-dot")
+          .attr("r", 8)
+          .attr("cx", h => circleCenter.x + circleRadius * Math.cos((h/24)*2*Math.PI - Math.PI/2))
+          .attr("cy", h => circleCenter.y + circleRadius * Math.sin((h/24)*2*Math.PI - Math.PI/2))
+          .on("click", (event,h) => drawChart(h));
+
+        // Labels for 0,6,12,18
+        [0,6,12,18].forEach(h => {
+          svg.append("text")
+            .attr("class","hour-label")
+            .attr("x", circleCenter.x + (circleRadius+20) * Math.cos((h/24)*2*Math.PI - Math.PI/2))
+            .attr("y", circleCenter.y + (circleRadius+20) * Math.sin((h/24)*2*Math.PI - Math.PI/2))
+            .attr("text-anchor","middle")
+            .attr("alignment-baseline","middle")
+            .text(h+":00");
+        });
+      }
+
+      // === Chart view ===
+      function drawChart(hour) {
+        svg.selectAll("*").remove();
+
+        const filtered = data.filter(d => d.arriveHour === hour);
+
+        const x = d3.scaleBand()
+          .domain(filtered.map(d => d.dateObj))
+          .range([margin.left, width - margin.right])
+          .padding(0.4);
+
+        const y = d3.scaleTime()
+          .domain([parseTime("06:00:00 AM"), parseTime("11:59:00 PM")])
+          .range([height - margin.bottom, margin.top]);
+
+        // Axes
+        svg.append("g")
+          .attr("transform", `translate(0,${height - margin.bottom})`)
+          .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%b %d")));
+
+        svg.append("g")
+          .attr("transform", `translate(${margin.left},0)`)
+          .call(d3.axisLeft(y).tickFormat(d3.timeFormat("%H:%M")).ticks(9));
+
+        // Marks
+        svg.selectAll("rect.conn")
+          .data(filtered)
+          .enter().append("rect")
+          .attr("class", "conn")
+          .attr("x", d => x(d.dateObj))
+          .attr("width", x.bandwidth())
+          .attr("y", d => y(d.disconnectObj))
+          .attr("height", d => y(d.connectObj) - y(d.disconnectObj));
+
+        const lineWidth = Math.max(2, x.bandwidth() * 0.08);
+        svg.selectAll("rect.ad")
+          .data(filtered)
+          .enter().append("rect")
+          .attr("class", "ad")
+          .attr("x", d => x(d.dateObj) + (x.bandwidth() - lineWidth)/2)
+          .attr("width", lineWidth)
+          .attr("y", d => y(d.departObj))
+          .attr("height", d => y(d.arriveObj) - y(d.departObj));
+
+        svg.selectAll("circle.after")
+          .data(filtered)
+          .enter().append("circle")
+          .attr("class", "after")
+          .attr("cx", d => x(d.dateObj) + x.bandwidth()/2)
+          .attr("cy", d => y(d.ninetyAfter))
+          .attr("r", 4);
+
+        svg.selectAll("circle.before")
+          .data(filtered)
+          .enter().append("circle")
+          .attr("class", "before")
+          .attr("cx", d => x(d.dateObj) + x.bandwidth()/2)
+          .attr("cy", d => y(d.ninetyBefore))
+          .attr("r", 4);
+
+        // Title + back button
+        svg.append("text")
+          .attr("x", width/2)
+          .attr("y", 30)
+          .attr("text-anchor","middle")
+          .style("font-size","16px")
+          .text(`Ships arriving at ${hour}:00`);
+
+        svg.append("text")
+          .attr("x", width/2)
+          .attr("y", height-20)
+          .attr("text-anchor","middle")
+          .style("font-size","14px")
+          .style("cursor","pointer")
+          .text("Back to circle view")
+          .on("click", drawCircle);
+      }
+    });
+  </script>
+</body>
+</html>
