@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D3 Gauge with Ship-Level Averages</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: sans-serif; }
+    svg { display: block; margin: 20px auto; }
+    select { margin: 20px; padding: 5px; }
+  </style>
+</head>
+<body>
+  <label for="shipSelect">Vessel:</label>
+  <select id="shipSelect"></select>
+  <svg id="gauge" width="600" height="400"></svg>
+
+  <script>
+    const svg = d3.select("#gauge");
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+
+    // Gauge parameters
+    const minValue = 0, maxValue = 2, targetValue = 1;
+    const backgroundColor = "#cbd1d6", fillColor = "#77A7FB", needleColor = "#555";
+
+    const centerX = width/2, radiusRef = Math.min(width/2,height/2);
+    const outerRadius = radiusRef*0.9, innerRadius = outerRadius*0.70;
+    const centerY = height/2 + outerRadius/2;
+
+    const parseDate = d3.timeParse("%m/%d/%Y");
+    const parseTime = d3.timeParse("%I:%M:%S %p");
+    const norm = v => (v==null?"":String(v).trim());
+
+    Promise.all([
+      d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/DuneData/dune_ShipCalls.csv"),
+      d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/DuneData/dune_ShipRegistry.csv")
+    ]).then(([calls, registry]) => {
+      const registryMap = new Map(registry.map(d => [norm(d["Registry"]), norm(d["Name"])]));
+      const data = calls.filter(d => d["Include?"]==="TRUE").map(d => {
+        const arriveObj = parseTime(d.Arrive);
+        const departObj = parseTime(d.Depart);
+        const connectObj = parseTime(d.Connect);
+        const disconnectObj = parseTime(d.Disconnect);
+        const toMs = t => t ? (t.getHours()*3600000+t.getMinutes()*60000+t.getSeconds()*1000) : null;
+        const arriveMs = toMs(arriveObj), departMs = toMs(departObj);
+        const fixUpDepartMs = (departMs!=null && arriveMs!=null && departMs<arriveMs)?departMs+86400000:departMs;
+        const connectMs = toMs(connectObj), disconnectMs = toMs(disconnectObj);
+        const fixUpDisconnectMs = (disconnectMs!=null && connectMs!=null && disconnectMs<connectMs)?disconnectMs+86400000:disconnectMs;
+        return {
+          VesselName: registryMap.get(norm(d.Vessel))||"Unknown",
+          connectMs, disconnectMs:fixUpDisconnectMs,
+          arriveMs, departMs:fixUpDepartMs,
+          ninetyAfterMs: arriveMs?arriveMs+5400000:null,
+          ninetyBeforeMs: fixUpDepartMs?fixUpDepartMs-5400000:null
+        };
+      });
+
+      // Populate dropdown
+      const vesselNames = Array.from(new Set(data.map(d=>d.VesselName)));
+      const select = d3.select("#shipSelect");
+      select.append("option").text("All Vessels").attr("value","all");
+      vesselNames.forEach(name=>select.append("option").text(name).attr("value",name));
+
+      // Draw gauge initially
+      updateGauge("all");
+
+      // On dropdown change
+      select.on("change", function() {
+        updateGauge(this.value);
+      });
+
+      function updateGauge(selectedName) {
+        svg.selectAll("*").remove();
+        const filtered = data.filter(d => selectedName==="all" || d.VesselName===selectedName);
+        const valid = filtered.filter(d=>d.connectMs!=null && d.ninetyAfterMs!=null && d.disconnectMs!=null && d.ninetyBeforeMs!=null);
+
+        // Group by ship name
+        const groupedByShip = d3.group(valid, d => d.VesselName);
+        const shipAverages = Array.from(groupedByShip, ([name, rows]) => ({
+          VesselName: name,
+          avgConnect: d3.mean(rows, r => r.connectMs),
+          avgDisc:    d3.mean(rows, r => r.disconnectMs),
+          tarConnect: d3.mean(rows, r => r.ninetyAfterMs),
+          tarDisc:    d3.mean(rows, r => r.ninetyBeforeMs)
+        }));
+        
+        console.log(shipAverages)
+
+        // Overall average across ships
+        const avgConnect = d3.mean(shipAverages, s => s.avgConnect);
+        const avgDisc    = d3.mean(shipAverages, s => s.avgDisc);
+        const tarConnect = d3.mean(shipAverages, s => s.tarConnect);
+        const tarDisc    = d3.mean(shipAverages, s => s.tarDisc);
+
+        let ratio = (avgConnect!=null && avgDisc!=null && tarConnect!=null && tarDisc!=null && (tarDisc-tarConnect)!=0)
+          ? (avgDisc-avgConnect)/(tarDisc-tarConnect) : 0;
+        const usedValue = Math.min(Math.max(minValue,ratio),maxValue);
+
+        const angleScale = d3.scaleLinear().domain([minValue,maxValue]).range([-Math.PI/2,Math.PI/2]);
+        const arc = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius).startAngle(-Math.PI/2);
+
+        // Background arc
+        svg.append("path")
+          .attr("transform",`translate(${centerX},${centerY})`)
+          .attr("d",arc.endAngle(Math.PI/2))
+          .attr("fill",backgroundColor);
+
+        // Value arc
+        svg.append("path")
+          .attr("transform",`translate(${centerX},${centerY})`)
+          .attr("d",arc.endAngle(angleScale(usedValue)))
+          .attr("fill",fillColor);
+
+        // Needle
+        const needleLen = innerRadius;
+        const needleAngleDeg = d3.scaleLinear().domain([minValue,maxValue]).range([-90,90])(usedValue);
+        const needlePath = d3.path();
+        needlePath.moveTo(centerX,centerY);
+        needlePath.lineTo(centerX,centerY-needleLen);
+        svg.append("path")
+          .attr("d",needlePath.toString())
+          .attr("stroke",needleColor)
+          .attr("stroke-width",2)
+          .attr("fill",needleColor)
+          .attr("transform",`rotate(${needleAngleDeg},${centerX},${centerY})`);
+          
+          
+            const targetStatus = (ratio === targetValue) ? 0
+                    : (ratio > targetValue ? 1 : -1);
+  const targetStatusColor = targetStatus === 0 ? "orange"
+                          : targetStatus === 1 ? "green"
+                          : "red";
+          
+          
+          
+          
+          
+
+        // Labels
+        svg.append("text")
+          .attr("x",centerX).attr("y",centerY+20)
+          .attr("text-anchor","middle")
+          .style("font-size","16px")
+          .text(d3.format(".2f")(ratio));
+          
+          
+          
+          // Title
+  svg.append("text")
+    .attr("x",centerX).attr("y",centerY-outerRadius*1.2)
+    .attr("text-anchor","middle")
+    .style("font-size","18px")
+    .text(selectedName==="all"?"Ship Performance":selectedName);
+
+  // Min and Max text values ---
+  svg.append("text")
+    .attr("x", centerX - outerRadius + (outerRadius - innerRadius)/2)
+    .attr("y", centerY + 15) 
+    .attr("text-anchor","middle")
+    .style("font-size","14px")
+    .text(minValue);
+
+  svg.append("text")
+    .attr("x", centerX + innerRadius + (outerRadius - innerRadius)/2)
+    .attr("y", centerY + 15) 
+    .attr("text-anchor","middle")
+    .style("font-size","14px")
+    .text(maxValue);
+     
+       const diffText = `${d3.format(".2f")(ratio - targetValue)} (${d3.format(".0%")(ratio/targetValue)})`;
+  svg.append("text")
+    .attr("x", centerX + 15)   
+    .attr("y", centerY + 40)  
+    .attr("font-size", "14px")
+    .attr("text-anchor", "middle")
+    .attr("fill", targetStatusColor)
+    .text(diffText);
+    
+          
+        svg.append("text")
+          .attr("x",centerX).attr("y",centerY-outerRadius*1.2)
+          .attr("text-anchor","middle")
+          .style("font-size","18px")
+          .text(selectedName==="all"?"Ship Performance":selectedName);
+          
+          
+          
+          
+      }
+    });
+  </script>
+</body>
+</html>
