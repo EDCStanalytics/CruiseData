@@ -59,12 +59,15 @@
         };
       });
 
-      
+      const uniqueDates = Array.from(new Set(data.map(d => d.dateObj))).slice(0, 15);
+
+      // Dropdown with vessel names
       const vesselNames = Array.from(new Set(data.map(d => d.VesselName)));
       const select = d3.select("#vesselSelect");
       select.append("option").text("All Vessels").attr("value", "all");
       vesselNames.forEach(name => select.append("option").text(name).attr("value", name));
 
+      // Scales
      const x = d3.scaleBand()
         .domain(data.map(d => d.dateObj))
         .range([margin.left, width - margin.right])
@@ -74,7 +77,7 @@
         .domain([parseTime("06:00:00 AM"), parseTime("11:59:00 PM")])
         .range([height - margin.bottom, margin.top]);
 
-       
+      // Axes
 svg.append("g")
   .attr("transform", `translate(0,${height - margin.bottom})`)
   .call(
@@ -84,3 +87,78 @@ svg.append("g")
 
 
 
+
+      svg.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).tickFormat(d3.timeFormat("%H:%M")).ticks(9));
+
+      // Marks
+      const rects = svg.selectAll("rect.conn")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "conn")
+        .attr("x", d => x(d.dateObj))
+        .attr("width", x.bandwidth())
+        .attr("y", d => y(d.disconnectObj))
+        .attr("height", d => y(d.connectObj) - y(d.disconnectObj));
+
+      const lineWidth = Math.max(2, x.bandwidth() * 0.08);
+      const adRects = svg.selectAll("rect.ad")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "ad")
+        .attr("x", d => x(d.dateObj) + (x.bandwidth() - lineWidth)/2)
+        .attr("width", lineWidth)
+        .attr("y", d => y(d.departObj))
+        .attr("height", d => y(d.arriveObj) - y(d.departObj));
+
+      const afterCircles = svg.selectAll("circle.after")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "after")
+        .attr("cx", d => x(d.dateObj) + x.bandwidth()/2)
+        .attr("cy", d => y(d.ninetyAfter))
+        .attr("r", 4);
+
+      const beforeCircles = svg.selectAll("circle.before")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "before")
+        .attr("cx", d => x(d.dateObj) + x.bandwidth()/2)
+        .attr("cy", d => y(d.ninetyBefore))
+        .attr("r", 4);
+
+      // Dropdown interaction
+      select.on("change", function() {
+        const selectedName = this.value;
+
+        rects.transition().duration(800)
+          .attr("y", d => (selectedName === "all" || d.VesselName === selectedName) ? y(d.disconnectObj) : height - margin.bottom)
+          .attr("height", d => (selectedName === "all" || d.VesselName === selectedName) ? (y(d.connectObj) - y(d.disconnectObj)) : 0);
+
+        adRects.transition().duration(800)
+          .attr("y", d => (selectedName === "all" || d.VesselName === selectedName) ? y(d.departObj) : height - margin.bottom)
+          .attr("height", d => (selectedName === "all" || d.VesselName === selectedName) ? (y(d.arriveObj) - y(d.departObj)) : 0);
+
+        afterCircles.transition().duration(800)
+  .attr("cy", d => (selectedName === "all" || d.VesselName === selectedName) 
+                    ? y(d.ninetyAfter) 
+                    : height - margin.bottom)
+  .style("opacity", d => (selectedName === "all" || d.VesselName === selectedName) 
+                          ? 1 
+                          : 0);
+
+
+        beforeCircles.transition().duration(800)
+  .attr("cy", d => (selectedName === "all" || d.VesselName === selectedName) 
+                    ? y(d.ninetyBefore) 
+                    : height - margin.bottom)
+  .style("opacity", d => (selectedName === "all" || d.VesselName === selectedName) 
+                          ? 1 
+                          : 0);
+
+      });
+    });
+  </script>
+</body>
+</html>
