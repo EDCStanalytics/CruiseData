@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D3 CallData Lines, Dots, and ShorePower Rectangles</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .conn { fill: pink; stroke: black; rx: 6; ry: 6; }
+    .ad { fill: #333; }
+    .after { fill: black; }
+    .before { fill: blue; }
+    select { margin: 20px; padding: 5px; }
+  </style>
+</head>
+<body>
+  <select id="vesselDropdown"></select>
+  <svg id="chart" width="6500" height="600"></svg>
+
+  <script>
+    const svg = d3.select("#chart"),
+          width = +svg.attr("width"),
+          height = +svg.attr("height"),
+          margin = {top: 40, right: 40, bottom: 40, left: 80};
+
+    const parseTime = d3.timeParse("%H:%M");
+    const ninetyMin = 90 * 60 * 1000;
+
+    Promise.all([
+      d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/CallData_Cruise.csv"),
+      d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/ShorePowerData_Cruise.csv")
+    ]).then(([callData, shorePower]) => {
+
+      // Build lookup from ShorePower keyed by CallID
+      const shoreLookup = new Map(
+        shorePower.map(d => [d.CallID, { connect: d.Connect, disconnect: d.Disconnect }])
+      );
+
+      // Build data from CallData, enrich with ShorePower if present
+      const data = callData.map(d => {
+        const sp = shoreLookup.get(d.CallID);
+        const connectObj = sp && sp.connect ? parseTime(sp.connect) : null;
+        const disconnectObj = sp && sp.disconnect ? parseTime(sp.disconnect) : null;
+
+        const arriveObj = d.Arrival ? parseTime(d.Arrival) : null;
+        const departObj = d.Depart ? parseTime(d.Depart) : null;
+
+        return {
+          CallID: d.CallID,
+          dateStr: (d.ArrivalDate || "").trim(),
+          arriveObj,
+          departObj,
+          connectObj,
+          disconnectObj,
+          ninetyAfter: arriveObj ? new Date(+arriveObj + ninetyMin) : null,
+          ninetyBefore: departObj ? new Date(+departObj - ninetyMin) : null,
+          VesselName: d.VesselName || "Unknown"
+        };
+      });
+
+      // Unique dates for x-axis
+      const uniqueDates = Array.from(new Set(data.map(d => d.dateStr).filter(Boolean)));
+
+      // Scales
+      const x = d3.scaleBand()
+        .domain(uniqueDates)
+        .range([margin.left, width - margin.right])
+        .padding(0.4);
+
+      const y = d3.scaleTime()
+        .domain([parseTime("06:00"), parseTime("23:59")])
+        .range([height - margin.bottom, margin.top]);
+
+      // Axes
+      svg.append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x));
+
+      svg.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).tickFormat(d3.timeFormat("%H:%M")).ticks(9));
+
+      // Rectangles from ShorePower (only if connect/disconnect exist)
+      svg.selectAll("rect.conn")
+        .data(data.filter(d => d.connectObj && d.disconnectObj))
+        .enter().append("rect")
+        .attr("class", "conn")
+        .attr("x", d => x(d.dateStr))
+        .attr("width", x.bandwidth())
+        .attr("y", d => y(d.disconnectObj))
+        .attr("height", d => Math.abs(y(d.connectObj) - y(d.disconnectObj)))
+        .attr("rx", 6)
+        .attr("ry", 6);
+
+      // Vertical line from depart to arrival (CallData)
+      const lineWidth = Math.max(2, x.bandwidth() * 0.08);
+      svg.selectAll("rect.ad")
+        .data(data.filter(d => d.arriveObj && d.departObj))
+        .enter().append("rect")
+        .attr("class", "ad")
+        .attr("x", d => x(d.dateStr) + (x.bandwidth() - lineWidth)/2)
+        .attr("width", lineWidth)
+        .attr("y", d => y(d.departObj))
+        .attr("height", d => y(d.arriveObj) - y(d.departObj));
+
+      // Dots 90 minutes after arrival
+      svg.selectAll("circle.after")
+        .data(data.filter(d => d.ninetyAfter))
+        .enter().append("circle")
+        .attr("class", "after")
+        .attr("cx", d => x(d.dateStr) + x.bandwidth()/2)
+        .attr("cy", d => y(d.ninetyAfter))
+        .attr("r", 4);
+
+      // Dots 90 minutes before depart
+      svg.selectAll("circle.before")
+        .data(data.filter(d => d.ninetyBefore))
+        .enter().append("circle")
+        .attr("class", "before")
+        .attr("cx", d => x(d.dateStr) + x.bandwidth()/2)
+        .attr("cy", d => y(d.ninetyBefore))
+        .attr("r", 4);
+
+      // Dropdown with vessel names
+      const vesselNames = Array.from(new Set(data.map(d => d.VesselName))).filter(Boolean);
+      const dropdown = d3.select("#vesselDropdown");
+
+      dropdown.selectAll("option")
+        .data(vesselNames)
+        .enter()
+        .append("option")
+        .attr("value", d => d)
+        .text(d => d);
+    });
+  </script>
+</body>
+</html>
