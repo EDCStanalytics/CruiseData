@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>D3 Connect/Disconnect + Arrive/Depart + Vessel Name Filter</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .conn { fill: pink; stroke: black; rx: 6; ry: 6; }
+    .ad { fill: #333; }
+    .after { fill: black; }
+    .before { fill: blue; }
+    select { margin: 20px; padding: 5px; }
+  </style>
+</head>
+<body>
+  <label for="vesselSelect">Select Vessel:</label>
+  <select id="vesselSelect"></select>
+  <svg id="chart" width="5000" height="600"></svg>
+
+  <script>
+    const svg = d3.select("#chart"),
+          width = +svg.attr("width"),
+          height = +svg.attr("height"),
+          margin = {top: 40, right: 40, bottom: 40, left: 80};
+
+    const parseDate = d3.timeParse("%m/%d/%Y");
+    const parseTime = d3.timeParse("%I:%M:%S %p");
+    const ninetyMin = 90 * 60 * 1000;
+    const norm = v => (v == null ? "" : String(v).trim());
+
+    Promise.all([
+      d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/DuneData/dune_ShipCalls.csv"),
+      d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/DuneData/dune_ShipRegistry.csv")
+    ]).then(([calls, registry]) => {
+      // Build Registry → Name map
+      const registryMap = new Map(registry.map(d => [norm(d["Registry"]), norm(d["Name"])]));
+      
+      // Enrich calls with VesselName
+      const data = calls.filter(d => d["Include?"] === "TRUE").map(d => {
+        const dateObj = parseDate(d.Date);
+        const connectObj = parseTime(d.Connect);
+        const disconnectObj = parseTime(d.Disconnect);
+        const arriveObj = parseTime(d.Arrive);
+        const departObj = parseTime(d.Depart);
+
+        const fixDisconnect = disconnectObj < connectObj ? new Date(+disconnectObj + 86400000) : disconnectObj;
+        const fixDepart = departObj < arriveObj ? new Date(+departObj + 86400000) : departObj;
+
+        return {
+          dateObj,
+          Vessel: d.Vessel,
+          VesselName: registryMap.get(norm(d.Vessel)) || "Unknown",
+          connectObj,
+          disconnectObj: fixDisconnect,
+          arriveObj,
+          departObj: fixDepart,
+          ninetyAfter: new Date(+arriveObj + ninetyMin),
+          ninetyBefore: new Date(+fixDepart - ninetyMin)
+        };
+      });
+
+      
+      const vesselNames = Array.from(new Set(data.map(d => d.VesselName)));
+      const select = d3.select("#vesselSelect");
+      select.append("option").text("All Vessels").attr("value", "all");
+      vesselNames.forEach(name => select.append("option").text(name).attr("value", name));
+
+     const x = d3.scaleBand()
+        .domain(data.map(d => d.dateObj))
+        .range([margin.left, width - margin.right])
+        .padding(0.4);
+
+      const y = d3.scaleTime()
+        .domain([parseTime("06:00:00 AM"), parseTime("11:59:00 PM")])
+        .range([height - margin.bottom, margin.top]);
+
+       
+svg.append("g")
+  .attr("transform", `translate(0,${height - margin.bottom})`)
+  .call(
+    d3.axisBottom(x)
+      .tickFormat(d3.timeFormat("%Y"))   // show only year
+  );
+
+
+
