@@ -10,19 +10,59 @@
     <script src="https://unpkg.com/d3-geo-projection@4"></script>
     <link rel="stylesheet" href="globe.css">
     <script src="globe.js" defer></script>
-
-  <style>
-    html, body { margin: 0; height: 100%; background: #18191b; color: #ddd; }
-    #earth svg { width: 100vw; height: 100vh; display: block; }
-    .note { position: fixed; top: 8px; left: 12px; font: 14px/1.2 system-ui, sans-serif; }
-  </style>
-
-
+    <script  src="../JavaScripts/header.js" defer></script>
+    
+    <script  src="../JavaScripts/chartEmbed.js" defer></script>
+    <script src="../JavaScripts/focus.js" defer></script>
+    <script src="../JavaScripts/covidData.js" defer></script>
+<!-- This installs Font Awesome-->
+        <script src="https://kit.fontawesome.com/14dbedf33a.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
 </head>
 
-<body>
-    <div class="note">Wheel = zoom size, Ctrl+Wheel = camera altitude. Drag = rotate. Press L to log camera.</div>
+
+  <header class="hBar" id="theHeaderBar">
+          <h1>Cruise NYC Data Portal</h1>
+          <nav>
+            <ul id="navBarItems">
+                <li>Summary</li>
+                <li>Vessels</li>
+                <li>Services</li>
+            </ul>
+          </nav>
+          <i class="fa-regular fa-circle-question"></i>
+          <i class="fa-solid fa-database"></i>
+  </header>
+
+  <body>
     <div id="earth"></div>
-</body>
+  
+    <div id="dataSpace">
+      <div id="berthSpace"></div>
+
+      <div id="cardSpace">
+        <p>Imagine this space with data about the ships or something</p>
+      </div>
+
+      <div id="D3andME">
+        <div class="kpiBucket" id="leftChartContainer"></div>
+        <div class="kpiBucket" id="rightChartContainer"></div>
+      </div>
+    </div>
+  </body>
+
+  <div id="tooltip" style="
+  z-index: 1000;
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 6px;
+  font-size: 14px;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  opacity: 0;"></div>
+
 </html>
 

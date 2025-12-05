@@ -1,5 +1,216 @@
+:root {
+   --cp1: #d4ac63;
+   --cp2: #cd2435;
+   --cp3: #e56335;
+   --cp4: #2b4d7d;
+   --cp5: #f4f5f7;   
+}
+
+* {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+i {
+    font-size: xx-large;
+    color: var(--cp5);
+    line-height: 1.5rem;
+    margin: 0px 10px 0px 10px;
+}
+
+body {
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    display: grid;
+    grid-template-areas: 
+        "gridHeaderArea"
+        "gridBodyArea"
+    ;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 100%;
+}
+
+header {
+    grid-row: gridHeaderArea;
+    grid-column: 1;
+    background-color: var(--cp4);
+    height: 1.25rem;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    left: 0px;
+    border-bottom: 2px solid var(--cp3);
+    padding-bottom: 1rem;
+    padding-top: 1.25rem;
+    display: inline-flex;
+    justify-content: space-between;
+    z-index: 100;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0px 0px 0px 0px;
+    color: var(--cp5);
+    font-variant: small-caps;
+    size: 1.5rem;
+    
+}
+ 
+header nav {
+    margin-left: auto; 
+}
+ 
+#navBarItems {
+    display: flex;
+    border-width: 5px;
+    justify-content: space-around;
+    height: 40px;
+    align-items: center;
+    margin: 0px;
+}
+
+#navBarItems li {
+    position: relative;
+    margin: 0px 15px;
+    color: var(--cp5);
+    border: 3px solid transparent;  
+    list-style-type: none;
+    transition: all 500ms ease-in-out 100ms;
+}
+ 
+#navBarItems li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-bottom: 3px solid transparent; /* Initial transparent border for pseudo-element */
+    transform: scale(0, 1);
+    transform-origin: left;
+    transition: transform 0.5s ease, border-color 0.8s ease;content: '';
+}
+ 
+#navBarItems li:hover::before, #navBarItems li.selectedNavItem::before
+    {
+        border-color: var(--cp3);
+        transform: scale(1, 1); 
+    }
+
+body {
+    margin: 0px;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
 #earth {
+    grid-row: gridBodyArea;
+    grid-column: 1;
+
     display: flex;
     width: 100%;
-    border: 2px dotted grey;
+    position: relative;
+    box-sizing: border-box;
 }
+
+#dataSpace {
+    grid-row: gridBodyArea;
+    grid-column: 1;
+
+    z-index: 1;
+    
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#berthSpace {
+    display: inline-flex;
+    
+    justify-content: space-around;
+    height: 30px;
+    width: 100%;
+    
+}
+
+#cardSpace {
+    align-items: center;
+    
+    display: inline-flex;
+    justify-content: space-around;
+
+    width: 100%;
+    
+    flex: 2;
+    transition: all 400ms ease;
+}
+
+#cardSpace.collapsed {
+    flex: 0; /* Shrinks to zero height */
+    overflow: hidden; /* Hide content */
+    transition: flex 400ms ease;
+}
+
+#D3andME {
+    flex: 3;
+    
+    display: inline-flex;
+    justify-content: space-around;
+    
+    align-items: center;
+    
+    width: 100%;
+}
+
+.kpiBucket {
+    height: 85%;
+    
+    justify-self: center;
+    border: 3px dashed grey;
+    border-radius: 50%;
+    
+    aspect-ratio: 1/1;
+    overflow: visible;
+    margin: 10px;
+    position: relative;
+    transition: all 1000ms ease;
+}
+
+
+.kpiBucket.focused {
+    transform: scale (3);
+    aspect-ratio: 1 / 1;
+    z-index: 10;
+}
+
+
+.kpiBucket.shrunk {
+    transform: scale(0.5);
+    opacity: 0.7;
+}
+
+#roundChartContainer::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:0;
+    height: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+
+#comboChartContainer::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:0;
+    height: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+
+
