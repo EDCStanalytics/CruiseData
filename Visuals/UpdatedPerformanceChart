@@ -23,6 +23,7 @@
           margin = {top: 40, right: 40, bottom: 40, left: 80};
 
     const parseTime = d3.timeParse("%H:%M");
+    const parseDate = d3.timeParse("%m/%Y")
     const ninetyMin = 90 * 60 * 1000;
 
     Promise.all([
@@ -36,17 +37,19 @@
       );
 
       // Build data from CallData, enrich with ShorePower if present
+      //filter(d => d.VesselName === selectedName).
       const data = callData.map(d => {
         const sp = shoreLookup.get(d.CallID);
         const connectObj = sp && sp.connect ? parseTime(sp.connect) : null;
         const disconnectObj = sp && sp.disconnect ? parseTime(sp.disconnect) : null;
-
+        const dateObj = parseDate(d.ArrivalDate)
         const arriveObj = d.Arrival ? parseTime(d.Arrival) : null;
         const departObj = d.Depart ? parseTime(d.Depart) : null;
 
         return {
           CallID: d.CallID,
           dateStr: (d.ArrivalDate || "").trim(),
+          dateObj,
           arriveObj,
           departObj,
           connectObj,
@@ -130,6 +133,35 @@
         .append("option")
         .attr("value", d => d)
         .text(d => d);
+      
+      // Dropdown interaction
+      select.on("change", function() {
+        const selectedName = this.value;
+
+        rects.transition().duration(800)
+          .attr("y", d => (selectedName === "all" || d.VesselName === selectedName) ? y(d.disconnectObj) : height - margin.bottom)
+          .attr("height", d => (selectedName === "all" || d.VesselName === selectedName) ? (y(d.connectObj) - y(d.disconnectObj)) : 0);
+
+        adRects.transition().duration(800)
+          .attr("y", d => (selectedName === "all" || d.VesselName === selectedName) ? y(d.departObj) : height - margin.bottom)
+          .attr("height", d => (selectedName === "all" || d.VesselName === selectedName) ? (y(d.arriveObj) - y(d.departObj)) : 0);
+
+        afterCircles.transition().duration(800)
+  .attr("cy", d => (selectedName === "all" || d.VesselName === selectedName) 
+                    ? y(d.ninetyAfter) 
+                    : height - margin.bottom)
+  .style("opacity", d => (selectedName === "all" || d.VesselName === selectedName) 
+                          ? 1 
+                          : 0);
+        beforeCircles.transition().duration(800)
+  .attr("cy", d => (selectedName === "all" || d.VesselName === selectedName) 
+                    ? y(d.ninetyBefore) 
+                    : height - margin.bottom)
+  .style("opacity", d => (selectedName === "all" || d.VesselName === selectedName) 
+                          ? 1 
+                          : 0);
+
+      });
     });
   </script>
 </body>
