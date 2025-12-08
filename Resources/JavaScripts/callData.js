@@ -1,7 +1,9 @@
-const callDataURL = 'https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/CallData_Cruise.csv'
+console.log('The call data is loading');
+
 
 const callFactory = (rawCallData) => {
-    const callArray = rawCallData.split(',');
+    const callArray = rawCallData.split(',').map(s => s.trim());
+
     const id = callArray[0] || '';
     const vessel = callArray[1] || '';
     const arrivalDate = callArray[2] || '';
@@ -21,8 +23,11 @@ const callFactory = (rawCallData) => {
 }
 
 const coerceDate = (rawDate) => {
-    const [m, d, y] = rawDate.split('/').map(Number);
-    return new Date(y, (m||1)-1, d||1);
+    if (!rawDate) return null;
+    const [m, d, y] = rawDate.trim().split('/').map(Number);
+
+    if(!y || !m || !d) return null;
+    return new Date(y, m-1, d);
 }
 
 const coerceTime = (baseDate, rawTime) => {
@@ -37,78 +42,36 @@ const coerceTime = (baseDate, rawTime) => {
 
 const timeStamp = (dateString, timeString) => {
     const dateValue = coerceDate(dateString);
+    if (!dateValue) return null;
     if (timeString && timeString.length) {
         return coerceTime(dateValue, timeString)
     } else {
         dateValue.setHours(0,0,0,0);
-        return date
+        return dateValue
     }
 }
 
-const getCalls = () => {
+const callDataURL = 'https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/CallData_Cruise.csv'
 
-  return fetch(callDataURL)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.text();
-    })
+async function getCalls() {
+  const res = await fetch(callDataURL);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch CSV (${res.status} ${res.statusText})`);
+    }
 
-    .then(data => {
-      const dataRows = data.split('\r\n');
+  const text = await res.text();
 
-        //now that you have the data, you need to filter it for the correct 12 month window
-        var endDate = new Date(today);
-        endDate.setFullYear(endDate.getFullYear() - yearsBack);
+  const lines = text
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .filter(l => l.length > 0)
 
-        var startDate = new Date(endDate);
-        startDate.setFullYear(startDate.getFullYear() - 1)
+  const dataLines = lines.slice(1)
 
+  const calls = dataLines.map(callFactory)
 
-        const shipCalls = dataRows.filter(row => {
-            let callDate = row.split(',')[2];
-            let [m, d, y] = callDate.split('/').map(number);
-            let coerceDate =
-            
-            
-            == deadYear);
-      const tbDead = annualDead.map((record) => {
-        const parts = record.split(',');
-        return [+parts[0], +parts[1], +parts[2].trim()]
-    })
-
-      return tbDead;
-    });
-};
-
-
-
-
-const collectTheDead = (deadYear) => {
-  if (typeof deadYear !== 'number') {
-    console.log('A specific year must be called.');
-    return Promise.reject('Invalid year');
+  return calls
   }
-
-  return fetch(covidDataURL)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.text();
-    })
-    .then(data => {
-      const dataRows = data.split('\r\n');
-      const annualDead = dataRows.filter(row => row.split(',')[0] == deadYear);
-      const tbDead = annualDead.map((record) => {
-        const parts = record.split(',');
-        return [+parts[0], +parts[1], +parts[2].trim()]
-    })
-
-      return tbDead;
-    });
-};
 
 //let comboLayout = document.getElementById('rightChartContainer')
 
