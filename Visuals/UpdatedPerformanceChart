@@ -13,8 +13,9 @@
   </style>
 </head>
 <body>
-  <select id="vesselDropdown"></select>
-  <svg id="chart" width="6500" height="600"></svg>
+ <label for="vesselSelect">Select Vessel:</label>
+  <select id="vesselSelect"></select>
+  <svg id="chart" width="8400" height="600"></svg>
 
   <script>
     const svg = d3.select("#chart"),
@@ -43,9 +44,36 @@
         const connectObj = sp && sp.connect ? parseTime(sp.connect) : null;
         const disconnectObj = sp && sp.disconnect ? parseTime(sp.disconnect) : null;
         const dateObj = parseDate(d.ArrivalDate)
+        const dateObj1 = parseDate(d.DepartDate)
         const arriveObj = d.Arrival ? parseTime(d.Arrival) : null;
         const departObj = d.Depart ? parseTime(d.Depart) : null;
+        
+  
 
+        
+        
+        
+        const dateDiff = departObj - arriveObj; 
+        const dateDiff2 = d.DepartDate - d.ArrivalDate
+        const arr = new Date(d.ArrivalDate)
+        const dep = new Date(d.DepartDate)
+        const diff = dep-arr
+      const diff2 = diff/(1000 * 60 * 60 * 24);
+      const correction = diff2 * 86400000
+      
+      
+    //   const ninetyBefore = departObj
+//  ? new Date((d.diff2 > 0 ? +departObj + d.correction : +departObj) - ninetyMin)
+//  : null;
+
+//console.log("ninetyBefore:", ninetyBefore);
+
+     //   console.log(arr, dep, diff2, correction)
+        
+     //   const merg = callData.map (row => ({full: `${row.ArrivalDate} ${row.Arrival} }))
+     //   console.log(merg)
+      //  console.log(d.ArrivalDate, d.DepartDate)
+     //   const timeDiff = dateDiff/ (1000 * 3600 * 24);
         return {
           CallID: d.CallID,
           dateStr: (d.ArrivalDate || "").trim(),
@@ -55,14 +83,25 @@
           connectObj,
           disconnectObj,
           ninetyAfter: arriveObj ? new Date(+arriveObj + ninetyMin) : null,
-          ninetyBefore: departObj ? new Date(+departObj - ninetyMin) : null,
-          VesselName: d.VesselName || "Unknown"
+   //       ninetyBefore: departObj ? new Date(+departObj - ninetyMin) : null,
+      //  ninetyBefore: departObj ? new Date(d.diff2 > 0 ? +departObj + d.correction - ninetyMin: +departObj - ninetyMin) : null,
+
+ninetyBefore: departObj ? new Date((d.diff2 > 0 ? +departObj + d.correction : +departObj) - ninetyMin): null,
+
+
+
+          VesselName: d.VesselName || "Unknown",
+          diff2,
+          correction
         };
+
       });
+
 
       // Unique dates for x-axis
       const uniqueDates = Array.from(new Set(data.map(d => d.dateStr).filter(Boolean)));
-
+      
+       
       // Scales
       const x = d3.scaleBand()
         .domain(uniqueDates)
@@ -70,7 +109,7 @@
         .padding(0.4);
 
       const y = d3.scaleTime()
-        .domain([parseTime("06:00"), parseTime("23:59")])
+        .domain([parseTime("02:00"), parseTime("23:59")])
         .range([height - margin.bottom, margin.top]);
 
       // Axes
@@ -83,7 +122,7 @@
         .call(d3.axisLeft(y).tickFormat(d3.timeFormat("%H:%M")).ticks(9));
 
       // Rectangles from ShorePower (only if connect/disconnect exist)
-      svg.selectAll("rect.conn")
+     const rects = svg.selectAll("rect.conn")
         .data(data.filter(d => d.connectObj && d.disconnectObj))
         .enter().append("rect")
         .attr("class", "conn")
@@ -96,17 +135,27 @@
 
       // Vertical line from depart to arrival (CallData)
       const lineWidth = Math.max(2, x.bandwidth() * 0.08);
-      svg.selectAll("rect.ad")
+     const adRects  =svg.selectAll("rect.ad")
         .data(data.filter(d => d.arriveObj && d.departObj))
         .enter().append("rect")
         .attr("class", "ad")
         .attr("x", d => x(d.dateStr) + (x.bandwidth() - lineWidth)/2)
         .attr("width", lineWidth)
-        .attr("y", d => y(d.departObj))
-        .attr("height", d => y(d.arriveObj) - y(d.departObj));
+      //  .attr("y", d => y(d.departObj))
+       .attr("y", d => y(d.diff2 > 0 
+  ? new Date(+d.departObj + d.correction) 
+  : d.departObj
+))
+
+     //   .attr("height", d => y(d.arriveObj) - y(d.departObj));
+   .attr("height", d => 
+   d.diff2 > 0
+    ? y(d.arriveObj) - y(new Date(+d.departObj + d.correction))
+    : y(d.arriveObj) - y(d.departObj)
+  )
 
       // Dots 90 minutes after arrival
-      svg.selectAll("circle.after")
+ const afterCircles = svg.selectAll("circle.after")
         .data(data.filter(d => d.ninetyAfter))
         .enter().append("circle")
         .attr("class", "after")
@@ -115,7 +164,7 @@
         .attr("r", 4);
 
       // Dots 90 minutes before depart
-      svg.selectAll("circle.before")
+   const beforeCircles = svg.selectAll("circle.before")
         .data(data.filter(d => d.ninetyBefore))
         .enter().append("circle")
         .attr("class", "before")
@@ -124,15 +173,17 @@
         .attr("r", 4);
 
       // Dropdown with vessel names
-      const vesselNames = Array.from(new Set(data.map(d => d.VesselName))).filter(Boolean);
-      const dropdown = d3.select("#vesselDropdown");
-
-      dropdown.selectAll("option")
-        .data(vesselNames)
-        .enter()
-        .append("option")
-        .attr("value", d => d)
-        .text(d => d);
+      const vesselName = Array.from(new Set(data.map(d => d.VesselName))).filter(Boolean);
+      const select = d3.select("#vesselSelect");
+            select.append("option").text("All Vessels").attr("value", "all");
+    vesselName.forEach(name => select.append("option").text(name).attr("value", name));
+    
+     // dropdown.selectAll("option")
+     //   .data(vesselNames)
+    //    .enter()
+   //     .append("option")
+   //     .attr("value", d => d)
+  //      .text(d => d); 
       
       // Dropdown interaction
       select.on("change", function() {
