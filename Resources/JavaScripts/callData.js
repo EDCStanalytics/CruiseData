@@ -123,7 +123,7 @@ window.callsPromise = getCalls()
     const deltaSymbol = delta > 0 ? '▲' : (delta < 0 ? '▼' : '—');
     const deltaPerc = (lastCount - prevCount) / prevCount;
     const percFmt = new Intl.NumberFormat('en-US', {
-      sytle: 'percent',
+      style: 'percent',
       signDisplay: 'always',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
