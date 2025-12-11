@@ -142,13 +142,12 @@ body {
     width: 100%;
     
     flex: 2;
-    transition: all 400ms ease;
+    transition: flex 500ms ease;
 }
 
 #cardSpace.collapsed {
     flex: 0; /* Shrinks to zero height */
     overflow: hidden; /* Hide content */
-    transition: flex 400ms ease;
 }
 
 #D3andME {
@@ -168,27 +167,31 @@ body {
     justify-self: center;
     border: 1px dashed grey;
     border-radius: 50%;
-    
-    
-  background:   
-radial-gradient(
-  circle at 50% 40%,
-  #f7f7f5 0%,   /* off-white center */
-  #e4e0d8 60%,  /* soft beige-gray */
-  #c8c2b8 100%
-
-);
+    background: whitesmoke;
 
     aspect-ratio: 1/1;
     overflow: visible;
     margin: 10px;
     position: relative;
-    transition: all 1000ms ease;
+    transition: transform 500ms ease, opacity 500ms ease;
+    transform: scale(1);
+    will-change: transform;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.kpiBucket.focused {
+    transform: scale (3);
+    aspect-ratio: 1 / 1;
+    z-index: 10;
+}
+
+.kpiBucket.shrunk {
+    transform: scale(1);
+    opacity: 0.7;
 }
 
 #shipCallKPIs {
@@ -215,19 +218,9 @@ radial-gradient(
 
 
 
-.kpiBucket.focused {
-    transform: scale (3);
-    aspect-ratio: 1 / 1;
-    z-index: 10;
-}
 
 
-.kpiBucket.shrunk {
-    transform: scale(1);
-    opacity: 0.7;
-}
-
-#roundChartContainer::after {
+#rightChartContainer::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -239,16 +232,10 @@ radial-gradient(
 }
 
 
-#comboChartContainer::after {
-    content: '';
+#rightRadialChart {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width:0;
-    height: 0;
+    inset: 0;
     overflow: visible;
-    pointer-events: none;
 }
-
 
 

@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (isAlreadyFocused) {
                 buckets.forEach(b => b.classList.remove("focused", "shrunk"));
                 shipCards.classList.remove("collapsed");
+                removeRadial("rightRadialChart");
+                removeRadial("leftradialChart");
+
                 return;
             }
 
@@ -30,10 +33,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (bucket.id === "rightChartContainer") {
                 //await window.circleToBars("rightChartContainer");
                 //await window.barsToCircle("leftChartContainer");
+                removeRadial("leftradialChart");
+                await waitForTransitionEndOnce(bucket);
                 drawRadialT12();
+                
             } else {
                 //await window.circleToBars("leftChartContainer");
                 //await window.barsToCircle("rightChartContainer");
+                removeRadial("rightRadialChart");
             }
 
         });
@@ -61,56 +68,98 @@ const get12Labels = (now = new Date()) => {
 }
 
 const drawRadialT12 = () => {
-    console.log('labeling the months...')
     const container = document.getElementById("rightRadialChart");
     if (!container) return;
 
     container.innerHTML = '';
 
-    const width = container.clientWidth || 760;
-    const height = container.clientHeight || 160;
-    const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+    const bounds = container.getBoundingClientRect();
+    const diameter = Math.min(bounds.width, bounds.height);     //this is the diameter of the element, which we don't want to draw on
+    const radius = diameter / 2;
+    const depth = radius / 5;
+    const outerDiameter = diameter + depth * 2;
+    
+    const width = container.offsetHeight;
+    const height = container.offsetWidth;
+    //const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+
+    const cx = width/2;
+    const cy = height/2;
+    const stroke = 5;
+    const r0 = Math.min(width, height) / 2 - stroke;
+
+    
+ 
+
+    //const chartWidth = width - margin.left - margin.right;
+    //const chartHeight = height - margin.top - margin.bottom;
+
+    const labels = get12Labels(new Date());
+
+    const angle = d3.scalePoint()
+        .domain(labels)
+        .range([0,2*Math.PI]);
 
     const svg = d3.select(container)
         .append('svg')
-        .attr('width', width)
-        .attr('height', height)
-        .style('display', 'block');
-
-    const chartWidth = width - margin.left - margin.right;
-    const chartHeight = height - margin.top - margin.bottom;
+        .attr('width', width*1.5)
+        .attr('height', height*1.5)
+        //.attr('viewBox', `${-pad} ${-pad} ${width + pad*2} ${height + pad * 2}`)
+        .style('display', 'block')
+        .style('overflow','visible');
 
     const g = svg.append('g')
-        .attr('transform',`translate(${margin.left},${margin.top})`)
+        .attr('transform',`translate(${cx},${cy})`);
 
-    const labels = get12Labels(new Date());
-    const x = d3.scaleBand()
-        .domain(labels)
-        .range([0,chartWidth])
-        .padding(0.05);
+    g.append('circle')
+        .attr('r', r0)
+        .attr('fill', 'none')
+        .attr('stroke', '#cd2435')
+        .attr('stroke-width', stroke)
 
-    const xAxis = d3.axisBottom(x).tickSizeOuter(0);
-
-    const axisG = g.append('g')
-        .attr('transform', `translate(0, ${chartHeight})`)
-        .call(xAxis);
-
-    axisG.selectAll('text')
+    g.selectAll('line.tick')
+        .data(labels)
+        .enter()
+        .append('line')
+        .attr('class', 'tick')
+        .attr('x1', d => Math.cos(angle(d)) * r0)
+        .attr('y1', d => Math.sin(angle(d)) * r0)
+        .attr('x2', d => Math.cos(angle(d)) * (r0 + 6))
+        .attr('y2', d => Math.sin(angle(d)) * (r0 + 6))
+        .attr('stroke', '#cd2435');
+      
+    g.selectAll('text.month')
+        .data(labels)
+        .enter()
+        .append('text')
+        .attr('class', 'month')
+        .attr('x', d => Math.cos(angle(d)) * (r0 + 12))
+        .attr('y', d => Math.sin(angle(d)) * (r0 + 12))
+        .attr('text-anchor', d => {
+            const a = angle(d), c = Math.cos(a);
+            return c > 0.1 ? 'start' : (c < -0.1 ? 'end' : 'middle');
+        })
+        .attr('dominant-baseline', 'middle')
         .style('font-size', '12px')
         .style('fill', '#334')
-        .attr('text-anchor', 'end')
-        .attr('transform', 'rotate(-35) translate(-6, 0)');
-    
-    axisG.selectAll('.tick line')
-        .attr('stroke', '#ccd')
-        .attr('y2', -chartHeight);
+        .text(d => d);
 
-    g.append('text')
-        .attr('x', chartWidth / 2)
-        .attr('y', chartHeight + 34)
-        .attr('text-anchor', 'middle')
-        .style('font-size', '13px')
-        .style('fill', '#445')
-        .text('Monthly ship calls — last 12 months (axis only)');
 }
 
+
+const removeRadial = (containerId) => {
+  const container = document.getElementById(containerId);
+  if (container) container.innerHTML = '';  // clears any SVG/content
+}
+
+
+const waitForTransitionEndOnce = (el, timeoutMs = 500) => {
+  return new Promise(resolve => {
+    let done = false;
+    const finish = () => { if (!done) { done = true; el.removeEventListener('transitionend', onEnd); resolve(); } };
+    const onEnd = (e) => { if (e.target === el) finish(); };
+    el.addEventListener('transitionend', onEnd, { once: true });
+    setTimeout(finish, timeoutMs);          // fallback in case no event fires
+    requestAnimationFrame(() => {});        // nudge to next frame; harmless
+  });
+}
