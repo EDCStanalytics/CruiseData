@@ -162,7 +162,7 @@ body {
 }
 
 .kpiBucket {
-    height: 95%;
+    height: 85%;
     
     justify-self: center;
     border: 1px dashed grey;
@@ -171,7 +171,7 @@ body {
 
     aspect-ratio: 1/1;
     overflow: visible;
-    margin: 10px;
+    margin: 60px;
     position: relative;
     transition: transform 500ms ease, opacity 500ms ease;
     transform: scale(1);
