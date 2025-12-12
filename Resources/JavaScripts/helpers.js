@@ -19,10 +19,10 @@ const help_CoerceTime = (baseDate, rawTime) => {
 }
 
 const help_TimeStamp = (dateString, timeString) => {
-    const dateValue = coerceDate(dateString);
+    const dateValue = help_CoerceDate(dateString);
     if (!dateValue) return null;
     if (timeString && timeString.length) {
-        return coerceTime(dateValue, timeString)
+        return help_CoerceTime(dateValue, timeString)
     } else {
         dateValue.setHours(0,0,0,0);
         return dateValue
@@ -43,10 +43,36 @@ async function help_getCSV(csvURL) {
     .filter(l => l.length > 0)
 
   const dataLines = lines.slice(1)
-  const calls = dataLines.map(callFactory)
-  return calls
+  
+  return dataLines
   }
 
 const help_rangeCheck = (d, start, end) => {
     return d && d >= start && d <=end;
   }
+
+const help_getT24 = (now = new Date()) => {
+    const lastStart = new Date(now);
+    lastStart.setHours(0,0,0,0);
+    lastStart.setMonth(lastStart.getMonth()-12);
+
+    const lastEnd = new Date(now);
+    lastEnd.setHours(23,59,59,999);
+
+    const prevStart = new Date(lastStart);
+    prevStart.setMonth(prevStart.getMonth()-12);
+
+    const prevEnd = new Date(lastStart);
+    prevEnd.setMilliseconds(prevEnd.getMilliseconds()-1);
+
+    return {lastStart,lastEnd,prevStart,prevEnd}
+  }
+
+  const coerceDate = help_CoerceDate;
+  const coerceTime = help_CoerceTime;
+  const timeStamp = (d, t) => help_TimeStamp(d, t);
+  const rangeCheck = help_rangeCheck;
+  const getT24 = help_getT24;
+  const getCSV = help_getCSV;
+
+  window.Helpers = {coerceDate, coerceTime, timeStamp, rangeCheck, getT24, getCSV};
