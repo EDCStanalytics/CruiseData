@@ -217,6 +217,17 @@ body {
 }
 
 
+/* Make labels crisp and legible */
+
+.poiLabel {
+  paint-order: stroke;
+  stroke: rgba(0,0,0,0.55);
+  stroke-width: 2px;
+  font-weight: 600;
+  opacity: 1;
+}
+
+
 
 
 

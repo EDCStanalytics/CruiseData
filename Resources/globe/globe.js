@@ -1,7 +1,23 @@
 const pointsOfInterest = [
   { name: "Brooklyn Cruise Terminal", coords: [-74.0143, 40.6820] },
-  { name: "Manhattan Cruise Terminal", coords:  [-73.9966, 40.7680] }
+  { name: "Manhattan Cruise Terminal", coords:  [-73.9966, 40.7680]},
+  { name: "Portland, Maine", coords:  [-70.2553, 43.6591]}
 ];
+
+const mustShow = [[-74.006, 40.713],[-66.106, 18.466],[-3.704, 40.417]];
+
+const centroidLonLat = (points) => {
+  const toVec = ([lon, lat]) => {
+    const λ = lon * Math.PI/180, φ = lat * Math.PI/180;
+    return [Math.cos(φ)*Math.cos(λ), Math.cos(φ)*Math.sin(λ), Math.sin(φ)]
+  };
+  const v = points.map(toVec).reduce((a,b) => [a[0]+b[0], a[1]+b[1], a[2]+b[2]],[0,0,0]);
+  const r = Math.hypot(v[0], v[1], v[2]);
+  const λ = Math.atan2(v[1], v[0]) * 180/Math.PI;
+  const φ = Math.asin(v[2]/r) * 180/Math.PI;
+  return [λ, φ];
+}
+
 
 const svgEarth = d3.select("#earth").append("svg");
 
@@ -12,11 +28,11 @@ const svgShadow = d3.select("#earth").append("svg")
   .style("pointer-events", "none");
 
 const shadowDefs = svgShadow.append("defs");
+
 const shadowGradient = shadowDefs.append("radialGradient")
   .attr("id", "shadowGradient")
-  .attr("cx", "50%")
-  .attr("cy", "50%")
-  .attr("r", "50%");
+  .attr("gradientUnits", "userSpaceOnUse")
+;
 
 shadowGradient.append("stop")
   .attr("offset", "0%")
@@ -61,9 +77,19 @@ svgEarth.append("path")
   .attr("fill", "url(#globeGradient)");
 
 
+// Soft glow filter
+const glow = defs.append("filter").attr("id","poiGlow");
+glow.append("feGaussianBlur")
+    .attr("stdDeviation", 2.5)
+    .attr("result","blur");
+const merge = glow.append("feMerge");
+merge.append("feMergeNode").attr("in","blur");
+merge.append("feMergeNode").attr("in","SourceGraphic");
+
+
 
 // Land
-d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(data => {
+d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json").then(data => {
   const countries = topojson.feature(data, data.objects.countries);
 
   svgEarth.selectAll("path.land")
@@ -75,60 +101,157 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(d
     .attr("stroke", "#999")
     .attr("stroke-width", 0.5);
 
-  svgEarth.selectAll("circle.poInterest")
-    .data(pointsOfInterest)
-    .enter().append("circle")
-    .attr("class", "poInterest")
-    .attr("r", 4) // small dot
-    .attr("fill", "#ffcc00") // subtle highlight color
-    .attr("stroke", "#333")
-    .attr("stroke-width", 1)
+/* my code recommendation: */
+// Replace the circle.poInterest block with grouped POIs
+const poiG = svgEarth.selectAll("g.poi")
+  .data(pointsOfInterest)
+  .enter().append("g")
+  .attr("class", "poi");
+
+// core dot (slightly larger, with glow)
+poiG.append("circle")
+  .attr("class", "poiDot")
+  .attr("r", 5.5)
+  .attr("fill", "#ffcc00")
+  .attr("stroke", "#333")
+  .attr("stroke-width", 1)
+  .style("filter", "url(#poiGlow)");
+
+// pulsing ring (animated)
+poiG.append("circle")
+  .attr("class", "poiPulse")
+  .attr("r", 6)
+  .attr("fill", "none")
+  .attr("stroke", "#ffcc00")
+  .attr("stroke-width", 1.5)
+  .style("opacity", 0.75);
+
+
+
+poiG.append("circle")
+  .attr("class", "poiHit")
+  .attr("r", 22)
+  .attr("fill", "#000")              // any color
+  .attr("fill-opacity", 0.1)       // effectively invisible, but "painted"
+  .attr("stroke", "#0080ff")         // keep visible while debugging; remove later
+  .attr("stroke-width", 1)
+
+
+
+// Append the label (initially hidden)
+poiG.append("text")
+  .attr("class", "poiLabel")
+  .attr("y", -12)
+  .attr("text-anchor", "middle")
+  .attr("fill", "#6c5211")
+  .style("font-size", "12px")
+  .style("opacity", 1)
+  .style("pointer-events", "none")   // label won't steal hover
+  .text(d => d.name);
+
+
+poiG.selectAll(".poiHit")
+  .on("pointerover", (event, d) => {
+    console.log("[POI hover] pointerover:", d?.name, event.target);
+    d3.select(event.currentTarget.parentNode).select(".poiLabel").style("opacity", 1);
+  })
+  .on("pointerout", (event, d) => {
+    console.log("[POI hover] pointerout:", d?.name, event.target);
+    d3.select(event.currentTarget.parentNode).select(".poiLabel").style("opacity", 0);
+  });
+
+
+  
+poiG.selectAll(".poiLabel")
+  .on("end.debug", function() {
+    console.log("[label transition end] opacity =", this.style.opacity, "text =", this.textContent);
+  });
+
+  
+pointsOfInterest.forEach(d => {
+  const p = projection(d.coords);
+  console.log("[projection]", d.name, "→", p);
+});
+
+svgEarth.on("pointermove.debug", (event) => {
+  const t = event.target;
+  console.log("[pointermove] target:", t && t.classList ? t.classList.value : t);
+});
+
+poiG.raise();
+
+poiG.selectAll(".poiLabel")
+  .style("pointer-events", "none");
+
 
   renderEarth();
 
+  
+function animatePOIs() {
+  svgEarth.selectAll("circle.poiPulse")
+    .transition().duration(1800).ease(d3.easeCubicOut)
+      .attr("r", 20).style("opacity", 0)
+    .transition().duration(0) // reset
+      .attr("r", 6).style("opacity", 0.75)
+    .on("end", animatePOIs);
+}
+animatePOIs();
 
 });
 
+
 function updatePing() {
-    svgEarth.selectAll("circle.poInterest")
-      .attr("cx", d => projection(d.coords)[0])
-      .attr("cy", d => projection(d.coords)[1]);
-  }
+  svgEarth.selectAll("g.poi")
+    .attr("transform", d => {
+      const p = projection(d.coords);
+      return `translate(${p[0]},${p[1]})`;
+    });
+}
+
+
+
 
 function renderEarth() {
   const width = window.innerWidth;
-  const headerObject = document.getElementById("theHeaderBar")
+  const headerObject = document.getElementById("theHeaderBar");
   const height = window.innerHeight - headerObject.offsetHeight;
 
   svgEarth.attr("width", width).attr("height", height);
+  svgShadow.attr("width", width).attr("height", height);
+
+  const [λc, φc] = centroidLonLat(mustShow);
 
   projection
-    .scale(width * 0.75)
-    .translate([width / 2, height * 0.45])
+    .distance(8)                // a bit further back → wider horizon
+    .tilt(20)                   // keep your tilt
+    .rotate([-λc, -φc, -14])    // rotate to center on the centroid
+    .scale(Math.min(width, height) * 1.25)
+    .translate([width/2, height * 0.45]);
 
-
-svgShadow.attr("width", width).attr("height", height);
-
-const globeRadius = projection.scale();
-
-// Remove previous shadow circle before adding a new one
-svgShadow.selectAll("circle").remove();
-
-svgShadow.append("circle")
-  .attr("cx", width / 2)
-  .attr("cy", height * 0.45)
-  .attr("r", globeRadius)
-  .attr("fill", "url(#shadowGradient)");
-
-
-  const horizon = Math.acos(1/projection.distance()) * 180 / Math.PI;
-
+  // Recompute horizon & clip, update paths and POIs (your existing logic continues)
+  const horizon = Math.acos(1 / projection.distance()) * 180 / Math.PI;
   projection.clipAngle(horizon - 1e-6);
 
-  svgEarth.selectAll("path").attr("d",path);
-  
-  updatePing();
+  const [tx, ty] = projection.translate();
+  const globeRadius = projection.scale(); // satellite uses scale == pixel radius
 
+  shadowGradient
+    .attr("cx", tx)
+    .attr("cy", ty)
+    .attr("r", globeRadius);
+
+    
+  const shadow = svgShadow.selectAll("path.shadowSphere").data([{ type: "Sphere" }]);
+  shadow.enter().append("path").attr("class", "shadowSphere");
+  svgShadow.selectAll("path.shadowSphere").attr("d", path).attr("fill", "url(#shadowGradient)").style("pointer-events", "none");
+
+
+  svgShadow.selectAll("path.shadowSphere").attr("d", path);
+
+  svgEarth.selectAll("path").attr("d", path);
+  updatePing();
 }
+
+
 
 window.addEventListener("resize", renderEarth);
