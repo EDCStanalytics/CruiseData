@@ -12,6 +12,7 @@
     <script src="globe.js" defer></script>
     <script  src="../JavaScripts/helpers.js" defer></script>
     <script  src="../JavaScripts/callData.js" defer></script>
+    <script  src="../JavaScripts/powerData.js" defer></script>
 
     <script  src="../JavaScripts/header.js" defer></script>
 
@@ -51,14 +52,31 @@
 
       <div id="D3andME">
         <div class="kpiBucket" id="leftChartContainer">
-          <div id="shipCallCounter">100</div>
-          <div id="shipCallKPIs">
-            <div id="shipCallArrow">up</div>
-            <div id="shipCallPerc">10%</div>
+          
+          <div class='speedRead' id="shipCallCounter">100</div>
+          <div class="shipInstrumentLabel" id="shipCallLabel">Ship Calls</div>
+          <div class='trendingBox' id="shipCallKPIs">
+            <!-- <div class='speedArrow'id="shipCallArrow">up</div> -->
+            <div class='speedTrend'id="shipCallPerc">10%</div>
           </div>
+          <div id="leftRadialChart" class="chart_anchor"></div>
+          
+
+<div class="glass" aria-hidden="true"></div>
+
         </div>
         <div class="kpiBucket" id="rightChartContainer">
-          <div id="rightRadialChart" class="chart_anchor">test</div>
+          <div class='speedRead' id="shipConnectionCounter">100</div>
+          <div class="shipInstrumentLabel" id="shipConnectionLabel">Shore Power Connections</div>
+          <div class='trendingBox' id="shipConnectionKPIs">
+            <!-- <div class='speedArrow'id="shipConnectionArrow">up</div> -->
+            <div class='speedTrend' id="shipConnectionPerc">10%</div>
+          </div>
+        <div id="rightRadialChart" class="chart_anchor"></div>
+          
+
+<div class="glass" aria-hidden="true"></div>
+
         </div>
       </div>
     </div>
