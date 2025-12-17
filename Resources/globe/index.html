@@ -46,53 +46,40 @@
     <div id="dataSpace">
       <div id="berthSpace"></div>
 
-      <div id="cardSpace">
-        
-      </div>
+      <div id="cardSpace"></div>
 
       <div id="D3andME">
+
         <div class="kpiBucket" id="leftChartContainer">
           
-          <div class='speedRead' id="shipCallCounter">100</div>
-          <div class="shipInstrumentLabel" id="shipCallLabel">Ship Calls</div>
-          <div class='trendingBox' id="shipCallKPIs">
-            <!-- <div class='speedArrow'id="shipCallArrow">up</div> -->
-            <div class='speedTrend'id="shipCallPerc">10%</div>
+          <div class="baseStats">
+            <div class='speedRead' id="shipCallCounter">100</div>
+            <div class='baseLabel' id="shipCallLabel">Ship Calls</div>
+            <div class='baseTrend' id="shipCallPerc">10%</div>
           </div>
-          <div id="leftRadialChart" class="chart_anchor"></div>
           
-
-<div class="glass" aria-hidden="true"></div>
+          <div id="leftRadialChart" class="radial_anchor"></div>
+          <div id="leftCentralChart"></div>
+          <div class="glass" aria-hidden="true"></div>
 
         </div>
+        
         <div class="kpiBucket" id="rightChartContainer">
-          <div class='speedRead' id="shipConnectionCounter">100</div>
-          <div class="shipInstrumentLabel" id="shipConnectionLabel">Shore Power Connections</div>
-          <div class='trendingBox' id="shipConnectionKPIs">
-            <!-- <div class='speedArrow'id="shipConnectionArrow">up</div> -->
-            <div class='speedTrend' id="shipConnectionPerc">10%</div>
-          </div>
-        <div id="rightRadialChart" class="chart_anchor"></div>
           
-
-<div class="glass" aria-hidden="true"></div>
+          <div class="baseStats">
+            <div class='speedRead' id="shipConnectionCounter">100</div>
+            <div class='baseLabel' id="shipConnectionLabel">Shore Power Connections</div>
+            <div class='baseTrend' id="shipConnectionPerc">10%</div>
+          </div>
+        
+          <div id="rightRadialChart" class="radial_anchor"></div>
+          <div id="rightCentralChart"></div>
+          <div class="glass" aria-hidden="true"></div>
 
         </div>
       </div>
     </div>
   </body>
-
-  <div id="tooltip" style="
-  z-index: 1000;
-  position: absolute;
-  background: #fff;
-  border: 1px solid #ccc;
-  padding: 6px;
-  font-size: 14px;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  pointer-events: none;
-  opacity: 0;"></div>
 
 </html>
 

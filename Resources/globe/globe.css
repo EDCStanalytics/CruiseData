@@ -16,6 +16,7 @@
     --brass-hi: #fff1c2; 
     --odometerFontSize: 6rem;
     --odometerFontWidth: 1.2ch;
+    --rim-band: 15%;
 }
 
 * {
@@ -171,6 +172,9 @@ body {
 }
 
 .kpiBucket {
+    container-type: size;
+    --bucket-h: 0px;
+
     padding: var(--instrument-rim);
     height: 90%;
     justify-self: center;
@@ -179,7 +183,7 @@ body {
     overflow: visible;
     margin: 60px;
     position: relative;
-    transition: transform 500ms ease, opacity 500ms ease;
+    transition: transform 500ms ease-in-out, opacity 500ms ease-in-out;
     transform: scale(1);
     will-change: transform;
     display: flex;
@@ -271,14 +275,33 @@ body {
 .kpiBucket.focused .glass { transform: translateY(-1px) scale(1.001); }
 
 .kpiBucket.focused {
-    transform: scale (3);
+    
     aspect-ratio: 1 / 1;
     z-index: 10;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.kpiBucket.focused .baseStats {
+  transform: translateY(var(--focus-offset-y)) scale(0.45);
+  transform-origin: top center;
+
 }
 
 .kpiBucket.shrunk {
     transform: scale(1);
     opacity: 0.7;
+}
+
+.baseStats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 500ms ease-in-out;
+    
+    backface-visibility: hidden;
+    transform: translateY(0) scale(1)
 }
 
 .trendingBox {
@@ -353,21 +376,22 @@ font-variant-numeric: tabular-nums;
   opacity: 0.45;
 }
 
-.speedArrow {
-    font-size: 2rem;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    margin: 0px 5px;
-    flex: 0 0 auto;
-    white-space: nowrap;
+
+.baseLabel {
+  font-weight: 300;
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  color: var(--kpi-fg, #0f172a);
 }
 
-.speedTrend {
+
+.baseTrend {
     flex: 0 1 auto;
     white-space: nowrap;
     min-width: 0;
-    font-size: clamp(1.25rem, 2vw, 2rem);
+    font-size: clamp(1rem, 1.6vw, 1.4rem);
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     margin: 0px 5px;
+    color: var(--kpi-fg, #0f172a);
 }
 
 #leftChartContainer::after {
@@ -381,11 +405,18 @@ font-variant-numeric: tabular-nums;
     pointer-events: none;
 }
 
-#leftRadialChart {
+#leftRadialChart, #rightRadialChart {
     position: absolute;
     inset: 0;
     overflow: visible;
+}
 
+#leftCentralChart, #rightCentralChart {
+  position: absolute;
+  inset: 0;          /* fill the bucket; SVG will be centered via viewBox */
+  overflow: visible;
+  pointer-events: none;
+  height: 1;
 }
 
 #rightChartContainer::after {
@@ -399,9 +430,15 @@ font-variant-numeric: tabular-nums;
     pointer-events: none;
 }
 
-#rightRadialChart {
-    position: absolute;
-    inset: 0;
-    overflow: visible;
+#rightCentralChart .call-span {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 1px;              
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;          
 }
 
+
+#rightCentralChart .month-sep {
+  stroke: var(--ink-300, #999);
+  stroke-width: 1px;
+}
