@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>D3 CallData Lines, Dots, and ShorePower Rectangles</title>
+  <title>D3 CallData Seasonality View (Centered Clusters)</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     .conn { fill: pink; stroke: black; rx: 6; ry: 6; }
-    .ad { fill: #333; }
+    .ad {}
     .after { fill: black; }
     .before { fill: blue; }
     select { margin: 20px; padding: 5px; }
@@ -15,7 +15,7 @@
 <body>
  <label for="vesselSelect">Select Vessel:</label>
   <select id="vesselSelect"></select>
-  <svg id="chart" width="8400" height="600"></svg>
+  <svg id="chart" width="4000" height="600"></svg>
 
   <script>
     const svg = d3.select("#chart"),
@@ -24,7 +24,7 @@
           margin = {top: 40, right: 40, bottom: 40, left: 80};
 
     const parseTime = d3.timeParse("%H:%M");
-    const parseDate = d3.timeParse("%m/%Y")
+    const parseDate = d3.timeParse("%m/%d/%Y");
     const ninetyMin = 90 * 60 * 1000;
 
     Promise.all([
@@ -32,186 +32,142 @@
       d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/ShorePowerData_Cruise.csv")
     ]).then(([callData, shorePower]) => {
 
-      // Build lookup from ShorePower keyed by CallID
       const shoreLookup = new Map(
-        shorePower.map(d => [d.CallID, { connect: d.Connect, disconnect: d.Disconnect }])
+        shorePower.map(d => [d.CallID, { connect: d.Connect, disconnect: d.Disconnect}])
       );
 
-      // Build data from CallData, enrich with ShorePower if present
-      //filter(d => d.VesselName === selectedName).
       const data = callData.map(d => {
         const sp = shoreLookup.get(d.CallID);
         const connectObj = sp && sp.connect ? parseTime(sp.connect) : null;
         const disconnectObj = sp && sp.disconnect ? parseTime(sp.disconnect) : null;
-        const dateObj = parseDate(d.ArrivalDate)
-        const dateObj1 = parseDate(d.DepartDate)
+        const dateObj = parseDate(d.ArrivalDate);
         const arriveObj = d.Arrival ? parseTime(d.Arrival) : null;
         const departObj = d.Depart ? parseTime(d.Depart) : null;
-        
-  
 
-        
-        
-        
-        const dateDiff = departObj - arriveObj; 
-        const dateDiff2 = d.DepartDate - d.ArrivalDate
-        const arr = new Date(d.ArrivalDate)
-        const dep = new Date(d.DepartDate)
-        const diff = dep-arr
-      const diff2 = diff/(1000 * 60 * 60 * 24);
-      const correction = diff2 * 86400000
-      
-      
-    //   const ninetyBefore = departObj
-//  ? new Date((d.diff2 > 0 ? +departObj + d.correction : +departObj) - ninetyMin)
-//  : null;
+        const arr = new Date(d.ArrivalDate);
+        const dep = new Date(d.DepartDate);
+        const diff = dep - arr;
+        const diff2 = diff/(1000 * 60 * 60 * 24);
+        const correction = diff2 * 86400000;
 
-//console.log("ninetyBefore:", ninetyBefore);
-
-     //   console.log(arr, dep, diff2, correction)
-        
-     //   const merg = callData.map (row => ({full: `${row.ArrivalDate} ${row.Arrival} }))
-     //   console.log(merg)
-      //  console.log(d.ArrivalDate, d.DepartDate)
-     //   const timeDiff = dateDiff/ (1000 * 3600 * 24);
         return {
           CallID: d.CallID,
-          dateStr: (d.ArrivalDate || "").trim(),
           dateObj,
+          month: dateObj ? dateObj.getMonth() : null,
+          year: dateObj ? dateObj.getFullYear() : null,
           arriveObj,
           departObj,
           connectObj,
           disconnectObj,
           ninetyAfter: arriveObj ? new Date(+arriveObj + ninetyMin) : null,
-   //       ninetyBefore: departObj ? new Date(+departObj - ninetyMin) : null,
-      //  ninetyBefore: departObj ? new Date(d.diff2 > 0 ? +departObj + d.correction - ninetyMin: +departObj - ninetyMin) : null,
-
-ninetyBefore: departObj ? new Date((d.diff2 > 0 ? +departObj + d.correction : +departObj) - ninetyMin): null,
-
-
-
+          ninetyBefore: departObj ? new Date((diff2 > 0 ? +departObj + correction : +departObj) - ninetyMin) : null,
           VesselName: d.VesselName || "Unknown",
           diff2,
           correction
         };
+      });
+      
+data.sort((a, b) => d3.ascending(a.year, b.year) || d3.ascending(a.month, b.month));
 
+
+      // Assign index within each month
+      const grouped = d3.group(data.filter(d => d.month!=null), d => d.month);
+      grouped.forEach((rows, m) => {
+        rows.forEach((row, i) => row.callIndex = i);
       });
 
-
-      // Unique dates for x-axis
-      const uniqueDates = Array.from(new Set(data.map(d => d.dateStr).filter(Boolean)));
-      
-       
-      // Scales
-      const x = d3.scaleBand()
-        .domain(uniqueDates)
+      const months = d3.range(0,12);
+      const xMonth = d3.scaleBand()
+        .domain(months)
         .range([margin.left, width - margin.right])
-        .padding(0.4);
+        .paddingInner(0.1);
+
+      const maxCalls = d3.max(Array.from(grouped.values(), v => v.length));
+      const xCall = d3.scaleBand()
+        .domain(d3.range(maxCalls))
+        .range([0, xMonth.bandwidth()])
+        .padding(0.1);
 
       const y = d3.scaleTime()
         .domain([parseTime("02:00"), parseTime("23:59")])
         .range([height - margin.bottom, margin.top]);
 
-      // Axes
+      // Axis
       svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(xMonth)
+          .tickFormat(i => d3.timeFormat("%b")(new Date(2000, i, 1))));
 
       svg.append("g")
         .attr("transform", `translate(${margin.left},0)`)
         .call(d3.axisLeft(y).tickFormat(d3.timeFormat("%H:%M")).ticks(9));
 
-      // Rectangles from ShorePower (only if connect/disconnect exist)
-     const rects = svg.selectAll("rect.conn")
-        .data(data.filter(d => d.connectObj && d.disconnectObj))
+      // Helper to center clusters
+      function clusterOffset(month) {
+        const callsInMonth = grouped.get(month)?.length || 0;
+        const clusterWidth = callsInMonth * xCall.bandwidth();
+        return (xMonth.bandwidth() - clusterWidth) / 2;
+      }
+
+      // Rectangles
+      const rects = svg.selectAll("rect.conn")
+        .data(data.filter(d => d.connectObj && d.disconnectObj && d.month!=null))
         .enter().append("rect")
         .attr("class", "conn")
-        .attr("x", d => x(d.dateStr))
-        .attr("width", x.bandwidth())
+        .attr("x", d => xMonth(d.month) + clusterOffset(d.month) + xCall(d.callIndex))
+        .attr("width", xCall.bandwidth())
         .attr("y", d => y(d.disconnectObj))
         .attr("height", d => Math.abs(y(d.connectObj) - y(d.disconnectObj)))
-        .attr("rx", 6)
-        .attr("ry", 6);
+        .attr("rx", 6).attr("ry", 6);
 
-      // Vertical line from depart to arrival (CallData)
-      const lineWidth = Math.max(2, x.bandwidth() * 0.08);
-     const adRects  =svg.selectAll("rect.ad")
-        .data(data.filter(d => d.arriveObj && d.departObj))
-        .enter().append("rect")
-        .attr("class", "ad")
-        .attr("x", d => x(d.dateStr) + (x.bandwidth() - lineWidth)/2)
-        .attr("width", lineWidth)
-      //  .attr("y", d => y(d.departObj))
-       .attr("y", d => y(d.diff2 > 0 
-  ? new Date(+d.departObj + d.correction) 
-  : d.departObj
-))
-
-     //   .attr("height", d => y(d.arriveObj) - y(d.departObj));
-   .attr("height", d => 
-   d.diff2 > 0
+      // Vertical line rectangles
+      const lineWidth = Math.max(2, xCall.bandwidth() * 0.1);
+      const adRects = svg.selectAll("rect.ad")
+  .data(data.filter(d => d.arriveObj && d.departObj && d.month!=null))
+  .enter().append("rect")
+  .attr("class", "ad")
+  .attr("x", d => xMonth(d.month) + clusterOffset(d.month) + xCall(d.callIndex) + (xCall.bandwidth()-lineWidth)/2)
+  .attr("width", lineWidth)
+  .attr("y", d => y(d.diff2 > 0 ? new Date(+d.departObj + d.correction) : d.departObj))
+  .attr("height", d => d.diff2 > 0
     ? y(d.arriveObj) - y(new Date(+d.departObj + d.correction))
-    : y(d.arriveObj) - y(d.departObj)
-  )
+    : y(d.arriveObj) - y(d.departObj))
+  .attr("fill",d => d.year === 2025 ? "blue" : "red");  // <-- color by year
 
-      // Dots 90 minutes after arrival
- const afterCircles = svg.selectAll("circle.after")
-        .data(data.filter(d => d.ninetyAfter))
+
+      // Dots
+      svg.selectAll("circle.after")
+        .data(data.filter(d => d.ninetyAfter && d.month!=null))
         .enter().append("circle")
         .attr("class", "after")
-        .attr("cx", d => x(d.dateStr) + x.bandwidth()/2)
+        .attr("cx", d => xMonth(d.month) + clusterOffset(d.month) + xCall(d.callIndex) + xCall.bandwidth()/2)
         .attr("cy", d => y(d.ninetyAfter))
         .attr("r", 4);
 
-      // Dots 90 minutes before depart
-   const beforeCircles = svg.selectAll("circle.before")
-        .data(data.filter(d => d.ninetyBefore))
+      svg.selectAll("circle.before")
+        .data(data.filter(d => d.ninetyBefore && d.month!=null))
         .enter().append("circle")
         .attr("class", "before")
-        .attr("cx", d => x(d.dateStr) + x.bandwidth()/2)
+        .attr("cx", d => xMonth(d.month) + clusterOffset(d.month) + xCall(d.callIndex) + xCall.bandwidth()/2)
         .attr("cy", d => y(d.ninetyBefore))
         .attr("r", 4);
 
-      // Dropdown with vessel names
+      // Dropdown
       const vesselName = Array.from(new Set(data.map(d => d.VesselName))).filter(Boolean);
       const select = d3.select("#vesselSelect");
-            select.append("option").text("All Vessels").attr("value", "all");
-    vesselName.forEach(name => select.append("option").text(name).attr("value", name));
-    
-     // dropdown.selectAll("option")
-     //   .data(vesselNames)
-    //    .enter()
-   //     .append("option")
-   //     .attr("value", d => d)
-  //      .text(d => d); 
-      
-      // Dropdown interaction
+      select.append("option").text("All Vessels").attr("value", "all");
+      vesselName.forEach(name => select.append("option").text(name).attr("value", name));
+
       select.on("change", function() {
         const selectedName = this.value;
-
         rects.transition().duration(800)
-          .attr("y", d => (selectedName === "all" || d.VesselName === selectedName) ? y(d.disconnectObj) : height - margin.bottom)
-          .attr("height", d => (selectedName === "all" || d.VesselName === selectedName) ? (y(d.connectObj) - y(d.disconnectObj)) : 0);
-
+          .style("opacity", d => (selectedName==="all" || d.VesselName===selectedName)?1:0);
         adRects.transition().duration(800)
-          .attr("y", d => (selectedName === "all" || d.VesselName === selectedName) ? y(d.departObj) : height - margin.bottom)
-          .attr("height", d => (selectedName === "all" || d.VesselName === selectedName) ? (y(d.arriveObj) - y(d.departObj)) : 0);
-
-        afterCircles.transition().duration(800)
-  .attr("cy", d => (selectedName === "all" || d.VesselName === selectedName) 
-                    ? y(d.ninetyAfter) 
-                    : height - margin.bottom)
-  .style("opacity", d => (selectedName === "all" || d.VesselName === selectedName) 
-                          ? 1 
-                          : 0);
-        beforeCircles.transition().duration(800)
-  .attr("cy", d => (selectedName === "all" || d.VesselName === selectedName) 
-                    ? y(d.ninetyBefore) 
-                    : height - margin.bottom)
-  .style("opacity", d => (selectedName === "all" || d.VesselName === selectedName) 
-                          ? 1 
-                          : 0);
-
+          .style("opacity", d => (selectedName==="all" || d.VesselName===selectedName)?1:0);
+        svg.selectAll("circle.after").transition().duration(800)
+          .style("opacity", d => (selectedName==="all" || d.VesselName===selectedName)?1:0);
+        svg.selectAll("circle.before").transition().duration(800)
+          .style("opacity", d => (selectedName==="all" || d.VesselName===selectedName)?1:0);
       });
     });
   </script>
