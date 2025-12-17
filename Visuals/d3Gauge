@@ -24,7 +24,7 @@
 
     const angleScale = d3.scaleLinear()
       .domain([minValue,maxValue])
-      .range([4*Math.PI/6, 12*Math.PI/6]); 
+      .range([6*Math.PI/6, 12*Math.PI/6]); 
 
     const parseDate = d3.timeParse("%m/%d/%Y");
     const buildDateTime = (dateStr, timeStr) => {
