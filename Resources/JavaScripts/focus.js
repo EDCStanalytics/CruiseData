@@ -1,6 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
     const buckets = document.querySelectorAll(".kpiBucket");
     const shipCards = document.getElementById("cardSpace");
+//
+
+const root = document.documentElement;
+const probeBucket = document.querySelector('.kpiBucket');
+if (probeBucket) {
+    const h = probeBucket.clientHeight;      // height of a bucket    const h = probeBucket.clientHeight;      // height of a bucket in normal state
+    const OFFSET_COEFF = 2;               // 40% of bucket height (adjust if needed)
+    const offsetY = Math.round(h * OFFSET_COEFF);
+    root.style.setProperty('--focus-offset-y', `${offsetY}px`);
+}
+
+    //
+
 
     buckets.forEach(bucket => {
         bucket.addEventListener("click", async () => {
@@ -8,13 +21,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Reset all buckets and shipCards if clicked again
             if (isAlreadyFocused) {
-                buckets.forEach(b => b.classList.remove("focused", "shrunk"));
+                bucket.classList.remove('focused');
+                const kpi = bucket.querySelector('.baseStats');               
+                await waitForTransitionEndOnce(kpi)
+                buckets.forEach(b => {
+                    b.classList.remove('focused', 'shrunk');
+                    b.style.removeProperty('--bucket-h');
+                    });
                 shipCards.classList.remove("collapsed");
                 removeRadial("leftRadialChart");
                 removeRadial("rightRadialChart");
+                document.getElementById('rightCentralChart')?.replaceChildren();
+                document.getElementById('leftCentralChart')?.replaceChildren();
 
                 return;
             }
+            
+            // Collapse shipCards
+            shipCards.classList.add("collapsed");
 
             // Apply focused/shrunk classes
             buckets.forEach(b => {
@@ -24,22 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     b.classList.remove("focused");
                     b.classList.add("shrunk");
+                    
                 }
             });
 
-            // Collapse shipCards
-            shipCards.classList.add("collapsed");
-
             if (bucket.id === "rightChartContainer") {
-                //await window.circleToBars("rightChartContainer");
-                //await window.barsToCircle("leftChartContainer");
                 removeRadial("leftRadialChart");
                 await waitForTransitionEndOnce(bucket);
-                drawRadialT12('rightRadialChart');
-                
+                window.drawPerformCentral('rightCentralChart');
             } else {
-                //await window.circleToBars("leftChartContainer");
-                //await window.barsToCircle("rightChartContainer");
                 removeRadial("rightRadialChart");
                 await waitForTransitionEndOnce(bucket);
                 drawRadialT12('leftRadialChart');
@@ -402,4 +419,133 @@ const waitForTransitionEndOnce = (el, timeoutMs = 500) => {
     setTimeout(finish, timeoutMs);          // fallback in case no event fires
     requestAnimationFrame(() => {});        // nudge to next frame; harmless
   });
+}
+
+window.drawPerformCentral = async function(containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    el.innerHTML = '';
+
+    const [calls, connections] = await Promise.all([
+        window.callsPromise,
+        window.connectionsPromise
+    ]);
+
+    
+    const { lastStart, lastEnd } = window.Helpers.getT24();
+    const t12Calls = calls.filter(c => 
+        window.Helpers.rangeCheck(c.arrival, lastStart, lastEnd));
+
+    const t12Connections = connections.filter(c =>
+        window.Helpers.rangeCheck(c.connect, lastStart, lastEnd)
+    );
+    
+    const callsSorted = t12Calls
+        .slice()
+        .sort((a, b) => a.arrival - b.arrival)
+
+    console.log('t12Calls: ' , t12Calls.length, 't12Connections: ', t12Connections.length);
+    const xDomain = callsSorted.map(c => c.id);
+
+
+
+    const monthChangeIndices = [];
+    for (let i = 1; i < callsSorted.length; i++) {
+        const prev = callsSorted[i - 1].arrival;
+        const curr = callsSorted[i].arrival;
+        if (prev.getMonth() !== curr.getMonth()) {
+            monthChangeIndices.push(i)
+        }
+    }
+
+    const width = el.clientWidth;
+    const height = el.clientHeight;
+    const margin = { top: 10, right: 10, bottom: 10, left: 10 };
+
+    const svg = d3.select(el)
+        .append('svg')
+        .attr('viewBox', `0 0 ${width} ${height}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet');
+
+    const innerWidthFactor = 0.8;
+    const innerHeightFactor = 0.4;
+    const W = width;
+    const H = height;
+    const D = Math.min(W, H);
+    
+    const innerW = Math.round(D * innerWidthFactor);
+    const innerH = Math.round(D * innerHeightFactor);
+    
+    const originX = Math.round((W - innerW) / 2);
+    const originY = Math.round((H - innerH) / 2);
+
+    const axisX_Y = originY + innerH;
+    const axisY_X = originX;
+
+    const xByCalls = d3.scaleBand()
+        .domain(xDomain)
+        .range([originX + margin.left, originX + innerW - margin.right])
+        .paddingInner(0.14)
+        .paddingOuter(0.04);
+
+    const labels = window.Helpers.monthLabels();
+
+    /*
+    const xMonth = d3.scaleBand()
+        .domain(labels)
+        .range([originX + margin.left, originX + innerW - margin.right])
+        .paddingInner(0.1);
+*/
+
+    const y = d3.scaleTime()
+        .domain([new Date(0,0,0,6,0), new Date(0,0,0,22,0)])
+        .range([originY + margin.top + innerH, originY + margin.top]);
+
+    const toTOD = (d) => new Date(0,0,0, d.getHours(), d.getMinutes(), d.getSeconds(),0);
+/*
+    svg.append('g')
+        .attr('class', 'axis axis--x')
+        .attr('transform', `translate(0,${axisX_Y})`)
+        .call(d3.axisBottom(xByCalls));
+
+        */
+/*
+    const grouped = d3.group(t12Calls, d => d.connect.getMonth());
+    grouped.forEach((rows, m) => rows.forEach((row, i) => row.callIndex = i));
+
+    */
+
+    //const maxCalls = d3.max(Array.from(grouped.values(), v => v.length));
+
+
+
+
+    svg.selectAll('line.call-span')
+        .data(callsSorted)
+        .enter().append('line')
+        .attr('class', 'call-span')
+        .attr('x1', d => xByCalls(d.id) + xByCalls.bandwidth()/2)
+        .attr('x2', d => xByCalls(d.id) + xByCalls.bandwidth() / 2)
+        //.attr('width', xByCalls.bandwidth())
+        .attr('y1', d => y(toTOD(d.arrival)))
+        .attr('y2', d => y(toTOD(d.departure)))
+        //.attr('height', d => Math.abs(y(d.arrival) - y(d.departure)))
+        .attr('height', d => Math.max(1, Math.abs(y(toTOD(d.arrival)) - y(toTOD(d.departure)))))
+        .attr('rx', 6).attr('ry', 6)
+        .attr('fill', getComputedStyle(document.documentElement)
+            .getPropertyValue('--brass-mid').trim());
+    
+    svg.append('g')
+        .selectAll('line.month-sep')
+        .data(monthChangeIndices)
+        .enter().append('line')
+        .attr('class', 'month-sep')
+        .attr('x1', i => xByCalls(callsSorted[i].id))
+        .attr('x2', i => xByCalls(callsSorted[i].id))
+        .attr('y1', originY + margin.top)
+        .attr('y2', originY + innerH - margin.bottom)
+        .attr('stroke', getComputedStyle(document.documentElement)
+        .getPropertyValue('--ink-300').trim())
+
 }

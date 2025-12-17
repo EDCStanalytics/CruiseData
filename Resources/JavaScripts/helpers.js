@@ -53,20 +53,35 @@ const help_rangeCheck = (d, start, end) => {
 
 const help_getT24 = (now = new Date()) => {
     const lastStart = new Date(now);
+    lastStart.setDate(1);
     lastStart.setHours(0,0,0,0);
     lastStart.setMonth(lastStart.getMonth()-12);
 
-    const lastEnd = new Date(now);
-    lastEnd.setHours(23,59,59,999);
+    const lastEnd = new Date(lastStart);
+    lastEnd.setMonth(lastEnd.getMonth()+12);
+    lastEnd.setMilliseconds(-1);
 
     const prevStart = new Date(lastStart);
     prevStart.setMonth(prevStart.getMonth()-12);
 
     const prevEnd = new Date(lastStart);
-    prevEnd.setMilliseconds(prevEnd.getMilliseconds()-1);
+    prevEnd.setMilliseconds(-1);
 
     return {lastStart,lastEnd,prevStart,prevEnd}
   }
+
+const help_monthLabels = (now = new Date()) => {
+  const {lastStart} = help_getT24(now);
+  const labels = [];
+  const d = new Date(lastStart);
+  for (let i = 0; i < 12; i++) {
+    const month = d.toLocaleString('en-US', {month: 'short'});
+    const year = String(d.getFullYear()).slice(-2);
+    labels.push(`${month} ${year}`);
+    d.setMonth(d.getMonth() + 1);
+  }
+  return labels;
+}
 
 
 function help_initOdometer(el, initialValue = 0) {
@@ -165,6 +180,7 @@ if (num !== 0) hitNonZero = true;
   const getCSV = help_getCSV;
   const initOdometer = help_initOdometer;
   const rollOdometer = help_rollOdometer;
+  const monthLabels = help_monthLabels;
 
   window.Helpers = {
     coerceDate, 
@@ -174,5 +190,6 @@ if (num !== 0) hitNonZero = true;
     getT24, 
     getCSV,
     initOdometer,
-    rollOdometer
+    rollOdometer,
+    monthLabels
   };
