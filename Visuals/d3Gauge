@@ -2,46 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>D3 Gauge with Ship-Level Averages</title>
+  <title>D3 Gauge Arc 240°–400° (with Vessel Data)</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    body { font-family: sans-serif; }
-    svg { display: block; margin: 20px auto; }
-    select { margin: 20px; padding: 5px; }
+    body { background-color: #ffffff; color: #000; font-family: sans-serif; }
+    svg { display: block; margin: 20px auto; background-color: #ffffff; }
   </style>
 </head>
 <body>
- <label for="vesselSelect">Select Vessel:</label>
-  <select id="vesselSelect"></select>
-  <svg id="gauge" width="600" height="400"></svg>
+  <svg id="gauge" width="600" height="600"></svg>
 
   <script>
     const svg = d3.select("#gauge");
     const width = +svg.attr("width");
     const height = +svg.attr("height");
 
-    // Gauge parameters
-    const minValue = 0, maxValue = 2, targetValue = 1;
-    const backgroundColor = "#cbd1d6", fillColor = "#77A7FB", needleColor = "#555";
+    const minValue = 0, maxValue = 1.5;
+    const centerX = width/2;
+    const centerY = height/2;
+    const radius = Math.min(width,height)/2 - 40;
 
-    const centerX = width/2, radiusRef = Math.min(width/2,height/2);
-    const outerRadius = radiusRef*0.8, innerRadius = outerRadius*0.60;
-    const centerY = height/2 + outerRadius/2;
+    const angleScale = d3.scaleLinear()
+      .domain([minValue,maxValue])
+      .range([4*Math.PI/6, 12*Math.PI/6]); 
 
-    // Parsers for your CSV formats
-    const parseDate = d3.timeParse("%m/%d/%Y"); // adjust if needed
-
-    // Helper to combine date + time into full Date object
+    const parseDate = d3.timeParse("%m/%d/%Y");
     const buildDateTime = (dateStr, timeStr) => {
       if (!dateStr) return null;
       const baseDate = parseDate(dateStr);
       if (!baseDate) return null;
       if (!timeStr) return baseDate;
       const parts = timeStr.split(':').map(Number);
-      const h = parts[0] || 0;
-      const m = parts[1] || 0;
-      const s = parts[2] || 0;
-      baseDate.setHours(h, m, s, 0);
+      baseDate.setHours(parts[0]||0, parts[1]||0, parts[2]||0, 0);
       return baseDate;
     };
 
@@ -49,21 +41,16 @@
       d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/CallData_Cruise.csv"),
       d3.csv("https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/ShorePowerData_Cruise.csv")
     ]).then(([callData, shorePower]) => {
-
-      // Build lookup from ShorePower keyed by CallID
       const shoreLookup = new Map(
         shorePower.map(d => [d.CallID, { connect: d.Connect, disconnect: d.Disconnect }])
       );
 
-      // Build data from CallData, enrich with ShorePower if present
       const data = callData.map(d => {
         const sp = shoreLookup.get(d.CallID);
-
         const arriveObj = buildDateTime(d.ArrivalDate, d.Arrival);
         const departObj = buildDateTime(d.DepartDate, d.Depart);
         const connectObj = sp && sp.connect ? buildDateTime(d.ArrivalDate, sp.connect) : null;
         const disconnectObj = sp && sp.disconnect ? buildDateTime(d.DepartDate, sp.disconnect) : null;
-
         return {
           CallID: d.CallID,
           VesselName: d.VesselName || "Unknown",
@@ -76,124 +63,99 @@
         };
       });
 
-      // Populate dropdown
-      const vesselName = Array.from(new Set(data.map(d => d.VesselName))).filter(Boolean);
+      const valid = data.filter(d=>d.connectMs && d.disconnectMs && d.ninetyAfterMs && d.ninetyBeforeMs);
+
+      const groupedByShip = d3.group(valid, d => d.VesselName);
+      const shipAverages = Array.from(groupedByShip, ([name, rows]) => ({
+        VesselName: name,
+        avgConnect: d3.mean(rows, r => r.connectMs),
+        avgDisc:    d3.mean(rows, r => r.disconnectMs),
+        tarConnect: d3.mean(rows, r => r.ninetyAfterMs),
+        tarDisc:    d3.mean(rows, r => r.ninetyBeforeMs)
+      }));
+
+      const avgConnect = d3.mean(shipAverages, s => s.avgConnect);
+      const avgDisc    = d3.mean(shipAverages, s => s.avgDisc);
+      const tarConnect = d3.mean(shipAverages, s => s.tarConnect);
+      const tarDisc    = d3.mean(shipAverages, s => s.tarDisc);
+
+      let ratio = (avgConnect && avgDisc && tarConnect && tarDisc && (tarDisc-tarConnect)!=0)
+        ? (avgDisc-avgConnect)/(tarDisc-tarConnect) : 0;
+
+      const usedValue = Math.min(Math.max(minValue,ratio),maxValue);
+      
+            const vesselNames = Array.from(new Set(data.map(d => d.VesselName))).filter(Boolean);
       const select = d3.select("#vesselSelect");
       select.append("option").text("All Vessels").attr("value", "all");
-      vesselName.forEach(name => select.append("option").text(name).attr("value", name));
+      vesselNames.forEach(name => select.append("option").text(name).attr("value", name));
 
-      // Draw gauge initially
-      updateGauge("all");
 
-      // On dropdown change
-      select.on("change", function() {
-        updateGauge(this.value);
+
+      // Draw outer circle
+      svg.append("circle")
+        .attr("cx", centerX).attr("cy", centerY)
+        .attr("r", radius)
+        .attr("fill","none")
+        .attr("stroke","#555")
+        .attr("stroke-width",2);
+
+      // Tick marks
+      const tickValues = d3.range(minValue, maxValue+0.006, 0.1);
+      tickValues.forEach(val => {
+        const angle = angleScale(val);
+        const x1 = centerX + radius * Math.cos(angle);
+        const y1 = centerY + radius * Math.sin(angle);
+        const x2 = centerX + (radius-40) * Math.cos(angle);
+        const y2 = centerY + (radius-40) * Math.sin(angle);
+
+        svg.append("line")
+          .attr("x1",x1).attr("y1",y1)
+          .attr("x2",x2).attr("y2",y2)
+          .attr("stroke","#000").attr("stroke-width",2);
+
+        svg.append("text")
+          .attr("x", centerX + (radius-70) * Math.cos(angle))
+          .attr("y", centerY + (radius-70) * Math.sin(angle))
+          .attr("text-anchor","middle")
+          .attr("dominant-baseline","middle")
+          .style("fill","#000").style("font-size","12px")
+          .text(val.toFixed(1));
       });
 
-      function updateGauge(selectedName) {
-        svg.selectAll("*").remove();
-        const filtered = data.filter(d => selectedName==="all" || d.VesselName===selectedName);
-        const valid = filtered.filter(d=>d.connectMs!=null && d.ninetyAfterMs!=null && d.disconnectMs!=null && d.ninetyBeforeMs!=null);
+      const needleAngle = angleScale(ratio);
 
-        console.log("filtered length:", filtered.length, "valid length:", valid.length);
+ const needleLen = radius - 60;
+    const needleWidth = 10; 
+      const tipX = centerX + needleLen * Math.cos(needleAngle);
+    const tipY = centerY + needleLen * Math.sin(needleAngle);
 
-        // Group by ship name
-        const groupedByShip = d3.group(valid, d => d.VesselName);
-        const shipAverages = Array.from(groupedByShip, ([name, rows]) => ({
-          VesselName: name,
-          avgConnect: d3.mean(rows, r => r.connectMs),
-          avgDisc:    d3.mean(rows, r => r.disconnectMs),
-          tarConnect: d3.mean(rows, r => r.ninetyAfterMs),
-          tarDisc:    d3.mean(rows, r => r.ninetyBeforeMs)
-        }));
-        
-        console.log("shipAverages:", shipAverages);
+    const leftBaseX = centerX + needleWidth * Math.cos(needleAngle - Math.PI/2);
+    const leftBaseY = centerY + needleWidth * Math.sin(needleAngle - Math.PI/2);
 
-        // Overall average across ships
-        const avgConnect = d3.mean(shipAverages, s => s.avgConnect);
-        const avgDisc    = d3.mean(shipAverages, s => s.avgDisc);
-        const tarConnect = d3.mean(shipAverages, s => s.tarConnect);
-        const tarDisc    = d3.mean(shipAverages, s => s.tarDisc);
+    const rightBaseX = centerX + needleWidth * Math.cos(needleAngle + Math.PI/2);
+    const rightBaseY = centerY + needleWidth * Math.sin(needleAngle + Math.PI/2);
 
-        let ratio = (avgConnect!=null && avgDisc!=null && tarConnect!=null && tarDisc!=null && (tarDisc-tarConnect)!=0)
-          ? (avgDisc-avgConnect)/(tarDisc-tarConnect) : 0;
-console.log(ratio)
-        const usedValue = Math.min(Math.max(minValue,ratio),maxValue);
-        const angleScale = d3.scaleLinear().domain([minValue,maxValue]).range([-Math.PI/2,Math.PI/2]);
-        const arc = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius).startAngle(-Math.PI/2);
+    const needlePath = d3.path();
+    needlePath.moveTo(leftBaseX, leftBaseY);
+    needlePath.lineTo(rightBaseX, rightBaseY);
+    needlePath.lineTo(tipX, tipY);
+    needlePath.closePath();
+    
+      svg.append("path")
+      .attr("d", needlePath.toString())
+      .attr("fill","red");
 
-        // Background arc
-        svg.append("path")
-          .attr("transform",`translate(${centerX},${centerY})`)
-          .attr("d",arc.endAngle(Math.PI/2))
-          .attr("fill",backgroundColor);
+      // Center hub
+      svg.append("circle")
+        .attr("cx",centerX).attr("cy",centerY)
+        .attr("r",10).attr("fill","#000");
 
-        // Value arc
-        svg.append("path")
-          .attr("transform",`translate(${centerX},${centerY})`)
-          .attr("d",arc.endAngle(angleScale(usedValue)))
-          .attr("fill",fillColor);
-
-        // Needle
-        const needleLen = 160;
-        const needleAngleDeg = d3.scaleLinear().domain([minValue,maxValue]).range([-90,90])(usedValue);
-        const needlePath = d3.path();
-        needlePath.moveTo(centerX,centerY);
-        needlePath.lineTo(centerX,centerY-needleLen);
-        svg.append("path")
-          .attr("d",needlePath.toString())
-          .attr("stroke",needleColor)
-          .attr("stroke-width",2)
-          .attr("fill",needleColor)
-          .attr("transform",`rotate(${needleAngleDeg},${centerX},${centerY})`);
-          
-          
-                    
-            const targetStatus = (ratio === targetValue) ? 0
-                    : (ratio > targetValue ? 1 : -1);
-  const targetStatusColor = targetStatus === 0 ? "orange"
-                          : targetStatus === 1 ? "green"
-                          : "red";
-          
-
-        // Labels
-        svg.append("text")
-          .attr("x",centerX).attr("y",centerY+20)
-          .attr("text-anchor","middle")
-          .style("font-size","16px")
-          .text(d3.format(".2f")(ratio));
-
-        // Title
-        svg.append("text")
-          .attr("x",centerX).attr("y",centerY-outerRadius*1.2)
-          .attr("text-anchor","middle")
-          .style("font-size","18px")
-          .text(selectedName==="all"?"Ship Performance":selectedName);
-
-        // Min and Max text values
-        svg.append("text")
-          .attr("x", centerX - outerRadius + (outerRadius - innerRadius)/2)
-          .attr("y", centerY + 15) 
-          .attr("text-anchor","middle")
-          .style("font-size","14px")
-          .text(minValue);
-
-        svg.append("text")
-          .attr("x", centerX + innerRadius + (outerRadius - innerRadius)/2)
-          .attr("y", centerY + 15) 
-          .attr("text-anchor","middle")
-          .style("font-size","14px")
-          .text(maxValue);
-          
-  const diffText = `${d3.format(".2f")(ratio - targetValue)} (${d3.format(".0%")(ratio/targetValue)})`;
-  svg.append("text")
-    .attr("x", centerX + 15)   
-    .attr("y", centerY + 40)  
-    .attr("font-size", "14px")
-    .attr("text-anchor", "middle")
-    .attr("fill", targetStatusColor)
-    .text(diffText);
-      }
+      // Digital readout
+      svg.append("text")
+        .attr("x",centerX).attr("y",centerY+radius+30)
+        .attr("text-anchor","middle")
+        .style("font-size","18px").style("fill","#0f0")
+        .text(d3.format(".2f")(ratio));
     });
   </script>
 </body>
