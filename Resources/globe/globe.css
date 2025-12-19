@@ -115,6 +115,95 @@ body {
     box-sizing: border-box;
 }
 
+
+/* /* my code recommendation: Pier button styling */ */
+.pierButtons {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start; /* left align at top */
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  background: var(--cp5); /* matches header/brand palette */
+}
+
+.pierButton {
+  --btn-bg: #fff;
+  --btn-fg: #0f172a; /* slate-900 */
+  --btn-border: rgba(0,0,0,0.12);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: 8px;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.65);
+  cursor: pointer;
+  transition: transform 160ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.pierButton:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.65);
+  border-color: rgba(0,0,0,0.18);
+}
+
+.pierButton:active {
+  transform: translateY(0);
+}
+
+.pierButton .pierName {
+  font-variant: small-caps;
+  letter-spacing: 0.02em;
+  color: var(--cp4); /* brand navy */
+}
+
+.pierButton .separator {
+  color: #94a3b8; /* slate-400 */
+}
+
+.pierButton .vesselName {
+  font-weight: 700;
+  color: #1f2937; /* slate-800 */
+}
+
+/* Status dot: red/yellow/green */
+.pierButton .statusDot {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  margin-left: 0.25rem;
+  box-shadow:
+    0 0 0 2px #fff,         /* ring */
+    0 0 0 3px rgba(0,0,0,0.06), /* outer ring */
+    0 0 6px rgba(0,0,0,0.15);   /* soft shadow */
+}
+
+/* States:
+   - status--red: more than a week out
+   - status--yellow: arriving within the week
+   - status--green: docked
+*/
+.status--red    { background: #ef4444; } /* red-500 */
+.status--yellow { background: #f59e0b; } /* amber-500 */
+.status--green  { background: #22c55e; } /* green-500 */
+
+/* Optional: keep #cardSpace’s top section compact */
+#berthSpace {
+    align-items: stretch;
+}
+
+
+
 #earth {
     grid-row: gridBodyArea;
     grid-column: 1;

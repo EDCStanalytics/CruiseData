@@ -32,8 +32,8 @@
           <nav>
             <ul id="navBarItems">
                 <li>Summary</li>
-                <li>Vessels</li>
-                <li>Services</li>
+                <li>Calls</li>
+                <li>Shore Power</li>
             </ul>
           </nav>
           <i class="fa-regular fa-circle-question"></i>
@@ -44,7 +44,17 @@
     <div id="earth"></div>
   
     <div id="dataSpace">
-      <div id="berthSpace"></div>
+      <div id="berthSpace">
+        <div class="pierButtons">
+          <button id="bctPBtn" class="pierButton" type="button" aria-live="polite">
+            <span class="pierName">BCT • Pier 12</span>
+            <span class="separator" aria-hidden="true">—</span>
+            <span class="vesselName">Next vessel: TBD</span>
+            <span class="statusDot status--red" aria-label="status: more than a week out"></span>
+          </button>
+        </div>
+
+      </div>
 
       <div id="cardSpace"></div>
 

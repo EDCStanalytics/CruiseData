@@ -1,7 +1,5 @@
 const pointsOfInterest = [
-  { name: "Brooklyn Cruise Terminal", coords: [-74.0143, 40.6820] },
-  { name: "Manhattan Cruise Terminal", coords:  [-73.9966, 40.7680]},
-  { name: "Portland, Maine", coords:  [-70.2553, 43.6591]}
+  { name: "Brooklyn Cruise Terminal", coords: [-74.0143, 40.6820] }
 ];
 
 const mustShow = [[-74.006, 40.713],[-66.106, 18.466],[-3.704, 40.417]];
@@ -255,3 +253,65 @@ function renderEarth() {
 
 
 window.addEventListener("resize", renderEarth);
+
+
+/* my code recommendation: BCT pier button updater */
+function setBCTPierButton({ pierName = "BCT • Pier 12", vesselName = "TBD", status = "red" }) {
+  const btn = document.getElementById("bctPierBtn");
+  if (!btn) return;
+
+  btn.querySelector(".pierName").textContent = pierName;
+  btn.querySelector(".vesselName").textContent = vesselName ? `Next vessel: ${vesselName}` : "Next vessel: TBD";
+
+  const dot = btn.querySelector(".statusDot");
+  dot.classList.remove("status--red", "status--yellow", "status--green");
+  dot.classList.add(`status--${status}`);
+}
+
+// Example (temporary): more than a week out
+setBCTPierButton({ vesselName: "Queen Mary 2", status: "red" });
+
+/////////////////////////////////////////
+//logging the start up of the script for debugging purposes
+console.log('Loading ship schedules');
+
+//this script relies on a number of helper functions located in the helpers.js file.
+//const help = window.Helpers;
+
+//the call data is currently stored on our gitHub repo but will hopefully be moved to the EDC site
+const callScheduleURL = 'https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/CallData_Cruise.csv'
+
+//the data is stored in a csv and not strictly typed. this factory function coerces data types and converts the data into an object
+const scheduleFactory = (rawCallData) => {
+    const callArray = rawCallData.split(',').map(s => s.trim());
+    const pierName = callArray[0] || '';
+    const vessel = callArray[1] || '';
+    const arrivalDate = callArray[2] || '';
+    const arriveTimeStamp = help.timeStamp(arrivalDate, null);
+
+    return {
+        pierName,
+        vessel,
+        expected: arriveTimeStamp
+    }
+}
+
+//this function retrieves the call data AND pushes it through the factory
+async function getSchedule(callScheduleURL) {
+  const dataLines = await help.getCSV(callScheduleURL);
+  const schedule = dataLines.map(scheduleFactory)
+  return schedule
+  }
+
+//this is the part of the code that makes the results of this script accessible to other scripts  
+window.schedulePromise = getSchedule(callScheduleURL)
+  .then(schedule => {
+    console.log(`Loaded ${schedule.length} upcoming calls`);
+    return schedule;
+  })
+  .catch(err => {
+    console.error('Failed to load the schedule data:', err);
+    throw err;
+  })
+
+
