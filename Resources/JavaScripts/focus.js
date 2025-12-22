@@ -88,6 +88,9 @@ const get12Labels = (now = new Date()) => {
 const fmtShortMD = d =>
     d ? d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : '';
 
+const fmtTime = (d) =>
+    d ? d.toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit', hour12: true}) : '';
+
 const drawRadialT12 = async (containerID) => {
     const container = document.getElementById(containerID);
     if (!container) return;
@@ -422,34 +425,90 @@ const waitForTransitionEndOnce = (el, timeoutMs = 500) => {
 }
 
 window.drawPerformCentral = async function(containerId) {
+    //kill switch to make sure we have a valid place to draw the chart before we get drawing
     const el = document.getElementById(containerId);
     if (!el) return;
 
+    //clear out the inner html content of our container
     el.innerHTML = '';
 
+    //start by loading/cleaning the call and connection data
     const [calls, connections] = await Promise.all([
         window.callsPromise,
         window.connectionsPromise
     ]);
 
-    
+    //for purposes of this chart we only care about data in the last 12 COMPLETED months
     const { lastStart, lastEnd } = window.Helpers.getT24();
     const t12Calls = calls.filter(c => 
         window.Helpers.rangeCheck(c.arrival, lastStart, lastEnd));
+
+    console.log(lastStart)
 
     const t12Connections = connections.filter(c =>
         window.Helpers.rangeCheck(c.connect, lastStart, lastEnd)
     );
     
+    //sort the calls by arrival
     const callsSorted = t12Calls
         .slice()
         .sort((a, b) => a.arrival - b.arrival)
 
-    console.log('t12Calls: ' , t12Calls.length, 't12Connections: ', t12Connections.length);
+    //connect the data in both sets via the id field
+    const connById = new Map();
+        t12Connections.forEach(c => { if (c.id != null) connById.set(c.id, c); });
+
+    
+console.log('t12Calls:', t12Calls.length, 't12Connections:', t12Connections.length);
+console.log('callsSorted:', callsSorted.length, 'example:', callsSorted[0]);
+
+
+
+    //next we'll take some measurements to help keep the drawing right where it belongs
+    const elWidth = el.clientWidth;
+    const elHeight = el.clientHeight;
+    
+    //here are some constants to make quick adjustments easy
+    const ninetyMs = 90 * 60 * 1000;
+    const boxWidthK = 0.8;
+    const boxHeightK = 0.4;
+
+    const boxW = Math.round(elWidth * boxWidthK);
+    const boxH = Math.round(elHeight * boxHeightK);
+    const boxMar = { top: 10, right: 10, bottom: 10, left: 10 };
+
+    //here are the x and y edges of the viewbox
+    const X0 = Math.round((elWidth - boxW) / 2);
+    const Y0 = Math.round((elHeight - boxH) / 2);
+
+    //const axisX_Y = originY + innerH;
+    //const axisY_X = originX;
+
+
+
+
+
+
+
+    const svg = d3.select(el)
+        .append('svg')
+        .attr('viewBox', `0 0 ${elWidth} ${elHeight}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet');
+
+
+    
+    //you can create an x domain based on the call ids to space them evenly
     const xDomain = callsSorted.map(c => c.id);
+    const xByCalls = d3.scaleBand()
+        //first you define the min to max values that can exist
+        .domain(xDomain)
+        //then you deine the range those values should be spread over
+        .range([X0 + boxMar.left, X0 + boxMar.left + boxW])
+        .paddingInner(0.14)
+        .paddingOuter(0.04);
 
 
-
+    //but if you do that, you'll need a way to visually identify where the months change
     const monthChangeIndices = [];
     for (let i = 1; i < callsSorted.length; i++) {
         const prev = callsSorted[i - 1].arrival;
@@ -459,93 +518,143 @@ window.drawPerformCentral = async function(containerId) {
         }
     }
 
-    const width = el.clientWidth;
-    const height = el.clientHeight;
-    const margin = { top: 10, right: 10, bottom: 10, left: 10 };
+    /////////////////
+const labels = window.Helpers.monthLabels();
+    /////////////////
 
-    const svg = d3.select(el)
-        .append('svg')
-        .attr('viewBox', `0 0 ${width} ${height}`)
-        .attr('preserveAspectRatio', 'xMidYMid meet');
 
-    const innerWidthFactor = 0.8;
-    const innerHeightFactor = 0.4;
-    const W = width;
-    const H = height;
-    const D = Math.min(W, H);
+
+    //the y axis is tricky because it has a default range and you need to cut off data that overflows
+    const yByTime = d3.scaleTime()
+        //let's strart with a 12 hour range. this will accommodate 90% of all calls
+        .domain([new Date(0,0,0,6,0), new Date(0,0,0,18,0)])
+        .range([Y0 + boxH - boxMar.bottom, Y0 + boxMar.top]);
     
-    const innerW = Math.round(D * innerWidthFactor);
-    const innerH = Math.round(D * innerHeightFactor);
+    const [yTop, yBottom] = yByTime.domain();
+
     
-    const originX = Math.round((W - innerW) / 2);
-    const originY = Math.round((H - innerH) / 2);
+svg.append('g')
+  .attr('class', 'y-axis')
+  .attr('transform', `translate(${X0 + boxMar.left},0)`)
+  .call(
+    d3.axisLeft(yByTime)
+      .ticks(d3.timeHour.every(2))
+      .tickFormat(d3.timeFormat('%-I %p')) // 6 AM, 8 AM, …
+  );
 
-    const axisX_Y = originY + innerH;
-    const axisY_X = originX;
-
-    const xByCalls = d3.scaleBand()
-        .domain(xDomain)
-        .range([originX + margin.left, originX + innerW - margin.right])
-        .paddingInner(0.14)
-        .paddingOuter(0.04);
-
-    const labels = window.Helpers.monthLabels();
-
-    /*
-    const xMonth = d3.scaleBand()
-        .domain(labels)
-        .range([originX + margin.left, originX + innerW - margin.right])
-        .paddingInner(0.1);
-*/
-
-    const y = d3.scaleTime()
-        .domain([new Date(0,0,0,6,0), new Date(0,0,0,22,0)])
-        .range([originY + margin.top + innerH, originY + margin.top]);
-
+    //this helper function strips the date off of a datestamp
     const toTOD = (d) => new Date(0,0,0, d.getHours(), d.getMinutes(), d.getSeconds(),0);
-/*
-    svg.append('g')
-        .attr('class', 'axis axis--x')
-        .attr('transform', `translate(0,${axisX_Y})`)
-        .call(d3.axisBottom(xByCalls));
-
-        */
-/*
-    const grouped = d3.group(t12Calls, d => d.connect.getMonth());
-    grouped.forEach((rows, m) => rows.forEach((row, i) => row.callIndex = i));
-
-    */
-
-    //const maxCalls = d3.max(Array.from(grouped.values(), v => v.length));
-
-
-
-
-    svg.selectAll('line.call-span')
-        .data(callsSorted)
-        .enter().append('line')
-        .attr('class', 'call-span')
-        .attr('x1', d => xByCalls(d.id) + xByCalls.bandwidth()/2)
-        .attr('x2', d => xByCalls(d.id) + xByCalls.bandwidth() / 2)
-        //.attr('width', xByCalls.bandwidth())
-        .attr('y1', d => y(toTOD(d.arrival)))
-        .attr('y2', d => y(toTOD(d.departure)))
-        //.attr('height', d => Math.abs(y(d.arrival) - y(d.departure)))
-        .attr('height', d => Math.max(1, Math.abs(y(toTOD(d.arrival)) - y(toTOD(d.departure)))))
-        .attr('rx', 6).attr('ry', 6)
-        .attr('fill', getComputedStyle(document.documentElement)
-            .getPropertyValue('--brass-mid').trim());
     
-    svg.append('g')
-        .selectAll('line.month-sep')
-        .data(monthChangeIndices)
-        .enter().append('line')
-        .attr('class', 'month-sep')
-        .attr('x1', i => xByCalls(callsSorted[i].id))
-        .attr('x2', i => xByCalls(callsSorted[i].id))
-        .attr('y1', originY + margin.top)
-        .attr('y2', originY + innerH - margin.bottom)
-        .attr('stroke', getComputedStyle(document.documentElement)
-        .getPropertyValue('--ink-300').trim())
+    //this tests to see if the stay was multiple days
+    const isMultiDay = (start, end) => start.toDateString() !== end.toDateString();
+
+    //this tests to see if a time is outside the domain of our y axis and returns a conforming value
+    const clampTOD = (dt) => {
+        const [min, max] = yByTime.domain();
+        const t = toTOD(dt);
+        return (t < min) ? min : (t > max) ? max : t;
+    }
+
+    
+
+const fmtDuration = (ms) => {
+  const min = Math.round(ms / 60000);
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return h ? `${h}h ${m}m` : `${m}m`;
+}
+
+
+
+
+
+// Create one <g class="call"> per visit, positioned at the call’s center X
+const callGroups = svg.selectAll('g.call')
+  .data(callsSorted)
+  .enter().append('g')
+  .attr('class', 'call')
+  .attr('data-id', d => d.id)
+  .attr('transform', d => `translate(${xByCalls(d.id) + xByCalls.bandwidth()/2},0)`);
+
+// 1) Visit (stay) line — thin, runs arrival → departure
+callGroups.append('line')
+  .attr('class', 'call-span')
+  .attr('x1', 0).attr('x2', 0)
+  //the bar should start at the lesser of 6am or the actual arrival time
+  //.attr('y1', d => yByTime(clampTOD(d.arrival)))
+  
+.attr('y1', d => isMultiDay(d.arrival, d.departure)
+  ? yByTime(yTop)              // full height start (top)
+  : yByTime(clampTOD(d.arrival)))
+
+  //the bar should carry on to the actual departure if it was same day before 8, or 8
+  //.attr('y2', d => isMultiDay(d.arrival, d.departure) ? yByTime(yTop) : yByTime(clampTOD(d.departure)));
+
+.attr('y2', d => isMultiDay(d.arrival, d.departure)
+  ? yByTime(yBottom)           // full height end (bottom)
+  : yByTime(clampTOD(d.departure)))
+
+
+/*
+// 2) Shore-power line — thicker accent, only if connection exists
+callGroups.filter(d => connById.has(d.id))
+  .append('line')
+  .attr('class', 'power-span')
+  .attr('x1', 0).attr('x2', 0)
+  .attr('y1', d => {
+        const c = connById.get(d.id);
+        return yByTime(clampTOD(c.connect));
+        })
+  .attr('y2', d => {
+        const c = connById.get(d.id);
+        return isMultiDay(c.connect, c.disconnect) ? yByTime(yTop) : yByTime(clampTOD(c.disconnect));
+        })
+/*
+// 3) 90-minute ticks — only for stays longer than 3 hours
+callGroups.filter(d => (d.departure - d.arrival) > (3 * 60 * 60 * 1000))
+  .append('line')
+  .attr('class', 'call-90')
+  .attr('x1', -1).attr('x2', 1)
+  .attr('y1', d => yByTime(clampTOD(new Date(d.arrival.getTime() + ninetyMs))))
+  .attr('y2', d => yByTime(clampTOD(new Date(d.arrival.getTime() + ninetyMs))));
+
+callGroups.filter(d => (d.departure - d.arrival) > (3 * 60 * 60 * 1000))
+  .append('line')
+  .attr('class', 'call-90')
+  .attr('x1', -1).attr('x2', 1)
+  .attr('y1', d => isMultiDay(d.arrival, d.departure) ? yByTime(yTop) : yByTime(clampTOD(new Date(d.departure.getTime() - ninetyMs))))
+  .attr('y2', d => isMultiDay(d.arrival, d.departure) ? yByTime(yTop) : yByTime(clampTOD(new Date(d.departure.getTime() - ninetyMs))));
+
+  */
+// 4) Wide, invisible hit area (for reliable hover) + native SVG tooltip
+callGroups.append('line')
+  .attr('class', 'hit-span')
+  .attr('x1', 0).attr('x2', 0)
+  .attr('y1', yByTime(yBottom))
+  .attr('y2', yByTime(yTop))
+  .append('title')
+  .text(d => {
+    // fmtTime is already defined near the top of your file
+    const visit = `${fmtShortMD(d.arrival)}, ${fmtTime(d.arrival)} → ${fmtShortMD(d.departure)}, ${fmtTime(d.departure)}`;
+    const conn = connById.get(d.id);
+    const connText = conn
+      ? `\nShore Power: ${fmtShortMD(conn.connect)}, ${fmtTime(conn.connect)} → ${fmtShortMD(conn.disconnect)}, ${fmtTime(conn.disconnect)} \nConnection Duration: ${fmtDuration(conn.disconnect - conn.connect)}`
+      : `\nShore Power: Did not connect`;
+    return `${d.vessel ?? 'Unknown'}\nVisit: ${visit}${connText}`;
+  });
+
+  
+ 
+svg.append('g')
+    .selectAll('line.month-sep')
+    .data(monthChangeIndices)
+    .enter().append('line')
+    .attr('class', 'month-sep')
+    .attr('x1', i => xByCalls(callsSorted[i].id))
+    .attr('x2', i => xByCalls(callsSorted[i].id))
+    .attr('y1', yByTime(yBottom))
+    .attr('y2', yByTime(yTop))
+    .attr('stroke', getComputedStyle(document.documentElement)
+    .getPropertyValue('--ink-300').trim())
 
 }
