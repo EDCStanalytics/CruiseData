@@ -275,7 +275,7 @@ body {
 .kpiBucket.focused .glass { transform: translateY(-1px) scale(1.001); }
 
 .kpiBucket.focused {
-    
+    transform: scale(2);
     aspect-ratio: 1 / 1;
     z-index: 10;
     flex-direction: column;
@@ -290,7 +290,7 @@ body {
 }
 
 .kpiBucket.shrunk {
-    transform: scale(1);
+    transform: scale(.1);
     opacity: 0.7;
 }
 
@@ -416,7 +416,8 @@ font-variant-numeric: tabular-nums;
   inset: 0;          /* fill the bucket; SVG will be centered via viewBox */
   overflow: visible;
   pointer-events: none;
-  height: 1;
+  height: auto;
+  min-height: 200px;
 }
 
 #rightChartContainer::after {
@@ -438,7 +439,78 @@ font-variant-numeric: tabular-nums;
 }
 
 
+#rightCentralChart .call-90 {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+
+#rightCentralChart .power-span {
+  stroke: var(--cp3, #e56335);
+  stroke-width: 2px;        
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
 #rightCentralChart .month-sep {
   stroke: var(--ink-300, #999);
   stroke-width: 1px;
+}
+
+
+
+/* my code recommendation: */
+#rightCentralChart .glass { pointer-events: none; } /* so hover reaches the lines */
+
+#rightCentralChart g.call .call-span {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightCentralChart g.call .power-span {
+  stroke: var(--cp3, #e56335);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightCentralChart g.call .call-90 {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightCentralChart g.call .hit-span {
+  stroke: #000;
+  stroke-width: 12px;         /* wide, forgiving */
+  stroke-opacity: 0;          /* invisible but hoverable */
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* === Hover state: make it unambiguous which call is hot === */
+#rightCentralChart g.call:hover .hit-span {
+  stroke-opacity: 0.15;       /* faint highlight of the hover column */
+}
+
+#rightCentralChart g.call:hover .call-span {
+  stroke-width: 3px;
+  stroke: var(--cp4, #2b4d7d); /* contrasts with brass */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#rightCentralChart g.call:hover .power-span {
+  stroke-width: 5px;          /* emphasize connection if present */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#rightCentralChart g.call:hover .call-90 {
+  stroke-width: 2px;
 }
