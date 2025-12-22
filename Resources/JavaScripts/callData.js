@@ -62,22 +62,29 @@ const popCalls = (calls) => {
     const prevCount = annualCallCount(calls, prevStart, prevEnd);
 
     const delta = lastCount - prevCount;
-    const deltaSymbol = delta > 0 ? '▲' : (delta < 0 ? '▼' : '—');
+    //const deltaSymbol = delta > 0 ? '▲' : (delta < 0 ? '▼' : '—');
     const deltaPerc = prevCount ? (lastCount - prevCount) / prevCount : 0;
     const percFmt = new Intl.NumberFormat('en-US', {
       style: 'percent',
       signDisplay: 'always',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     })
 
 
     const el = document.getElementById('shipCallCounter');
-    const arrowEl = document.getElementById('shipCallArrow');
+        if (el && !el.dataset.odometer) {
+            window.Helpers.initOdometer(el, lastCount);
+            window.Helpers.rollOdometer(el, 0, { immediate: true });
+            setTimeout(() => window.Helpers.rollOdometer(el, lastCount), 500);
+        } else if (el) {
+            setTimeout(() => window.Helpers.rollOdometer(el, lastCount), 500);
+        }
+    //const arrowEl = document.getElementById('shipCallArrow');
     const percEl = document.getElementById('shipCallPerc');
 
-    el.textContent = lastCount.toLocaleString('en-US');
-    arrowEl.textContent = deltaSymbol;
+    
+    //arrowEl.textContent = deltaSymbol;
     percEl.textContent = percFmt.format(deltaPerc);
   }
 
