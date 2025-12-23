@@ -1,7 +1,68 @@
 document.addEventListener("DOMContentLoaded", () => {
     const buckets = document.querySelectorAll(".kpiBucket");
     const shipCards = document.getElementById("cardSpace");
-//
+
+//this is a function to load up and bucket the data for purposes of graphing it to the radial charts
+window.fillBuckets = async () => {
+
+//start by loading/cleaning the call and connection data
+    const [calls, connections] = await Promise.all([
+        window.callsPromise,
+        window.connectionsPromise
+    ]);
+
+    //now get the filter dates and use them to filter the data sets
+    const { lastStart, lastEnd } = window.Helpers.getT24();
+    const t12Calls = calls.filter(c => 
+        window.Helpers.rangeCheck(c.arrival, lastStart, lastEnd));
+
+    const t12Connections = connections.filter(c =>
+        window.Helpers.rangeCheck(c.connect, lastStart, lastEnd)
+    );
+
+    console.log(`Filtering for data between ${lastStart} and ${lastEnd}`)
+    
+    //sort the calls by arrival
+    const sortedCalls = t12Calls
+        .slice()
+        .sort((a, b) => a.arrival - b.arrival)
+
+    // Build the connection lookup map (id -> connection)
+    const connById = new Map();
+    t12Connections.forEach(c => { if (c.id != null) connById.set(c.id, c); });
+
+    // Attach the matched connection onto each sorted call (or null)
+    sortedCalls.forEach(c => { c.connection = connById.get(c.id) ?? null; });
+
+    // Month labels + 12 completed-month buckets (shared by both charts)
+    const labels = window.Helpers.monthLabels();
+
+    const firstY = lastStart.getFullYear();
+    const firstM = lastStart.getMonth();
+
+    // local helpers for month bounds
+    const monthStart = (y, m) => { const d = new Date(y, m, 1); d.setHours(0,0,0,0); return d; };
+    const monthEnd   = (y, m) => { const d = new Date(y, m + 1, 1); d.setMilliseconds(-1); return d; };
+
+    // prebuild 12 buckets
+    const byMonth = Array.from({ length: 12 }, (_, i) => {
+        const y = firstY + Math.floor((firstM + i) / 12);
+        const m = (firstM + i) % 12;
+        return { i, y, m, start: monthStart(y, m), end: monthEnd(y, m), calls: [] };
+    });
+
+    // assign sorted calls to buckets (keeps per-bucket order)
+    sortedCalls.forEach(c => {
+        const mi = (c.arrival.getFullYear() - firstY) * 12 + (c.arrival.getMonth() - firstM);
+        if (mi >= 0 && mi < 12) byMonth[mi].calls.push(c);
+        });
+
+    // extend the return to include labels + byMonth
+    return { lastStart, lastEnd, labels, connById, t12Calls: sortedCalls, byMonth };
+
+}
+
+window.radialCtx = new Map();
 
 const root = document.documentElement;
 const probeBucket = document.querySelector('.kpiBucket');
@@ -12,9 +73,8 @@ if (probeBucket) {
     root.style.setProperty('--focus-offset-y', `${offsetY}px`);
 }
 
-    //
 
-
+//now we add the event listeners to the areas the user can focus on
     buckets.forEach(bucket => {
         bucket.addEventListener("click", async () => {
             const isAlreadyFocused = bucket.classList.contains("focused");
@@ -55,41 +115,490 @@ if (probeBucket) {
             if (bucket.id === "rightChartContainer") {
                 removeRadial("leftRadialChart");
                 await waitForTransitionEndOnce(bucket);
-                window.drawPerformCentral('rightCentralChart');
+                //window.drawPerformCentral('rightCentralChart');
+                await window.radialCalendar('rightRadialChart');
+                await window.drawPowerArcs('rightRadialChart');
             } else {
                 removeRadial("rightRadialChart");
                 await waitForTransitionEndOnce(bucket);
-                drawRadialT12('leftRadialChart');
+                //drawRadialT12('leftRadialChart');
+                await window.radialCalendar('leftRadialChart');
+                await window.drawCallArcs('leftRadialChart');
             }
 
         });
     });
 });
 
-
-//this function generates a 12 month axis series for all of our time related charts
-const get12Labels = (now = new Date()) => {
-    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const startYear = now.getFullYear() -1;
-    const startMonth = now.getMonth();
-
-    const monthLabels = [];
-    let y = startYear;
-    let m = startMonth;
-
-    for (let i = 0; i < 12; i++) {
-        monthLabels.push(`${monthNames[m]} ${y - 2000}`);
-        m++;
-        if (m===12) {m = 0, y++;;}
-    }
-    return monthLabels
-}
-
 const fmtShortMD = d =>
     d ? d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : '';
 
 const fmtTime = (d) =>
     d ? d.toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit', hour12: true}) : '';
+
+window.radialCalendar = async (containerID) => {
+    //kill switch to make sure we have a valid element id
+    const container = document.getElementById(containerID);
+    if (!container) return;
+    console.log(`found ${containerID}`)
+    container.innerHTML = '';
+
+    //compute dimensions of svg
+    
+    const rimPx = container ? parseFloat(getComputedStyle(container).getPropertyValue('--instrument-rim')) || 0 : 0;
+    const bounds = container.getBoundingClientRect();
+    const diameter = Math.min(bounds.width - rimPx * 2, bounds.height - rimPx * 2);     //this is the diameter of the element, which we don't want to draw on
+    const radius = diameter / 2;
+    const depth = radius / 6;
+    
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    const cx = width/2;
+    const cy = height/2;
+    const stroke = 2;
+    const r0 = radius - depth - stroke;
+
+
+    const labels = window.Helpers.monthLabels();
+
+    const axisPad = Math.max(2, stroke);
+    const rimPad = 1;
+
+     const angle = d3.scaleBand()
+        .domain(labels)
+        .range([0,2*Math.PI])
+        .padding(0);
+        ;
+
+    const A = d => angle(d);
+    const M = d => angle(d) + angle.bandwidth() / 2;
+    const aVis = d => M(d) - Math.PI / 2;
+    const norm2pi = a => (a % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+    const pct = d => (M(d) / (2 * Math.PI)) * 100;
+    const isBottom = d => {
+        const n = norm2pi(aVis(d));
+        return n > 0 && n < Math.PI;
+    };
+
+    const toX = a => Math.cos(a- Math.PI / 2);
+    const toY = a => Math.sin(a- Math.PI / 2);
+
+    const rLabel = r0 - 12;
+    const pathDfwd = [
+        `M ${cx} ${cy - rLabel}`,
+        `A ${rLabel} ${rLabel} 0 1 1 ${cx} ${cy + rLabel}`,
+        `A ${rLabel} ${rLabel} 0 1 1 ${cx} ${cy - rLabel}`
+        ].join(' ');
+
+    const pathDrev = [
+        `M ${cx} ${cy - rLabel}`,
+        `A ${rLabel} ${rLabel} 0 1 0 ${cx} ${cy + rLabel}`,
+        `A ${rLabel} ${rLabel} 0 1 0 ${cx} ${cy - rLabel}`
+        ].join(' ');
+
+const svg = d3.select(container)
+        .append('svg')
+        .attr('viewBox', `0 0 ${width} ${height}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet')
+        .style('width', '100%')
+        .style('height', '100%')
+        .style('position', 'absolute')
+        
+        .style('left', 0)
+        .style('top', 0)
+        .style('overflow','visible')
+        ;
+
+    const g = svg.append('g')
+        .attr('transform',`translate(${cx},${cy})`);
+
+    g.append('circle')
+        .attr('r', r0)
+        .attr('fill', 'none')
+        .attr('stroke', '#7a5c2b')
+        .attr('stroke-width', stroke)
+
+    const arcGen = d3.arc();
+
+    const monthSpans = labels.map((lbl, i) => ({
+        i,
+        startAngle: angle(lbl),
+        endAngle:   angle(lbl) + angle.bandwidth()
+        }));
+    
+    const bgGroup = g.append('g').attr('class', 'month-backgrounds');
+/*
+bgGroup.selectAll('path.month-bg')
+  .data(monthSpans)
+  .enter()
+  .append('path')
+  .attr('class', d => `month-bg ${d.i % 2 === 0 ? 'even' : 'odd'}`)
+  .attr('d', d => arcGen({
+    innerRadius: r0 + axisPad,
+    outerRadius: r0 + depth - rimPad,
+    startAngle:  d.startAngle,
+    endAngle:    d.endAngle
+  }));
+*/
+
+    const deg = d => d*Math.PI/180;
+    const startAngleVis = (m3, q3) => deg(m3 *30 + q3 * 6 + 2.5);
+    const endAngleVis = (m4, q4) => deg(m4 * 30 + q4 * 6 + 3 + .5);
+
+
+    g.selectAll('line.tick')
+        .data(labels)
+        .enter()
+        .append('line')
+        .attr('class', 'tick')
+        .attr('x1', d => toX(A(d)) * r0)
+        .attr('y1', d => toY(A(d)) * r0)
+        .attr('x2', d => toX(A(d)) * (r0 + depth))
+        .attr('y2', d => toY(A(d)) * (r0 + depth))
+        .attr('stroke', '#7a5c2b');
+      
+    const defs = svg.append('defs');
+    defs.append('path')
+        .attr('id', 'label-path-fwd')
+        .attr('d', pathDfwd)
+        .attr('pathLength', 100);
+
+    defs.append('path')
+        .attr('id', 'label-path-rev')
+        .attr('d', pathDrev)
+        .attr('pathLength', 100);
+
+    svg.append('g')
+        .selectAll('text.month-top')
+        .data(labels.filter(d => !isBottom(d)))
+        .enter()
+        .append('text')
+        .attr('class','month-top')
+        .attr('text-anchor', 'middle')
+        .style('font-size', '12px')
+        .style('fill', '#7a5c2b')
+        .append('textPath')
+        .attr('xlink:href', '#label-path-fwd') 
+        .attr('startOffset', d => pct(d) + '%')
+        .text(d => d);
+    
+    svg.append('g')
+        .selectAll('text.month-bottom')
+        .data(labels.filter(d => isBottom(d)))
+        .enter()
+        .append('text')
+        .attr('class','month-bottom')
+        .attr('text-anchor', 'middle')
+        .style('font-size', '12px')
+        .style('fill', '#7a5c2b')
+        .append('textPath')
+        .attr('xlink:href', '#label-path-rev') 
+        .attr('startOffset', d => (100 - pct(d)) + '%')
+        .text(d => d);
+
+    window.radialCtx.set(containerID, {
+        g,
+        arcGen,
+        startAngleVis,
+        endAngleVis,
+        r0, depth, stroke,
+        segGap: 2,
+        axisPad,
+        rimPad: 1
+    });
+
+}
+
+window.build60Columns = (byMonth) => {
+    //part 1: helper function to split data in five sections per month
+    const splitMtoQ = (start, end, calls) => {
+        const startMs = start.getTime();
+        const endMs = end.getTime();
+        const slotMs = (endMs - startMs + 1) / 5;
+        const groups = [[],[],[],[],[]];
+        
+        for (const c of calls) {
+            const ms = c.arrival?.getTime?.();
+            if (!Number.isFinite(ms) || ms < startMs || ms > endMs) continue;
+            let q = Math.floor((ms - startMs) / slotMs);
+            if (q < 0) q = 0; if (q > 4) q = 4;
+            groups[q].push(c);
+        }
+
+        for (const g of groups) g.sort((a, b) => a.arrival - b.arrival);
+        return groups;
+    };
+
+    //part 2: populate all 60 columns with the corresponding calls
+    const columns60Calls = [];
+    let maxStack = 1;
+
+    for (let m1 = 0; m1 < 12; m1++) {
+        const { start, end, calls } = byMonth[m1];
+        const groups = splitMtoQ(start, end, calls);
+        for (let q1 = 0; q1 < 5; q1++) {
+            const g = groups[q1];
+            maxStack = Math.max(maxStack, g.length);
+            for (let idx = 0; idx < g.length; idx++) {
+                columns60Calls.push({ m1, q1, idx, call: g[idx] });
+            }
+        }
+    }
+
+    return { columns60Calls, maxStack };
+}
+
+window.drawCallArcs = async function (containerID) {
+    const ctx = window.radialCtx.get(containerID);
+    if (!ctx) return;
+
+    const {byMonth} = await fillBuckets();
+    const {columns60Calls, maxStack} = window.build60Columns(byMonth);
+    const {g, arcGen, startAngleVis, endAngleVis, r0, depth, segGap, axisPad, rimPad} = ctx;
+    const rUnit = maxStack > 0 ? (depth - axisPad - rimPad - ((maxStack - 1) * segGap)) / maxStack : depth;
+
+    g.selectAll('path.call-seg')
+        .data(columns60Calls)
+        .enter()
+        .append('path')
+        .attr('class','call-seg')
+        .attr('d', d => {
+            const inner = r0 + axisPad + d.idx * (rUnit + segGap);
+            const outer = Math.min(r0 + depth - rimPad, inner + rUnit);
+            return arcGen({
+                innerRadius: inner,
+                outerRadius: outer,
+                startAngle: startAngleVis(d.m1, d.q1),
+                endAngle: endAngleVis(d.m1, d.q1)
+            });
+        })
+        .attr('fill', '#b78a3d')
+        .attr('fill-opacity', 0.90)
+        .attr('stroke', 'none')
+        .append('title')
+        .text(d => `${d.call.vessel ?? 'Unknown'} — ${fmtShortMD(d.call.arrival)}`);
+}
+
+window.buildPowerArcs = (byMonth) => {
+    const maxCallsAnyMonth = Math.max(1, ...byMonth.map(b => b.calls.length));
+    const deg = d => d * Math.PI / 180;
+    const monthDeg = 30;
+    const edgeMarginDeg = 1;
+    const gapDeg = 1;
+    const usableDeg = monthDeg - edgeMarginDeg * 2;
+    const callDeg = Math.max(0.1, (usableDeg - gapDeg * (maxCallsAnyMonth - 1)) / maxCallsAnyMonth);
+
+    const arcs = [];
+    for (const b of byMonth) {
+        const baseDeg = b.i * monthDeg + edgeMarginDeg;
+        for (let idx = 0; idx < b.calls.length; idx++) {
+            const startDeg = baseDeg + idx * (callDeg + gapDeg);
+            const endDeg = startDeg + callDeg;
+            arcs.push({
+                m1: b.i,
+                idx,
+                startAngle: deg(startDeg),
+                endAngle: deg(endDeg),
+                call: b.calls[idx]
+            });
+        }
+    }
+
+    return {arcs, callDeg, gapDeg, maxCallsAnyMonth};
+}
+
+window.drawPowerArcs = async (containerID) => {
+    const ctx = window.radialCtx.get(containerID);
+    if (!ctx) return;
+
+    const {byMonth} = await window.fillBuckets();
+    const {arcs, maxCallsAnyMonth} = window.buildPowerArcs(byMonth);
+    const {g, arcGen, r0, depth, segGap, axisPad, rimPad} = ctx;
+    
+    const toX = a => Math.cos(a - Math.PI / 2);
+    const toY = a => Math.sin(a - Math.PI / 2);
+
+    
+    const yRadial = d3.scaleTime()
+        .domain([new Date(0,0,0,6,0), new Date(0,0,0,18,0)])
+        .range([r0 + axisPad, r0 + depth - rimPad]);
+
+    //this helper function strips the date off of a datestamp
+    const toTOD = (d) => new Date(0,0,0, d.getHours(), d.getMinutes(), d.getSeconds(),0);
+    
+    //this tests to see if the stay was multiple days
+    const isMultiDay = (start, end) => start.toDateString() !== end.toDateString();
+
+    //this tests to see if a time is outside the domain of our y axis and returns a conforming value
+    const clampTOD = (dt) => {
+        const [min, max] = yRadial.domain();
+        const t = toTOD(dt);
+        return (t < min) ? min : (t > max) ? max : t;
+    }
+
+    const rUnit = maxCallsAnyMonth > 0 ? (depth - axisPad - rimPad - ((maxCallsAnyMonth - 1) * segGap)) / maxCallsAnyMonth : depth;
+
+/////
+
+const items = arcs.map(a => {
+    const midA = (a.startAngle + a.endAngle) / 2;
+    const c = a.call;
+
+    // Visit (arrival → departure), clamped
+    const visitStartR = yRadial(clampTOD(c.arrival));
+    const visitEndR   = isMultiDay(c.arrival, c.departure)
+      ? yRadial.range()[1]                 // extend to outer limit if past 18:00 same day / multi-day
+      : yRadial(clampTOD(c.departure));
+
+    // Connection (connect → disconnect), if present
+    const conn = c.connection || null;
+    const connStartR = conn ? yRadial(clampTOD(conn.connect)) : null;
+    const connEndR   = conn
+      ? (isMultiDay(conn.connect, conn.disconnect)
+          ? yRadial.range()[1]
+          : yRadial(clampTOD(conn.disconnect)))
+      : null;
+
+      
+/* my code recommendation: */
+// compute connection value (0..1.25) for coloring
+const stayMsRaw = c.departure - c.arrival;
+const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000)); // stay - 3h
+let connValue = 0;
+if (conn && stayMsAdj > 0) {
+  const connMs = conn.disconnect - conn.connect;
+  connValue = Math.max(0, Math.min(1.25, connMs / stayMsAdj));
+}
+
+
+
+
+    return { 
+        idx: a.idx, 
+        slotStart: a.startAngle, 
+        slotEnd: a.endAngle, 
+        angle: midA, 
+        visitStartR, 
+        visitEndR, 
+        connStartR, 
+        connEndR, 
+        call: c,
+        connValue
+    };
+  });
+
+
+
+/////
+
+const itemG = g.selectAll('g.power-item')
+  .data(items)
+  .enter()
+  .append('g')
+  .attr('class', 'power-item');
+
+
+
+/////
+
+
+  // 1) Visit lines (always)
+
+itemG.append('line')
+  .attr('class', 'power-stay')
+
+    .attr('x1', d => toX(d.angle) * d.visitStartR)
+    .attr('y1', d => toY(d.angle) * d.visitStartR)
+    .attr('x2', d => toX(d.angle) * d.visitEndR)
+    .attr('y2', d => toY(d.angle) * d.visitEndR)
+    .append('title')
+    .text(d => `${d.call.vessel ?? 'Unknown'} — ${fmtShortMD(d.call.arrival)} → ${fmtShortMD(d.call.departure)}`);
+
+  // 2) Connection lines (only if connection exists)
+
+const connColor = d3.scaleLinear()
+  .domain([0, 0.8, 0.95, 1.05, 1.25])
+  .range(['#cd2435', '#e5b835', '#2ea44f', '#2ea44f', '#71c7ec'])
+  .clamp(true);
+
+itemG.filter(d => d.connStartR != null)
+  .append('line')
+
+    .attr('class', 'power-conn')
+    .style('stroke', d => connColor(d.connValue))
+    .attr('x1', d => toX(d.angle) * d.connStartR)
+    .attr('y1', d => toY(d.angle) * d.connStartR)
+    .attr('x2', d => toX(d.angle) * d.connEndR)
+    .attr('y2', d => toY(d.angle) * d.connEndR)
+    .append('title')
+    .text(d => {
+      const conn = d.call.connection;
+      return `Shore Power: ${fmtShortMD(conn.connect)}, ${fmtTime(conn.connect)} → ${fmtShortMD(conn.disconnect)}, ${fmtTime(conn.disconnect)}`;
+    });
+
+/* my code recommendation: */
+// Tiny duration formatter (local; you used it in the Cartesian chart)
+    const fmtDuration = ms => {
+        const min = Math.round(ms / 60000);
+        const h = Math.floor(min / 60);
+        const m = min % 60;
+        return h ? `${h}h ${m}m` : `${m}m`;
+    };
+
+// Add the transparent hit area over the full radial band for the slot
+    itemG.append('path')
+        .attr('class', 'power-hit')
+        .attr('d', d => arcGen({
+            innerRadius: r0 + axisPad,
+            outerRadius: r0 + depth - rimPad,
+            startAngle: d.slotStart,
+            endAngle:   d.slotEnd
+        }))
+        .style('fill', 'transparent')
+        .style('pointer-events', 'all')
+        .append('title')
+        .text(d => {
+            const v = d.call;
+            const conn = v.connection;
+            const visit = `${fmtShortMD(v.arrival)}, ${fmtTime(v.arrival)} → ${fmtShortMD(v.departure)}, ${fmtTime(v.departure)}`;
+            const connText = conn
+                ? `\nShore Power: ${fmtShortMD(conn.connect)}, ${fmtTime(conn.connect)} → ${fmtShortMD(conn.disconnect)}, ${fmtTime(conn.disconnect)}\nConnection Duration: ${fmtDuration(conn.disconnect - conn.connect)}`
+                : `\nShore Power: Did not connect`;
+            return `${v.vessel ?? 'Unknown'}\nVisit: ${visit}${connText}`;
+        });
+
+
+
+
+};
+
+
+/////
+/*
+    g.selectAll('path.power-seg')
+        .data(arcs)
+        .enter()
+        .append('path')
+        .attr('d', d => {
+            const inner = r0 + axisPad + d.idx * (rUnit + segGap);
+            const outer = Math.min(r0 + depth - rimPad, inner + rUnit);
+            return arcGen({
+                innerRadius: inner,
+                outerRadius: outer,
+                startAngle: d.startAngle,
+                endAngle:   d.endAngle
+            });
+        })
+        .attr('fill', '#e56335')       // style in CSS later
+        .attr('fill-opacity', 0.90)
+        .attr('stroke', 'none')
+        .append('title')
+        .text(d => `${d.call.vessel ?? 'Unknown'} — ${fmtShortMD(d.call.arrival)}`);
+*/
+
+
+
 
 const drawRadialT12 = async (containerID) => {
     const container = document.getElementById(containerID);
@@ -197,7 +706,8 @@ const drawRadialT12 = async (containerID) => {
 
     const now = new Date();
     const buckets = monthBuckets(now, calls);
-    const labels = get12Labels(now);
+    //const labels = get12Labels(now);
+    const labels = window.Helpers.monthLabels();
     const quintiles = buckets.map(b => quintSplits(b.start, b.end, b.stamps));
     const columns60 = [];
         for (let m1 = 0; m1 < 12; m1++) {
@@ -337,22 +847,6 @@ const drawRadialT12 = async (containerID) => {
             .append('title')
             .text(d => `${d.call.vessel ?? 'Unknown'} — ${fmtShortMD(d.call.arrival)}`)
 
-    /*
-    g.selectAll('path.col')
-        .data(columns60)
-        .enter()
-        .append('path')
-        .attr('class', 'col')
-        .attr('d', d => arcGen({
-            innerRadius: r(0),
-            outerRadius: r(d.count),
-            startAngle: startAngleVis(d.m1, d.q1),
-            endAngle: endAngleVis(d.m1, d.q1)
-        }))
-        .attr('fill', '#b78a3d')
-        .attr('fill-opacity', 0.85)
-        .attr('stroke', 'none')
-    */
 
     g.selectAll('line.tick')
         .data(labels)
@@ -432,6 +926,7 @@ window.drawPerformCentral = async function(containerId) {
     //clear out the inner html content of our container
     el.innerHTML = '';
 
+    /*
     //start by loading/cleaning the call and connection data
     const [calls, connections] = await Promise.all([
         window.callsPromise,
@@ -461,7 +956,7 @@ window.drawPerformCentral = async function(containerId) {
     
 console.log('t12Calls:', t12Calls.length, 't12Connections:', t12Connections.length);
 console.log('callsSorted:', callsSorted.length, 'example:', callsSorted[0]);
-
+*/
 
 
     //next we'll take some measurements to help keep the drawing right where it belongs
@@ -578,14 +1073,12 @@ const callGroups = svg.selectAll('g.call')
 
 // 1) Visit (stay) line — thin, runs arrival → departure
 callGroups.append('line')
-  .attr('class', 'call-span')
+  .attr('class', d => `call-span ${isMultiDay(d.arrival, d.departure) ? 'multi-day' : ''}`)
   .attr('x1', 0).attr('x2', 0)
   //the bar should start at the lesser of 6am or the actual arrival time
   //.attr('y1', d => yByTime(clampTOD(d.arrival)))
   
-.attr('y1', d => isMultiDay(d.arrival, d.departure)
-  ? yByTime(yTop)              // full height start (top)
-  : yByTime(clampTOD(d.arrival)))
+.attr('y1', d => yByTime(clampTOD(d.arrival)))
 
   //the bar should carry on to the actual departure if it was same day before 8, or 8
   //.attr('y2', d => isMultiDay(d.arrival, d.departure) ? yByTime(yTop) : yByTime(clampTOD(d.departure)));
@@ -593,6 +1086,8 @@ callGroups.append('line')
 .attr('y2', d => isMultiDay(d.arrival, d.departure)
   ? yByTime(yBottom)           // full height end (bottom)
   : yByTime(clampTOD(d.departure)))
+
+
 
 
 /*

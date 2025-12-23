@@ -122,7 +122,6 @@ function help_rollOdometer(el, value, opts = {}) {
   const immediate = !!opts.immediate;
 
   
-/* my code recommendation: */
 // helpers.js — replace the main loop inside help_rollOdometer()
 const raw = Number(value).toLocaleString('en-US');
 const nums = raw.replace(/,/g, '').split('');  // digits only, e.g., "1234" -> ["1","2","3","4"]

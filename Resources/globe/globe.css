@@ -169,6 +169,8 @@ body {
     justify-content: space-around;
     align-items: center;
     width: 100%;
+
+    container-type: size;
 }
 
 .kpiBucket {
@@ -181,9 +183,11 @@ body {
     border-radius: 50%;
     aspect-ratio: 1/1;
     overflow: visible;
-    margin: 60px;
+    margin: 25px;
     position: relative;
-    transition: transform 500ms ease-in-out, opacity 500ms ease-in-out;
+    transition: 
+      transform 500ms ease-in-out, 
+      opacity 500ms ease-in-out;
     transform: scale(1);
     will-change: transform;
     display: flex;
@@ -275,7 +279,7 @@ body {
 .kpiBucket.focused .glass { transform: translateY(-1px) scale(1.001); }
 
 .kpiBucket.focused {
-    transform: scale(2);
+    transform: scale(1);
     aspect-ratio: 1 / 1;
     z-index: 10;
     flex-direction: column;
@@ -290,8 +294,8 @@ body {
 }
 
 .kpiBucket.shrunk {
-    transform: scale(.1);
-    opacity: 0.7;
+    transform: scale(.25);
+    opacity: 0.0;
 }
 
 .baseStats {
@@ -411,6 +415,81 @@ font-variant-numeric: tabular-nums;
     overflow: visible;
 }
 
+
+#rightRadialChart .power-stay {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightRadialChart .power-conn {
+  stroke: var(--cp3, #e56335);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+
+/* Base appearance (keep lines visible and crisp) */
+#rightRadialChart .power-stay {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightRadialChart .power-conn {
+  stroke: var(--cp3, #e56335);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightRadialChart .power-hit {
+  pointer-events: all;
+  cursor: pointer;
+  stroke: transparent;          /* invisible but hoverable */
+  stroke-width: 12px;           /* forgiving hit width */
+  stroke-opacity: 0;
+}
+
+/* Hover state — call out the item */
+#rightRadialChart g.power-item:hover .power-stay {
+  stroke: var(--cp4, #2b4d7d);  /* accent color on hover */
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#rightRadialChart g.power-item:hover .power-conn {
+  stroke-width: 5px;            /* emphasize connection line */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+/* Faint highlight of the angular slot on hover */
+#rightRadialChart g.power-item:hover .power-hit {
+  stroke: currentColor;         /* uses inherited color if desired */
+  stroke-opacity: 0.12;         /* subtle radial highlight */
+}
+
+/* my code recommendation: */
+#leftRadialChart .month-bg.even,
+#rightRadialChart .month-bg.even {
+  fill: rgba(123, 94, 44, 0.10);   /* subtle warm tint */
+}
+
+#leftRadialChart .month-bg.odd,
+#rightRadialChart .month-bg.odd {
+  fill: rgba(40, 80, 120, 0.08);   /* subtle cool tint */
+}
+
+/* Ensure backgrounds sit under lines/arcs visually */
+#leftRadialChart .month-bg,
+#rightRadialChart .month-bg {
+  pointer-events: none;            /* not hoverable */
+}
+
+
 #leftCentralChart, #rightCentralChart {
   position: absolute;
   inset: 0;          /* fill the bucket; SVG will be centered via viewBox */
@@ -436,6 +515,11 @@ font-variant-numeric: tabular-nums;
   stroke-width: 1px;              
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;          
+}
+
+#rightCentralChart g.call .call-span.multi-day {
+  stroke: var(--cp2, #cd2435);   /* red */
+  stroke-width: 3px;             /* slightly bolder for visibility */
 }
 
 
