@@ -17,6 +17,7 @@
     --odometerFontSize: 6rem;
     --odometerFontWidth: 1.2ch;
     --rim-band: 15%;
+    --focus-offset-y: 60px;
 }
 
 * {
@@ -288,7 +289,7 @@ body {
 }
 
 .kpiBucket.focused .baseStats {
-  transform: translateY(var(--focus-offset-y)) scale(0.45);
+  transform: translateY(calc(var(--focus-offset-y) + 24px)) scale(0.38);
   transform-origin: top center;
 
 }
@@ -598,3 +599,58 @@ font-variant-numeric: tabular-nums;
 #rightCentralChart g.call:hover .call-90 {
   stroke-width: 2px;
 }
+
+
+/* my code recommendation: */
+/* Right gauge styles */
+#rightRadialChart .gauge-track { pointer-events: none; }
+#rightRadialChart .gauge-value { pointer-events: none; }
+#rightRadialChart .gauge-label { font-weight: 600; }
+
+/* my code recommendation: */
+/* Right radial gauge styles */
+#rightRadialChart .conn-gauge .gauge-tick.minor {
+  stroke: rgba(0,0,0,0.25);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+#rightRadialChart .conn-gauge .gauge-tick.major {
+  stroke: var(--brass-deep, #7a5c2b);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+
+#rightRadialChart .conn-gauge .gauge-label {
+  fill: var(--brass-deep, #7a5c2b);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+#rightRadialChart .conn-gauge .gauge-needle {
+  stroke: var(--cp4, #2b4d7d);
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#rightRadialChart .conn-gauge .gauge-hub {
+  fill: var(--brass-mid, #b78a3d);
+  stroke: var(--brass-deep, #7a5c2b);
+  stroke-width: 1px;
+}
+
+#rightRadialChart .conn-gauge .gauge-readout {
+  fill: var(--cp4, #2b4d7d);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* my code recommendation: */
+#rightRadialChart .conn-gauge { --gauge-minor: rgba(0,0,0,0.25); }
+#rightRadialChart .conn-gauge .gauge-tick.minor { stroke: var(--gauge-minor); }
+#rightRadialChart .conn-gauge .gauge-rail { fill: var(--gauge-minor); }
+
+
+

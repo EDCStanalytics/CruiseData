@@ -62,6 +62,52 @@ window.fillBuckets = async () => {
 
 }
 
+
+/* my code recommendation: */
+function updateFocusOffsetFor(bucket) {
+  if (!bucket) return;
+  const h = bucket.clientHeight;                     // height *after* focus
+  const OFFSET_COEFF = .35;                            // reuse your coefficient
+  const offsetY = Math.round(h * OFFSET_COEFF);
+  document.documentElement.style.setProperty('--focus-offset-y', `${offsetY}px`);
+}
+
+
+// Minimal digit setter (uses existing .digit .stack markup + CSS transition)
+window.setRotorValue = function (speedReadEl, value) {
+  const s = String(value);
+  const stacks = speedReadEl.querySelectorAll('.digit .stack');
+  const pad = s.padStart(stacks.length, '0');
+  stacks.forEach((stack, i) => {
+    const d = Number(pad[i]);
+    stack.style.transform = `translateY(-${d}em)`;
+  });
+};
+
+
+//compute the average connection quality for our t12 period
+window.getAvgConnQualityT12 = async function () {
+  const { t12Calls } = await window.fillBuckets();
+  let sum = 0, n = 0;
+  for (const c of t12Calls) {
+
+const conn = c.connection;
+const stayMsRaw = c.departure - c.arrival;
+const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000));
+
+let value = 0;
+if (conn && stayMsAdj > 0) {
+  const connMs = conn.disconnect - conn.connect;
+  value = Math.max(0, Math.min(1.25, connMs / stayMsAdj));
+}
+
+    sum += value; n++;
+  }
+  const avg = n ? (sum / n) : 0;
+  return { avg, n };
+};
+
+
 window.radialCtx = new Map();
 
 const root = document.documentElement;
@@ -83,7 +129,8 @@ if (probeBucket) {
             if (isAlreadyFocused) {
                 bucket.classList.remove('focused');
                 const kpi = bucket.querySelector('.baseStats');               
-                await waitForTransitionEndOnce(kpi)
+                await waitForTransitionEndOnce(kpi);
+                updateFocusOffsetFor(bucket);
                 buckets.forEach(b => {
                     b.classList.remove('focused', 'shrunk');
                     b.style.removeProperty('--bucket-h');
@@ -113,14 +160,25 @@ if (probeBucket) {
             });
 
             if (bucket.id === "rightChartContainer") {
+                //this is the RIGHT click branch
                 removeRadial("leftRadialChart");
                 await waitForTransitionEndOnce(bucket);
+                updateFocusOffsetFor(bucket);
                 //window.drawPerformCentral('rightCentralChart');
                 await window.radialCalendar('rightRadialChart');
+
+
+                const { avg, n } = await window.getAvgConnQualityT12();
+                await window.drawConnQualityGauge('rightRadialChart', avg, n);
+
+
+
                 await window.drawPowerArcs('rightRadialChart');
             } else {
+                //this is the LEFT click branch
                 removeRadial("rightRadialChart");
                 await waitForTransitionEndOnce(bucket);
+                updateFocusOffsetFor(bucket);
                 //drawRadialT12('leftRadialChart');
                 await window.radialCalendar('leftRadialChart');
                 await window.drawCallArcs('leftRadialChart');
@@ -310,6 +368,7 @@ bgGroup.selectAll('path.month-bg')
 
 }
 
+
 window.build60Columns = (byMonth) => {
     //part 1: helper function to split data in five sections per month
     const splitMtoQ = (start, end, calls) => {
@@ -379,6 +438,166 @@ window.drawCallArcs = async function (containerID) {
         .append('title')
         .text(d => `${d.call.vessel ?? 'Unknown'} — ${fmtShortMD(d.call.arrival)}`);
 }
+
+
+/* my code recommendation: */
+// ADD: ring gauge overlay (value in [0..1.25])
+window.drawConnQualityGauge = async function (containerID, avgValue, sampleCount) {
+  const ctx = window.radialCtx.get(containerID);
+  if (!ctx) return;
+  const { g, arcGen, r0, depth, axisPad, rimPad } = ctx;
+
+const gGauge = g.append('g')
+  .attr('class', 'conn-gauge')
+  .style('pointer-events', 'none');
+
+// Map value → angle (semi-circle, centered at -120 deg)
+
+const deg = d => d * Math.PI / 180;
+const aStart = deg(250);
+const aSpan  = deg(220);
+const angleScale = d3.scaleLinear()
+  .domain([0, 1.25])
+  .range([aStart, aStart + aSpan])
+  .clamp(true);
+
+const toXg = a => Math.cos(a - Math.PI/2);
+const toYg = a => Math.sin(a - Math.PI/2);
+
+
+// Place dial inward (well inside labels)
+const rDial   = Math.max(24, r0 - depth/1.2);
+
+/* my code recommendation: */
+const chartEl = document.getElementById(containerID);
+chartEl.style.setProperty('--quality-rotor-y', `${rDial}px`);
+chartEl.style.setProperty('--quality-rotor-factor', `0.25`);  // 25% of dial radius → near hub
+
+
+chartEl.style.setProperty('--quality-rotor-scale', `0.80`); 
+
+
+window.radialCtx.get(containerID).rDial = rDial;
+const tickIn  = rDial - 6;
+const tickOut = rDial + 0;
+
+// Major tick values (you can tweak these)
+const majorVals = [0, 0.25, 0.50, 0.75, 1.0, 1.25];
+
+// Minor ticks (optional): 10 segments across dial
+const minorAngles = d3.range(26).map(i => aStart + (i * aSpan / 25));
+
+// Draw minor ticks
+gGauge.selectAll('line.gauge-tick.minor')
+  .data(minorAngles)
+  .enter()
+  .append('line')
+  .attr('class', 'gauge-tick minor')
+
+.attr('x1', a => toXg(a) * tickIn)
+.attr('y1', a => toYg(a) * tickIn)
+.attr('x2', a => toXg(a) * (tickOut))
+.attr('y2', a => toYg(a) * (tickOut));
+
+
+// Draw major ticks + labels
+const majors = majorVals.map(v => ({ v, a: angleScale(v) }));
+gGauge.selectAll('line.gauge-tick.major')
+  .data(majors)
+  .enter()
+  .append('line')
+  .attr('class', 'gauge-tick major')
+
+.attr('x1', d => toXg(d.a) * (tickIn))
+.attr('y1', d => toYg(d.a) * (tickIn))
+.attr('x2', d => toXg(d.a) * (tickOut))
+.attr('y2', d => toYg(d.a) * (tickOut));
+
+gGauge.selectAll('text.gauge-label')
+  .data(majors)
+  .enter()
+  .append('text')
+  .attr('class', 'gauge-label')
+
+
+.attr('x', d => toXg(d.a) * (rDial * 0.9))
+.attr('y', d => toYg(d.a) * (rDial * 0.9))
+.attr('text-anchor', 'middle')
+.style('dominant-baseline', 'middle')
+
+  .text(d => `${Math.round(d.v * 100)}%`);
+
+
+/* my code recommendation: */
+// Thin rail connecting the ticks (using the same sweep as the dial)
+gGauge.append('path')
+  .attr('class', 'gauge-rail')
+  .attr('d', arcGen({
+    innerRadius: rDial,           // ~2px band
+    outerRadius: rDial + 1,
+    startAngle:  aStart,
+    endAngle:    aStart + aSpan
+  }));
+
+
+// Needle (points at avgValue)
+const aNeedle = angleScale(avgValue);
+gGauge.append('line')
+  .attr('class', 'gauge-needle')
+
+.attr('x1', toXg(aNeedle) * (tickIn * -0.1))
+.attr('y1', toYg(aNeedle) * (tickIn * -0.1))
+.attr('x2', toXg(aNeedle) * (rDial))
+.attr('y2', toYg(aNeedle) * (rDial))
+;
+
+// Hub
+gGauge.append('circle')
+  .attr('class', 'gauge-hub')
+  .attr('r', 4)
+  .attr('cx', 0)
+  .attr('cy', 0);
+
+  /*
+// Small caption (avg • sample count) under the hub
+gGauge.append('text')
+  .attr('class', 'gauge-readout')
+  .attr('x', 0)
+  .attr('y', rDial - 30)
+  .style('dominant-baseline', 'middle')
+  .text(`${avgValue.toFixed(2)} • ${sampleCount}`);
+
+*/
+
+  // Gauge band (thin ring just inside the content band)
+  const inner = r0 + axisPad - 10;
+  const outer = inner + 8;
+
+  // Color via the same scale you used for connection lines
+  const colorScale = d3.scaleLinear()
+    .domain([0, 0.33, 0.66, 1.0, 1.25])
+    .range(['#cd2435', '#e5b835', '#2ea44f', '#2ea44f', '#71c7ec'])
+    .clamp(true);
+
+  // Map value to arc length (0..1.25 → 0..180°)
+  const maxDeg = 180;
+  const theta = (Math.max(0, Math.min(1.25, avgValue)) / 1.25) * (maxDeg * Math.PI/180);
+
+
+/*
+  // Tiny label (value + sample count); place at center-top
+  g.append('text')
+    .attr('class', 'gauge-label')
+    .attr('x', 0).attr('y', inner - 16)
+    .attr('text-anchor', 'middle')
+    .text(`${Math.round(avgValue * 100)}% • ${sampleCount}`)
+    .style('font-size', '11px')
+    .style('fill', '#2b4d7d');
+    */
+
+};
+
+
 
 window.buildPowerArcs = (byMonth) => {
     const maxCallsAnyMonth = Math.max(1, ...byMonth.map(b => b.calls.length));
@@ -574,32 +793,11 @@ itemG.filter(d => d.connStartR != null)
 };
 
 
-/////
+
+
+
+///////////////
 /*
-    g.selectAll('path.power-seg')
-        .data(arcs)
-        .enter()
-        .append('path')
-        .attr('d', d => {
-            const inner = r0 + axisPad + d.idx * (rUnit + segGap);
-            const outer = Math.min(r0 + depth - rimPad, inner + rUnit);
-            return arcGen({
-                innerRadius: inner,
-                outerRadius: outer,
-                startAngle: d.startAngle,
-                endAngle:   d.endAngle
-            });
-        })
-        .attr('fill', '#e56335')       // style in CSS later
-        .attr('fill-opacity', 0.90)
-        .attr('stroke', 'none')
-        .append('title')
-        .text(d => `${d.call.vessel ?? 'Unknown'} — ${fmtShortMD(d.call.arrival)}`);
-*/
-
-
-
-
 const drawRadialT12 = async (containerID) => {
     const container = document.getElementById(containerID);
     if (!container) return;
@@ -899,6 +1097,9 @@ const drawRadialT12 = async (containerID) => {
         .text(d => d);
         
 }
+
+*/
+///////////////////////
 
 
 const removeRadial = (containerId) => {
