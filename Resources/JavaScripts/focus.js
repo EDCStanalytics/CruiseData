@@ -1,5 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
     const buckets = document.querySelectorAll(".kpiBucket");
+
+    
+  const resizeObs = new ResizeObserver(entries => {
+    entries.forEach(entry => positionProbeDots(entry.target));
+  });
+  buckets.forEach(b => {
+    ensureProbeDots(b);
+    positionProbeDots(b);
+    resizeObs.observe(b);
+  });
+
+  
+buckets.forEach(b => {
+    const pts = computeProbePositions(b);   // uses the helper you already added
+    const center = pts[0];                  // 0: center, 1: before(4), 2: six, 3: after(8), 4: midpoint
+    setRotorXY(b, center.x, center.y);      // moves .baseStats via CSS variables
+  });
+
+    
     const shipCards = document.getElementById("cardSpace");
 
 //this is a function to load up and bucket the data for purposes of graphing it to the radial charts
@@ -73,6 +92,7 @@ function updateFocusOffsetFor(bucket) {
 }
 
 
+
 // Minimal digit setter (uses existing .digit .stack markup + CSS transition)
 window.setRotorValue = function (speedReadEl, value) {
   const s = String(value);
@@ -110,14 +130,7 @@ if (conn && stayMsAdj > 0) {
 
 window.radialCtx = new Map();
 
-const root = document.documentElement;
-const probeBucket = document.querySelector('.kpiBucket');
-if (probeBucket) {
-    const h = probeBucket.clientHeight;      // height of a bucket    const h = probeBucket.clientHeight;      // height of a bucket in normal state
-    const OFFSET_COEFF = 2;               // 40% of bucket height (adjust if needed)
-    const offsetY = Math.round(h * OFFSET_COEFF);
-    root.style.setProperty('--focus-offset-y', `${offsetY}px`);
-}
+document.documentElement.style.setProperty('--focus-offset-y', '0px');
 
 
 //now we add the event listeners to the areas the user can focus on
@@ -128,9 +141,11 @@ if (probeBucket) {
             // Reset all buckets and shipCards if clicked again
             if (isAlreadyFocused) {
                 bucket.classList.remove('focused');
-                const kpi = bucket.querySelector('.baseStats');               
+                const kpi = bucket.querySelector('.baseStats');
+                void setRotorToProbe(bucket, 0);               
                 await waitForTransitionEndOnce(kpi);
                 updateFocusOffsetFor(bucket);
+                
                 buckets.forEach(b => {
                     b.classList.remove('focused', 'shrunk');
                     b.style.removeProperty('--bucket-h');
@@ -164,6 +179,14 @@ if (probeBucket) {
                 removeRadial("leftRadialChart");
                 await waitForTransitionEndOnce(bucket);
                 updateFocusOffsetFor(bucket);
+                positionProbeDots(bucket);
+                
+  // 1) Move to point 3 (inner 6 o’clock)
+  void setRotorToProbe(bucket, 3);  // indices: [0:center, 1:before, 2:6, 3:after, 4:midpoint]
+
+
+
+
                 //window.drawPerformCentral('rightCentralChart');
                 await window.radialCalendar('rightRadialChart');
 
@@ -174,11 +197,14 @@ if (probeBucket) {
 
 
                 await window.drawPowerArcs('rightRadialChart');
+                
+
             } else {
                 //this is the LEFT click branch
                 removeRadial("rightRadialChart");
                 await waitForTransitionEndOnce(bucket);
                 updateFocusOffsetFor(bucket);
+                positionProbeDots(bucket);
                 //drawRadialT12('leftRadialChart');
                 await window.radialCalendar('leftRadialChart');
                 await window.drawCallArcs('leftRadialChart');
@@ -186,6 +212,25 @@ if (probeBucket) {
 
         });
     });
+
+    
+/* my code recommendation: */
+getKwhT12Value().then(kwhT12 => {
+    console.log('[kWh] T12 total computed:', kwhT12);
+  setupRotor({
+    role: 'kwh',
+    bucketId: 'rightChartContainer',
+    labelText: 'kWh Provided',
+    valueGetter: () => kwhT12,   // use the precomputed number
+    appearWhen: 'focus',
+    appearAt: 2,                 // human point 2 = ~4 o'clock (per your edit)
+    hideWhen: 'blur',
+    hideTo: 1,
+    startHidden: true,
+    syncReveal: 'transitionEnd'
+  });
+});
+
 });
 
 const fmtShortMD = d =>
@@ -1353,4 +1398,348 @@ svg.append('g')
     .attr('stroke', getComputedStyle(document.documentElement)
     .getPropertyValue('--ink-300').trim())
 
+}
+
+
+
+// === CONFIG for KPI probe points ===
+window.KPIProbeConfig = {
+  innerRatio: 0.6,    // (2) inner circle diameter vs. bucket diameter; tweakable
+  deltaDeg: 50,       // (3-4) +/- degrees around 6 o’clock; default 4 & 8 positions
+  betweenFraction: 0.4, // (5) fraction from center toward the 6-point; tweakable
+  sixDeg: 90          // 6 o’clock angle (0° = 3 o’clock, +CW with screen coords)
+};
+
+
+// Ensure we have exactly 5 dot elements per bucket
+function ensureProbeDots(bucket) {
+  const N = 5;
+  const existing = bucket.querySelectorAll('.probe-dot');
+  if (existing.length === N) return Array.from(existing);
+
+  existing.forEach(d => d.remove());
+  const dots = [];
+  for (let i = 0; i < N; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'probe-dot';
+    bucket.appendChild(dot);
+    dots.push(dot);
+  }
+  return dots;
+}
+
+
+// Compute the five points given the bucket's current size
+function computeProbePositions(bucket) {
+  const rimPx = parseFloat(getComputedStyle(bucket).getPropertyValue('--instrument-rim')) || 0;
+  const bounds = bucket.getBoundingClientRect();
+  const diameter = Math.min(bounds.width - rimPx * 2, bounds.height - rimPx * 2);
+  const R = diameter / 2;
+
+  // Center of the bucket (in its own coordinate space)
+  const cx = bucket.clientWidth / 2;
+  const cy = bucket.clientHeight / 2;
+
+  const cfg = window.KPIProbeConfig;
+  const rInner = R * cfg.innerRatio;
+  const toRad = d => (d * Math.PI) / 180;
+
+  // (1) center
+  const p1 = { x: cx, y: cy };
+
+  // (2–4) three points on inner circle: 6 o’clock centered, +/- delta around it
+  const a6 = toRad(cfg.sixDeg);
+  const aBefore = toRad(cfg.sixDeg - cfg.deltaDeg);
+  const aAfter  = toRad(cfg.sixDeg + cfg.deltaDeg);
+
+  const p2 = { x: cx + rInner * Math.cos(aBefore), y: cy + rInner * Math.sin(aBefore) };
+  const p3 = { x: cx + rInner * Math.cos(a6),      y: cy + rInner * Math.sin(a6)      }; // 6 o’clock
+  const p4 = { x: cx + rInner * Math.cos(aAfter),  y: cy + rInner * Math.sin(aAfter)  };
+
+  // (5) between center and the 6-point, fractional distance f (default 0.5)
+  const f = cfg.betweenFraction;
+  const p5 = { x: cx + (p3.x - cx) * f, y: cy + (p3.y - cy) * f };
+
+  return [p1, p2, p3, p4, p5];
+}
+
+
+// Position (or re-position) the dots
+function positionProbeDots(bucket) {
+  const dots = ensureProbeDots(bucket);
+  const pts = computeProbePositions(bucket);
+  dots.forEach((dot, i) => {
+    const { x, y } = pts[i];
+    dot.style.left = `${x}px`;
+    dot.style.top  = `${y}px`;
+  });
+}
+
+
+/* my code recommendation: */
+// Set rotor to a specific (x,y) within the bucket coordinate space
+function setRotorXY(bucket, x, y) {
+  const rotor = bucket.querySelector('.baseStats');
+  if (!rotor) return;
+  const cx = bucket.clientWidth / 2;
+  const cy = bucket.clientHeight / 2;
+  rotor.style.setProperty('--rotor-x', `${x - cx}px`);
+  rotor.style.setProperty('--rotor-y', `${y - cy}px`);
+}
+
+// Snap rotor to one of our 5 probe points (indices: 0..4 per computeProbePositions)
+async function setRotorToProbe(bucket, index, timeoutMs = 600) {
+  const pts = computeProbePositions(bucket);         // already added earlier
+  const p = pts[index];
+  setRotorXY(bucket, p.x, p.y);
+  const rotor = bucket.querySelector('.baseStats');
+  if (rotor) await waitForTransitionEndOnce(rotor, timeoutMs); // you already have this
+}
+
+
+/* my code recommendation: */
+// === RotorFactory (no edits to existing functions required) ===
+// Uses computeProbePositions() already defined in focus.js.
+(() => {
+  function rf_setXY(bucket, x, y, rotorEl) {
+    if (!rotorEl) return;
+    const cx = bucket.clientWidth / 2;
+    const cy = bucket.clientHeight / 2;
+    rotorEl.style.setProperty('--rotor-x', `${x - cx}px`);
+    rotorEl.style.setProperty('--rotor-y', `${y - cy}px`);
+  }
+  function rf_toProbe(bucket, rotorEl, index = 0) {
+    const pts = window.computeProbePositions(bucket);
+    const p = pts[index] || pts[0];
+    rf_setXY(bucket, p.x, p.y, rotorEl);
+  }
+  function rf_toCenter(bucket, rotorEl) { rf_toProbe(bucket, rotorEl, 0); }
+  function rf_show(el)  { el?.classList.remove('is-hidden'); }
+  function rf_hide(el)  { el?.classList.add('is-hidden'); }
+  function rf_scale(el, s) { el?.style.setProperty('--rotor-scale', String(s)); }
+
+  function rf_adopt(bucket, selOrEl, role) {
+    const el = typeof selOrEl === 'string' ? bucket.querySelector(selOrEl) : selOrEl;
+    if (!el) return null;
+    el.classList.add('baseStats');                 // uniform styling hook
+    if (role) el.dataset.role = role;
+    rf_toCenter(bucket, el);                       // default placement
+    return el;
+  }
+  function rf_create(bucket, { role, id } = {}) {
+    const el = document.createElement('div');
+    el.className = 'baseStats';
+    if (role) el.dataset.role = role;
+    if (id)   el.id = id;
+    bucket.appendChild(el);
+    rf_toCenter(bucket, el);
+    return el;
+  }
+
+  window.RotorFactory = {
+    adopt:  rf_adopt,
+    create: rf_create,
+    toProbe: rf_toProbe,
+    toCenter: rf_toCenter,
+    show: rf_show,
+    hide: rf_hide,
+    scale: rf_scale,
+    setXY: rf_setXY
+  };
+})();
+
+
+/* my code recommendation: */
+// Build the kWh rotor markup (odometer + label)
+function buildKwhRotorContent(rotorEl, kwhValue) {
+  // Odometer container
+  const speed = document.createElement('div');
+  speed.className = 'speedRead';
+  speed.id = 'kwhRotorValue';
+
+  // Label under the odometer
+  const label = document.createElement('div');
+  label.className = 'baseLabel';
+  label.textContent = 'kWh Provided';
+
+  rotorEl.appendChild(speed);
+  rotorEl.appendChild(label);
+
+  // Initialize & roll odometer to the provided value
+  window.Helpers.initOdometer(speed, Math.round(kwhValue));
+  window.Helpers.rollOdometer(speed, Math.round(kwhValue));
+}
+
+
+
+/* my code recommendation: */
+// Compute T12 kWh total from connections (independent of the factory)
+async function getKwhT12Value() {
+  const connections = await window.connectionsPromise;
+  const { lastStart, lastEnd } = window.Helpers.getT24();
+  const ref = c => c.connect || c.disconnect;   // pick a timestamp to test
+
+  let total = 0;
+  for (const c of connections) {
+    const r = ref(c);
+    if (r && window.Helpers.rangeCheck(r, lastStart, lastEnd)) {
+      total += (c.usage || 0);                  // usage must be numeric
+    }
+  }
+  return total;
+}
+
+
+
+
+
+/* my code recommendation: */
+// === Generic Rotor Setup (create/adopt + populate + show/hide + move) ===
+// Human points: 1..5 (center, 4 o'clock, 6 o'clock, 8 o'clock, midpoint to 6)
+// Depends on: RotorFactory, computeProbePositions(bucket), waitForTransitionEndOnce(el), window.Helpers.*
+function setupRotor({
+  // identity / placement
+  role,                      // e.g. 'kwh'
+  bucketId,                  // e.g. 'rightChartContainer'
+  id,                        // optional element id, default: 'rotor-' + role
+  adoptSelector,             // optional: adopt an existing element instead of creating a new one
+
+  // content
+  labelText,                 // e.g. 'kWh Provided'
+  valueGetter,               // async () => number; supplies odometer value
+
+  // visibility & movement policy (human numbering)
+  appearWhen = 'focus',      // 'focus' | 'always' | ((bucket) => boolean)
+  appearAt    = 3,           // human point (default: 3 = inner-6)
+  moveAfterAppearTo = null,  // optional secondary human point
+  hideWhen   = 'blur',       // 'blur' | 'never'
+  hideTo     = 1,            // human point for hiding (default: 1 = center)
+  startHidden = true,        // start hidden until rule is met
+
+  // timing
+  syncReveal = 'instant',    // 'instant' | 'transitionEnd' (wait for bucket focus transition)
+}) {
+  // resolve bucket
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+
+  // create or adopt rotor element
+  const rotorEl = adoptSelector
+    ? RotorFactory.adopt(bucket, adoptSelector, role)
+    : RotorFactory.create(bucket, { role, id: id || `rotor-${role}` });
+
+  if (!rotorEl) return null;
+
+
+
+  // ---- populate content: odometer + label ----
+  function buildContent(el, value) {
+    // clear first use or repopulate
+    el.innerHTML = '';
+
+    const speed = document.createElement('div');
+    speed.className = 'speedRead';
+    speed.id = `rotor-${role}-value`;
+
+    const label = document.createElement('div');
+    label.className = 'baseLabel';
+    label.textContent = labelText ?? '';
+
+    el.appendChild(speed);
+    el.appendChild(label);
+
+    window.Helpers.initOdometer(speed, Math.round(value ?? 0));
+    window.Helpers.rollOdometer(speed, Math.round(value ?? 0));
+  }
+
+  // load the value once (you can call again later if you need refresh)
+  (async () => {
+    try {
+      const val = await Promise.resolve().then(valueGetter);
+      console.log('[kWh] setupRotor build value:', val);
+      buildContent(rotorEl, val);
+    } catch (e) {
+      console.error(`setupRotor(${role}) failed to populate:`, e);
+      buildContent(rotorEl, 0);
+    }
+  })();
+
+  // helper: human point → index
+  const toIdx = (human) => Math.max(0, Math.min(4, (human ?? 1) - 1));
+
+  // initial placement
+  RotorFactory.toProbe(bucket, rotorEl, toIdx(1)); // center for tidy start
+  if (startHidden) {
+    // prefer CSS class; also set display:none as a fallback so it truly hides even if class isn't defined
+    rotorEl.classList.add('is-hidden');
+    //rotorEl.style.display = 'none';
+  }
+
+  // visibility predicate
+  const appearPredicate = (bucket) => {
+    if (typeof appearWhen === 'function') return !!appearWhen(bucket);
+    if (appearWhen === 'always') return true;
+    if (appearWhen === 'focus') return bucket.classList.contains('focused');
+    return false;
+  };
+
+  // hide rule
+  const shouldHide = (bucket) => {
+    if (hideWhen === 'never') return false;
+    // default: 'blur' → hide when not focused
+    return !bucket.classList.contains('focused');
+  };
+
+  // reveal & move
+  async function revealAndMove() {
+    if (syncReveal === 'transitionEnd') {
+      await waitForTransitionEndOnce(bucket); // your existing helper
+    }
+    // show
+    //rotorEl.classList.remove('is-hidden');
+    //rotorEl.style.display = ''; // remove fallback hiding
+
+  const s = rotorEl.querySelector('.speedRead');
+  if (s && s.dataset.odometer) {
+    // use the same valueGetter as at build step
+    const v = await Promise.resolve().then(valueGetter);
+    window.Helpers.rollOdometer(s, Math.round(v));
+  }
+
+    // move to appearAt
+    RotorFactory.toProbe(bucket, rotorEl, toIdx(appearAt));
+
+    // optional secondary move
+    if (moveAfterAppearTo != null) {
+      RotorFactory.toProbe(bucket, rotorEl, toIdx(moveAfterAppearTo));
+    }
+  }
+
+  // hide & reset
+  function hideAndReset() {
+    rotorEl.classList.add('is-hidden');
+    rotorEl.style.display = 'none'; // fallback
+    RotorFactory.toProbe(bucket, rotorEl, toIdx(hideTo));
+  }
+
+  // observe bucket class changes → apply policy
+  const obs = new MutationObserver(muts => {
+    for (const m of muts) {
+      if (m.type !== 'attributes' || m.attributeName !== 'class') continue;
+
+      if (appearPredicate(bucket)) {
+        // appear
+        void revealAndMove();
+      } else if (shouldHide(bucket)) {
+        // hide
+        hideAndReset();
+      }
+    }
+  });
+  obs.observe(bucket, { attributes: true, attributeFilter: ['class'] });
+
+  // in case the page loads with bucket already focused
+  if (appearPredicate(bucket)) void revealAndMove();
+
+  return rotorEl;
 }

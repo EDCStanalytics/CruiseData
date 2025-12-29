@@ -5,8 +5,36 @@ console.log('The power data is loading');
 
 const powerDataURL = 'https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/ShorePowerData_Cruise.csv';
 
+
+// Split a CSV line into fields, respecting quotes
+
+
+
+function splitCSVLine(line) {
+  const tokens = line.match(/(".*?"|[^,]+)/g) || [];
+  return tokens.map(s => s.replace(/^"|"$/g, '').trim());
+}
+
+
 //the data is stored in a csv and not strictly typed. this factory function coerces data types and converts the data into an object
 const powerFactory = (rawData) => {
+  const fields = splitCSVLine(rawData);
+  const [id, connectDate, disconnectDate, connectTime, disconnectTime, usageRaw] = fields;
+
+  const connectTS    = window.Helpers.timeStamp(connectDate,    connectTime);
+  const disconnectTS = window.Helpers.timeStamp(disconnectDate, disconnectTime);
+
+  // Numeric kWh: strip everything except digits and dot, then Number(...)
+  const usage = Number(String(usageRaw ?? '').replace(/[^0-9.]/g, '')) || 0;
+
+  return {
+    id,                      
+    usage,
+    connect:    connectTS,
+    disconnect: disconnectTS
+  };
+
+  /*
     const callArray = rawData.split(',').map(s => s.trim());
     const id = callArray[0] || '';
     const usage = callArray[5] || '';
@@ -23,6 +51,8 @@ const powerFactory = (rawData) => {
         connect: connectTimeStamp,
         disconnect: disconnectTimeStamp
     }
+
+    */
 }
 
 //this function retrieves the call data AND pushes it through the factory

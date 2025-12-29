@@ -289,9 +289,8 @@ body {
 }
 
 .kpiBucket.focused .baseStats {
-  transform: translateY(calc(var(--focus-offset-y) + 24px)) scale(0.38);
-  transform-origin: top center;
-
+  --base-offset-y: 0px;
+  --rotor-scale: 0.38;
 }
 
 .kpiBucket.shrunk {
@@ -306,7 +305,12 @@ body {
     transition: transform 500ms ease-in-out;
     
     backface-visibility: hidden;
-    transform: translateY(0) scale(1)
+      transform:
+    translate(
+      var(--rotor-x, 0px),
+      calc(var(--base-offset-y, 0px) + var(--rotor-y, 0px))
+    )
+    scale(var(--rotor-scale, 1));
 }
 
 .trendingBox {
@@ -653,4 +657,35 @@ font-variant-numeric: tabular-nums;
 #rightRadialChart .conn-gauge .gauge-rail { fill: var(--gauge-minor); }
 
 
+/* Probe dots inside each bucket */
+.kpiBucket .probe-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1e90ff;           /* little blue dot */
+  box-shadow: 0 0 2px rgba(0,0,0,0.25);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 25;                    /* above chart lines, below glass (z:20) if needed */
+}
+
+/* Publishing toggle: add .hide-probes on the bucket to hide all dots */
+.kpiBucket.hide-probes .probe-dot {
+  display: none;
+}
+
+
+
+
+/* Programmatic states (optional) */
+.baseStats.rotor.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.baseStats.rotor.is-shrunk {
+  /* Use your CSS variables—not inline transforms */
+  --rotor-scale: 0.25;
+}
 
