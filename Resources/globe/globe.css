@@ -189,7 +189,8 @@ body {
     transition: 
       transform 500ms ease-in-out, 
       opacity 500ms ease-in-out;
-    transform: scale(1);
+--focus-shift-x: 0px;
+    transform: translateX(var(--focus-shift-x)) scale(1);
     will-change: transform;
     display: flex;
     flex-direction: column;
@@ -207,6 +208,7 @@ body {
         0 8px 20px rgba(0,0,0,0.35),
         inset 0 0 0 2px rgba(255,255,255,0.15),
         inset 0 -6px 12px rgba(0,0,0,0.35);
+    
 
 }
 
@@ -269,6 +271,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    
 }
 
 .kpiBucket.focused .baseStats {
@@ -279,6 +282,7 @@ body {
 .kpiBucket.shrunk {
     transform: scale(.25);
     opacity: 0.0;
+    pointer-events: none;
 }
 
 
