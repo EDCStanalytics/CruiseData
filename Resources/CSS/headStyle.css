@@ -181,3 +181,8 @@ header nav {
 .dataViz.original {
     width: 5%;
 }
+
+.fa-database:hover {
+  color: #007bff;
+  transform: scale(1.1);
+}
