@@ -4,4 +4,3 @@ This is an experimental web page to answer the following questions:
 2. Can we cheaply and securely (?) store the required data to make the report function?
 3. Can we create a data ingestion pipeline that doesn't rely on authentication protocals built into the website?
 
-I'm making a quick change to test this branching thing.
