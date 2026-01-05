@@ -1,83 +1,86 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const buckets = document.querySelectorAll(".kpiBucket");
-
+  const buckets = document.querySelectorAll(".kpiBucket");
     
   const resizeObs = new ResizeObserver(entries => {
     entries.forEach(entry => positionProbeDots(entry.target));
-  });
+    });
+  
   buckets.forEach(b => {
     ensureProbeDots(b);
     positionProbeDots(b);
     resizeObs.observe(b);
-  });
+    });
 
   
-buckets.forEach(b => {
+  buckets.forEach(b => {
     const pts = computeProbePositions(b);   // uses the helper you already added
     const center = pts[0];                  // 0: center, 1: before(4), 2: six, 3: after(8), 4: midpoint
     setRotorXY(b, center.x, center.y);      // moves .baseStats via CSS variables
-  });
+    });
+      
+  // Build the calls rotor on the next frame (non-blocking; no await)
+  requestAnimationFrame(() => { void dR_calls(); });
+  requestAnimationFrame(() => { void dR_connections(); });
 
-    
-    const shipCards = document.getElementById("cardSpace");
+  const shipCards = document.getElementById("cardSpace");
 
-//this is a function to load up and bucket the data for purposes of graphing it to the radial charts
-window.fillBuckets = async () => {
+  //this is a function to load up and bucket the data for purposes of graphing it to the radial charts
+  window.fillBuckets = async () => {
 
-//start by loading/cleaning the call and connection data
-    const [calls, connections] = await Promise.all([
+  //start by loading/cleaning the call and connection data
+  const [calls, connections] = await Promise.all([
         window.callsPromise,
         window.connectionsPromise
     ]);
 
-    //now get the filter dates and use them to filter the data sets
-    const { lastStart, lastEnd } = window.Helpers.getT24();
-    const t12Calls = calls.filter(c => 
+  //now get the filter dates and use them to filter the data sets
+  const { lastStart, lastEnd } = window.Helpers.getT24();
+  
+  const t12Calls = calls.filter(c => 
         window.Helpers.rangeCheck(c.arrival, lastStart, lastEnd));
 
-    const t12Connections = connections.filter(c =>
-        window.Helpers.rangeCheck(c.connect, lastStart, lastEnd)
-    );
+  const t12Connections = connections.filter(c =>
+        window.Helpers.rangeCheck(c.connect, lastStart, lastEnd));
 
-    console.log(`Filtering for data between ${lastStart} and ${lastEnd}`)
+  console.log(`Filtering for data between ${lastStart} and ${lastEnd}`)
     
-    //sort the calls by arrival
-    const sortedCalls = t12Calls
+  //sort the calls by arrival
+  const sortedCalls = t12Calls
         .slice()
         .sort((a, b) => a.arrival - b.arrival)
 
-    // Build the connection lookup map (id -> connection)
-    const connById = new Map();
+  // Build the connection lookup map (id -> connection)
+  const connById = new Map();
     t12Connections.forEach(c => { if (c.id != null) connById.set(c.id, c); });
 
-    // Attach the matched connection onto each sorted call (or null)
-    sortedCalls.forEach(c => { c.connection = connById.get(c.id) ?? null; });
+  // Attach the matched connection onto each sorted call (or null)
+  sortedCalls.forEach(c => { c.connection = connById.get(c.id) ?? null; });
 
-    // Month labels + 12 completed-month buckets (shared by both charts)
-    const labels = window.Helpers.monthLabels();
+  // Month labels + 12 completed-month buckets (shared by both charts)
+  const labels = window.Helpers.monthLabels();
 
-    const firstY = lastStart.getFullYear();
-    const firstM = lastStart.getMonth();
+  const firstY = lastStart.getFullYear();
+  const firstM = lastStart.getMonth();
 
-    // local helpers for month bounds
-    const monthStart = (y, m) => { const d = new Date(y, m, 1); d.setHours(0,0,0,0); return d; };
-    const monthEnd   = (y, m) => { const d = new Date(y, m + 1, 1); d.setMilliseconds(-1); return d; };
+  // local helpers for month bounds
+  const monthStart = (y, m) => { const d = new Date(y, m, 1); d.setHours(0,0,0,0); return d; };
+  const monthEnd   = (y, m) => { const d = new Date(y, m + 1, 1); d.setMilliseconds(-1); return d; };
 
-    // prebuild 12 buckets
-    const byMonth = Array.from({ length: 12 }, (_, i) => {
+  // prebuild 12 buckets
+  const byMonth = Array.from({ length: 12 }, (_, i) => {
         const y = firstY + Math.floor((firstM + i) / 12);
         const m = (firstM + i) % 12;
         return { i, y, m, start: monthStart(y, m), end: monthEnd(y, m), calls: [] };
     });
 
-    // assign sorted calls to buckets (keeps per-bucket order)
-    sortedCalls.forEach(c => {
+  // assign sorted calls to buckets (keeps per-bucket order)
+  sortedCalls.forEach(c => {
         const mi = (c.arrival.getFullYear() - firstY) * 12 + (c.arrival.getMonth() - firstM);
         if (mi >= 0 && mi < 12) byMonth[mi].calls.push(c);
-        });
+    });
 
-    // extend the return to include labels + byMonth
-    return { lastStart, lastEnd, labels, connById, t12Calls: sortedCalls, byMonth };
+  // extend the return to include labels + byMonth
+  return { lastStart, lastEnd, labels, connById, t12Calls: sortedCalls, byMonth, t12ConnectionsCount: t12Connections.length };
 
 }
 
@@ -126,6 +129,22 @@ if (conn && stayMsAdj > 0) {
   const avg = n ? (sum / n) : 0;
   return { avg, n };
 };
+
+
+/* my code recommendation: */
+// Returns the number of connections in the T12 window
+async function getConnCountT12() {
+  const connections = await window.connectionsPromise;
+  const { lastStart, lastEnd } = window.Helpers.getT24(); // your existing date window
+  // Count any connection whose 'connect' OR 'disconnect' falls inside the window
+  let count = 0;
+  for (const c of connections) {
+    const ts = c.connect ?? c.disconnect;
+    if (ts && window.Helpers.rangeCheck(ts, lastStart, lastEnd)) count++;
+  }
+  return count;
+}
+
 
 
 window.radialCtx = new Map();
@@ -178,12 +197,15 @@ document.documentElement.style.setProperty('--focus-offset-y', '0px');
                 //this is the RIGHT click branch
                 removeRadial("leftRadialChart");
                 await waitForTransitionEndOnce(bucket);
+
                 updateFocusOffsetFor(bucket);
                 positionProbeDots(bucket);
                 
-  // 1) Move to point 3 (inner 6 o’clock)
-  void setRotorToProbe(bucket, 3);  // indices: [0:center, 1:before, 2:6, 3:after, 4:midpoint]
+  
+  
 
+await dR_kWh(); 
+await dR_usage();
 
 
 
@@ -206,6 +228,8 @@ document.documentElement.style.setProperty('--focus-offset-y', '0px');
                 updateFocusOffsetFor(bucket);
                 positionProbeDots(bucket);
                 //drawRadialT12('leftRadialChart');
+
+                
                 await window.radialCalendar('leftRadialChart');
                 await window.drawCallArcs('leftRadialChart');
             }
@@ -214,22 +238,7 @@ document.documentElement.style.setProperty('--focus-offset-y', '0px');
     });
 
     
-/* my code recommendation: */
-getKwhT12Value().then(kwhT12 => {
-    console.log('[kWh] T12 total computed:', kwhT12);
-  setupRotor({
-    role: 'kwh',
-    bucketId: 'rightChartContainer',
-    labelText: 'kWh Provided',
-    valueGetter: () => kwhT12,   // use the precomputed number
-    appearWhen: 'focus',
-    appearAt: 2,                 // human point 2 = ~4 o'clock (per your edit)
-    hideWhen: 'blur',
-    hideTo: 1,
-    startHidden: true,
-    syncReveal: 'transitionEnd'
-  });
-});
+
 
 });
 
@@ -837,316 +846,6 @@ itemG.filter(d => d.connStartR != null)
 
 };
 
-
-
-
-
-///////////////
-/*
-const drawRadialT12 = async (containerID) => {
-    const container = document.getElementById(containerID);
-    if (!container) return;
-
-    const rimPx = container ? parseFloat(getComputedStyle(container).getPropertyValue('--instrument-rim')) || 0 : 0;
-    const calls = await window.callsPromise;
-    console.log('calls loaded in radial: ', calls.length)
-    console.log('we got an inner padding of ', rimPx)
-    const segGap = 2;
-
-    container.innerHTML = '';
-
-    const bounds = container.getBoundingClientRect();
-    const diameter = Math.min(bounds.width - rimPx * 2, bounds.height - rimPx * 2);     //this is the diameter of the element, which we don't want to draw on
-    const radius = diameter / 2;
-    const depth = radius / 6;
-    
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-
-    const cx = width/2;
-    const cy = height/2;
-    const stroke = 2;
-    
-
-    const r0 = radius - depth - stroke;
-    //const r0 = radius + stroke/2;
-
-    const monthStart = (y, m) => {
-        const d = new Date(y, m, 1);
-        d.setHours(0,0,0,0);
-        return d;
-    }
-
-    const monthEnd = (y, m) => {
-        const d = new Date(y, m + 1, 1);
-        d.setMilliseconds(-1);
-        return d;
-    }
-
-    const monthBuckets = (now, calls) => {
-        const firstY = now.getFullYear() - 1;
-        const firstM = now.getMonth();
-        const buckets = [];
-        for (let i = 0; i < 12; i++) {
-            const y = firstY + Math.floor((firstM + i) / 12);
-            const m = (firstM + i) % 12;
-            const start = monthStart(y, m);
-            const end = monthEnd(y, m);
-            const stamps = [];
-            const callsInBucket = [];
-                for (const c of calls) {
-                    const t = c.arrival;
-                        if (t && t >= start && t <= end) {
-                            stamps.push(t);
-                            callsInBucket.push(c);
-                        }
-                    }
-
-            buckets.push({y, m, start, end, stamps, calls: callsInBucket});
-        }
-        return buckets;
-    }
-
-    const quintSplits = (start, end, stamps) => {
-        const startMs = start.getTime();
-        const endMs = end.getTime();
-        const totalMs = (endMs - startMs + 1);
-        const slotMs = totalMs / 5;
-
-        const counts = [0,0,0,0,0];
-        for (const t of stamps) {
-            const ms = t.getTime();
-            if (ms < startMs || ms > endMs) continue;
-            const offset = ms - startMs;
-            let q = Math.floor(offset / slotMs);
-            if (q < 0) q = 0;
-            if (q > 4) q = 4;
-            counts[q]++;
-        }
-        return counts;
-    }
-    
-    const quintGroups = (start, end, calls) => {
-        const startMs = start.getTime();
-        const endMs   = end.getTime();
-        const totalMs = (endMs - startMs + 1);
-        const slotMs  = totalMs / 5;
-        const groups  = [[],[],[],[],[]];
-            for (const c of calls) {
-                const ms = c.arrival?.getTime?.() ?? NaN;
-                    if (!Number.isFinite(ms) || ms < startMs || ms > endMs) continue;
-                        let q = Math.floor((ms - startMs) / slotMs);
-                            if (q < 0) q = 0; if (q > 4) q = 4;
-                            groups[q].push(c);
-                }
-  // optional: sort each quintile by arrival time
-        for (const g of groups) g.sort((a,b) => a.arrival - b.arrival);
-        return groups;
-    };
-
-
-    
-
-    const now = new Date();
-    const buckets = monthBuckets(now, calls);
-    //const labels = get12Labels(now);
-    const labels = window.Helpers.monthLabels();
-    const quintiles = buckets.map(b => quintSplits(b.start, b.end, b.stamps));
-    const columns60 = [];
-        for (let m1 = 0; m1 < 12; m1++) {
-            for (let q1 = 0; q1 < 5; q1++) {
-                columns60.push({m1, q1, count: quintiles[m1][q1]})
-            }
-        }
-
-    const maxPower = columns60.reduce((m2, c2) => Math.max(m2, c2.count), 0);
-    const segCount = Math.max(1,maxPower);
-    const axisPad = Math.max(2, stroke);
-    const rimPad = 1;
-    console.log('max power count is: ', segCount);
-    const rUnit = segCount > 0 ? (depth - axisPad - rimPad - ((segCount-1) * segGap)) / segCount : depth;
-    
-    depth / segCount; // one call = one radial slice
-    
-
-    const columns60Calls = [];
-        for (let m1 = 0; m1 < 12; m1++) {
-            const groups = quintGroups(buckets[m1].start, buckets[m1].end, buckets[m1].calls);
-            for (let q1 = 0; q1 < 5; q1++) {
-                const g = groups[q1];
-                for (let idx = 0; idx < g.length; idx++) {
-                    columns60Calls.push({ m1, q1, idx, call: g[idx] });
-                }
-            }
-        }
-
-
-    
-
-
-    //for debugging purposes this lets you print out the table that will be graphed
-    const qTable = labels.map((lbl, i) => ({
-            month: lbl,
-            q0: quintiles[i][0],
-            q1: quintiles[i][1],
-            q2: quintiles[i][2],
-            q3: quintiles[i][3],
-            q4: quintiles[i][4],
-            total: buckets[i].stamps.length
-    }))
-
-    console.table(qTable);
-    window._radialQuintiles = quintiles;
-    window._radialColumns60 = columns60;
-    window._radialBuckets = buckets;
-    window._radialMaxPower = segCount;
-
-    const angle = d3.scaleBand()
-        .domain(labels)
-        .range([0,2*Math.PI])
-        .padding(0);
-        ;
-
-    const A = d => angle(d);
-    const M = d => angle(d) + angle.bandwidth() / 2;
-    const aVis = d => M(d) - Math.PI / 2;
-    const norm2pi = a => (a % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-    const pct = d => (M(d) / (2 * Math.PI)) * 100;
-    const isBottom = d => {
-        const n = norm2pi(aVis(d));
-        return n > 0 && n < Math.PI;
-    };
-
-    const toX = a => Math.cos(a- Math.PI / 2);
-    const toY = a => Math.sin(a- Math.PI / 2);
-
-    const rLabel = r0 - 12;
-    const pathDfwd = [
-        `M ${cx} ${cy - rLabel}`,
-        `A ${rLabel} ${rLabel} 0 1 1 ${cx} ${cy + rLabel}`,
-        `A ${rLabel} ${rLabel} 0 1 1 ${cx} ${cy - rLabel}`
-        ].join(' ');
-
-    const pathDrev = [
-        `M ${cx} ${cy - rLabel}`,
-        `A ${rLabel} ${rLabel} 0 1 0 ${cx} ${cy + rLabel}`,
-        `A ${rLabel} ${rLabel} 0 1 0 ${cx} ${cy - rLabel}`
-        ].join(' ');
-
-    const r = d3.scaleLinear()
-        .range([r0 + stroke/2, r0 + depth]) 
-        .domain([0, segCount]); //d3.max(data, d => d[2])]);
-
-    const svg = d3.select(container)
-        .append('svg')
-        .attr('viewBox', `0 0 ${width} ${height}`)
-        .attr('preserveAspectRatio', 'xMidYMid meet')
-        .style('width', '100%')
-        .style('height', '100%')
-        .style('position', 'absolute')
-        
-        .style('left', 0)
-        .style('top', 0)
-        .style('overflow','visible')
-        ;
-
-    const g = svg.append('g')
-        .attr('transform',`translate(${cx},${cy})`);
-
-    g.append('circle')
-        .attr('r', r0)
-        .attr('fill', 'none')
-        .attr('stroke', '#7a5c2b')
-        .attr('stroke-width', stroke)
-
-    const arcGen = d3.arc();
-    const deg = d => d*Math.PI/180;
-    const startAngleVis = (m3, q3) => deg(m3 *30 + q3 * 6 + 2.5);
-    const endAngleVis = (m4, q4) => deg(m4 * 30 + q4 * 6 + 3 + .5);
-
-    g.selectAll('path.call-seg')
-        .data(columns60Calls)
-        .enter()
-        .append('path')
-        .attr('class', 'call-seg')
-        .attr('d', d=> {
-            const inner = r0 + axisPad + d.idx * (rUnit + segGap);
-            const outer = Math.min(r0 + depth - rimPad, inner + rUnit);
-                return arcGen({
-                    innerRadius: inner,
-                    outerRadius: outer,
-                    startAngle: startAngleVis(d.m1, d.q1),
-                    endAngle: endAngleVis(d.m1, d.q1)
-                });
-            })
-            .attr('fill', '#b78a3d')
-            .attr('fill-opacity', 0.90)
-            .attr('stroke', 'none')
-            .style('cursor', 'pointer')
-            .attr('data-vessel', d => d.call.vessel ?? '')
-            .attr('data-arrival', d => d.call.arrival ? d.call.arrival.toISOString() : '')
-            .attr('data-id', d => d.call.id ?? '')
-  // simple native tooltip for now (optional)
-            .append('title')
-            .text(d => `${d.call.vessel ?? 'Unknown'} — ${fmtShortMD(d.call.arrival)}`)
-
-
-    g.selectAll('line.tick')
-        .data(labels)
-        .enter()
-        .append('line')
-        .attr('class', 'tick')
-        .attr('x1', d => toX(A(d)) * r0)
-        .attr('y1', d => toY(A(d)) * r0)
-        .attr('x2', d => toX(A(d)) * (r0 + 6))
-        .attr('y2', d => toY(A(d)) * (r0 + 6))
-        .attr('stroke', '#7a5c2b');
-      
-    const defs = svg.append('defs');
-    defs.append('path')
-        .attr('id', 'label-path-fwd')
-        .attr('d', pathDfwd)
-        .attr('pathLength', 100);
-
-    defs.append('path')
-        .attr('id', 'label-path-rev')
-        .attr('d', pathDrev)
-        .attr('pathLength', 100);
-
-    svg.append('g')
-        .selectAll('text.month-top')
-        .data(labels.filter(d => !isBottom(d)))
-        .enter()
-        .append('text')
-        .attr('class','month-top')
-        .attr('text-anchor', 'middle')
-        .style('font-size', '12px')
-        .style('fill', '#7a5c2b')
-        .append('textPath')
-        .attr('xlink:href', '#label-path-fwd') 
-        .attr('startOffset', d => pct(d) + '%')
-        .text(d => d);
-    
-    svg.append('g')
-        .selectAll('text.month-bottom')
-        .data(labels.filter(d => isBottom(d)))
-        .enter()
-        .append('text')
-        .attr('class','month-bottom')
-        .attr('text-anchor', 'middle')
-        .style('font-size', '12px')
-        .style('fill', '#7a5c2b')
-        .append('textPath')
-        .attr('xlink:href', '#label-path-rev') 
-        .attr('startOffset', d => (100 - pct(d)) + '%')
-        .text(d => d);
-        
-}
-
-*/
-///////////////////////
-
-
 const removeRadial = (containerId) => {
   const container = document.getElementById(containerId);
   if (container) container.innerHTML = '';  // clears any SVG/content
@@ -1172,39 +871,6 @@ window.drawPerformCentral = async function(containerId) {
     //clear out the inner html content of our container
     el.innerHTML = '';
 
-    /*
-    //start by loading/cleaning the call and connection data
-    const [calls, connections] = await Promise.all([
-        window.callsPromise,
-        window.connectionsPromise
-    ]);
-
-    //for purposes of this chart we only care about data in the last 12 COMPLETED months
-    const { lastStart, lastEnd } = window.Helpers.getT24();
-    const t12Calls = calls.filter(c => 
-        window.Helpers.rangeCheck(c.arrival, lastStart, lastEnd));
-
-    console.log(lastStart)
-
-    const t12Connections = connections.filter(c =>
-        window.Helpers.rangeCheck(c.connect, lastStart, lastEnd)
-    );
-    
-    //sort the calls by arrival
-    const callsSorted = t12Calls
-        .slice()
-        .sort((a, b) => a.arrival - b.arrival)
-
-    //connect the data in both sets via the id field
-    const connById = new Map();
-        t12Connections.forEach(c => { if (c.id != null) connById.set(c.id, c); });
-
-    
-console.log('t12Calls:', t12Calls.length, 't12Connections:', t12Connections.length);
-console.log('callsSorted:', callsSorted.length, 'example:', callsSorted[0]);
-*/
-
-
     //next we'll take some measurements to help keep the drawing right where it belongs
     const elWidth = el.clientWidth;
     const elHeight = el.clientHeight;
@@ -1224,11 +890,6 @@ console.log('callsSorted:', callsSorted.length, 'example:', callsSorted[0]);
 
     //const axisX_Y = originY + innerH;
     //const axisY_X = originX;
-
-
-
-
-
 
 
     const svg = d3.select(el)
@@ -1406,7 +1067,7 @@ svg.append('g')
 window.KPIProbeConfig = {
   innerRatio: 0.6,    // (2) inner circle diameter vs. bucket diameter; tweakable
   deltaDeg: 50,       // (3-4) +/- degrees around 6 o’clock; default 4 & 8 positions
-  betweenFraction: 0.4, // (5) fraction from center toward the 6-point; tweakable
+  betweenFraction: 0.25, // (5) fraction from center toward the 6-point; tweakable
   sixDeg: 90          // 6 o’clock angle (0° = 3 o’clock, +CW with screen coords)
 };
 
@@ -1497,9 +1158,6 @@ async function setRotorToProbe(bucket, index, timeoutMs = 600) {
 }
 
 
-/* my code recommendation: */
-// === RotorFactory (no edits to existing functions required) ===
-// Uses computeProbePositions() already defined in focus.js.
 (() => {
   function rf_setXY(bucket, x, y, rotorEl) {
     if (!rotorEl) return;
@@ -1508,33 +1166,68 @@ async function setRotorToProbe(bucket, index, timeoutMs = 600) {
     rotorEl.style.setProperty('--rotor-x', `${x - cx}px`);
     rotorEl.style.setProperty('--rotor-y', `${y - cy}px`);
   }
+
+
+/* my code recommendation: */
+const toIdx = h => Math.max(0, Math.min(4, (h ?? 1) - 1));
+
+
   function rf_toProbe(bucket, rotorEl, index = 0) {
     const pts = window.computeProbePositions(bucket);
     const p = pts[index] || pts[0];
     rf_setXY(bucket, p.x, p.y, rotorEl);
   }
+
   function rf_toCenter(bucket, rotorEl) { rf_toProbe(bucket, rotorEl, 0); }
   function rf_show(el)  { el?.classList.remove('is-hidden'); }
   function rf_hide(el)  { el?.classList.add('is-hidden'); }
   function rf_scale(el, s) { el?.style.setProperty('--rotor-scale', String(s)); }
 
-  function rf_adopt(bucket, selOrEl, role) {
-    const el = typeof selOrEl === 'string' ? bucket.querySelector(selOrEl) : selOrEl;
-    if (!el) return null;
-    el.classList.add('baseStats');                 // uniform styling hook
-    if (role) el.dataset.role = role;
-    rf_toCenter(bucket, el);                       // default placement
-    return el;
-  }
-  function rf_create(bucket, { role, id } = {}) {
-    const el = document.createElement('div');
-    el.className = 'baseStats';
-    if (role) el.dataset.role = role;
-    if (id)   el.id = id;
-    bucket.appendChild(el);
-    rf_toCenter(bucket, el);
-    return el;
-  }
+
+
+/* my code recommendation: */
+function rf_adopt(bucket, selOrEl, role, startAtHuman = 1) {
+  const el = typeof selOrEl === 'string' ? bucket.querySelector(selOrEl) : selOrEl;
+  if (!el) return null;
+  el.classList.add('baseStats');
+  if (role) el.dataset.role = role;
+
+  // PRE-SET POSITION VARS before reveal
+  const pts = window.computeProbePositions(bucket);
+  const cx = bucket.clientWidth / 2;
+  const cy = bucket.clientHeight / 2;
+  const idx = Math.max(0, Math.min(4, (startAtHuman ?? 1) - 1));
+  const p   = pts[idx] ?? pts[0];
+  el.style.setProperty('--rotor-x', `${p.x - cx}px`);
+  el.style.setProperty('--rotor-y', `${p.y - cy}px`);
+
+  return el;
+}
+
+
+
+
+/* my code recommendation: */
+function rf_create(bucket, { role, id } = {}, startAtHuman = 1) {
+  const el = document.createElement('div');
+  el.className = 'baseStats';
+  if (role) el.dataset.role = role;
+  if (id) el.id = id;
+
+  // PRE-SET POSITION VARS *before* appending to the DOM
+  const pts = window.computeProbePositions(bucket);
+  const cx = bucket.clientWidth / 2;
+  const cy = bucket.clientHeight / 2;
+  const idx = Math.max(0, Math.min(4, (startAtHuman ?? 1) - 1));
+  const p   = pts[idx] ?? pts[0];
+  el.style.setProperty('--rotor-x', `${p.x - cx}px`);
+  el.style.setProperty('--rotor-y', `${p.y - cy}px`);
+
+  bucket.appendChild(el);          // append AFTER vars are set
+  return el;
+}
+
+
 
   window.RotorFactory = {
     adopt:  rf_adopt,
@@ -1597,66 +1290,142 @@ async function getKwhT12Value() {
 // === Generic Rotor Setup (create/adopt + populate + show/hide + move) ===
 // Human points: 1..5 (center, 4 o'clock, 6 o'clock, 8 o'clock, midpoint to 6)
 // Depends on: RotorFactory, computeProbePositions(bucket), waitForTransitionEndOnce(el), window.Helpers.*
+
+/* my code recommendation: */
+
+/* my code recommendation: */
 function setupRotor({
   // identity / placement
-  role,                      // e.g. 'kwh'
-  bucketId,                  // e.g. 'rightChartContainer'
-  id,                        // optional element id, default: 'rotor-' + role
+  role,                      // e.g., 'kwh'
+  bucketId,                  // e.g., 'rightChartContainer'
+  id,                        // optional element id; default: 'rotor-' + role
   adoptSelector,             // optional: adopt an existing element instead of creating a new one
 
   // content
-  labelText,                 // e.g. 'kWh Provided'
+  labelText,                 // e.g., 'kWh Provided'
   valueGetter,               // async () => number; supplies odometer value
 
+  
+ // STANDARD OPTIONS (no role-specific logic inside setup):
+  pillText,                         // string or (value) => string
+  digitsRenderer,                   // (speedEl, value) => void
+  digitsRoller,                     // (speedEl, value) => void
+
+
   // visibility & movement policy (human numbering)
+  /*
   appearWhen = 'focus',      // 'focus' | 'always' | ((bucket) => boolean)
-  appearAt    = 3,           // human point (default: 3 = inner-6)
+  appearAt = 3,              // human point (default: 3 = inner-6)
   moveAfterAppearTo = null,  // optional secondary human point
-  hideWhen   = 'blur',       // 'blur' | 'never'
-  hideTo     = 1,            // human point for hiding (default: 1 = center)
+  hideWhen = 'blur',         // 'blur' | 'never'
+  hideTo = 1,                // human point for hiding (default: 1 = center)
+  */
+  appearWhen,
+  appearAt,
+  moveAfterAppearTo,
+  positions = null,
+  scales = { 1: 1.8, 2: 0.5, 3: 0.5, 4: 0.5, 5: 0.8 },
+  hideWhen,
+  hideTo,
   startHidden = true,        // start hidden until rule is met
 
   // timing
-  syncReveal = 'instant',    // 'instant' | 'transitionEnd' (wait for bucket focus transition)
+  syncReveal = 'instant'     // 'instant' | 'transitionEnd' (wait for bucket focus transition)
 }) {
+
+// Wait for bucket's transition and one extra frame so geometry is current
+async function afterGeometrySettles() {
+  // If caller asked to sync with transitionEnd, await it
+  if (syncReveal === 'transitionEnd') {
+    await waitForTransitionEndOnce(bucket);
+  }
+  // Then give the browser one more paint to update clientWidth/clientHeight
+  await new Promise(r => requestAnimationFrame(() => r()));
+}
+
   // resolve bucket
   const bucket = document.getElementById(bucketId);
   if (!bucket) return null;
 
   // create or adopt rotor element
-  const rotorEl = adoptSelector
-    ? RotorFactory.adopt(bucket, adoptSelector, role)
-    : RotorFactory.create(bucket, { role, id: id || `rotor-${role}` });
+const rotorEl = adoptSelector
+  ? RotorFactory.adopt(bucket, adoptSelector, role, appearAt)
+  : RotorFactory.create(bucket, { role, id: id ?? `rotor-${role}` }, appearAt);
 
-  if (!rotorEl) return null;
+if (!rotorEl) return null;
 
+/* my code recommendation: */
+function buildContent(el, value) {
+  el.innerHTML = '';
 
+  const speed = document.createElement('div');
+  speed.className = 'speedRead';
+  speed.id = `rotor-${role}-value`;
 
-  // ---- populate content: odometer + label ----
-  function buildContent(el, value) {
-    // clear first use or repopulate
-    el.innerHTML = '';
+  const label = document.createElement('div');
+  label.className = 'baseLabel';
+  label.textContent = labelText ?? '';
 
-    const speed = document.createElement('div');
-    speed.className = 'speedRead';
-    speed.id = `rotor-${role}-value`;
+  el.appendChild(speed);
+  el.appendChild(label);
 
-    const label = document.createElement('div');
-    label.className = 'baseLabel';
-    label.textContent = labelText ?? '';
-
-    el.appendChild(speed);
-    el.appendChild(label);
-
-    window.Helpers.initOdometer(speed, Math.round(value ?? 0));
-    window.Helpers.rollOdometer(speed, Math.round(value ?? 0));
+  // Render digits using the provided renderer or fall back to generic odometer
+  const v = Number(value ?? 0);
+  if (typeof digitsRenderer === 'function') {
+    digitsRenderer(speed, v);
+  } else {
+    window.Helpers.initOdometer(speed, Math.round(v));
+    window.Helpers.rollOdometer(speed, Math.round(v));
   }
 
-  // load the value once (you can call again later if you need refresh)
+  // Attach pill using provided pillText (string or function)
+  const pill =
+    typeof pillText === 'function' ? pillText(v)
+    : pillText;
+
+  attachRotorPill(speed, pill);
+}
+
+
+/* my code recommendation: */
+function getFocusLevel(bucket) {
+  // 0 = load (default), 1 = bucket focused, 2 = detail view
+  const lvAttr = bucket.dataset.focus;
+  if (lvAttr === '2') return 2;
+  return bucket.classList.contains('focused') ? 1 : 0;
+}
+
+  /* my code recommendation: */
+  function applyScaleForProbe(humanPoint) {
+    const scale = (scales && scales[humanPoint]) ?? null;
+    if (scale != null) RotorFactory.scale(rotorEl, scale);  // sets --rotor-scale inline
+  }
+
+
+  function resolveProbeForLevel(level) {
+    if (!positions) return null;
+    if (Array.isArray(positions)) return positions[level] ?? null;
+    return positions[level] ?? null;
+  }
+
+
+  async function setToLevelPositionAsync(level) {
+    const human = resolveProbeForLevel(level);
+    if (human == null) return;
+    await afterGeometrySettles();                      // wait for final geometry
+    RotorFactory.toProbe(bucket, rotorEl, Math.max(0, Math.min(4, (human - 1) || 0)));
+    /* my code recommendation: */
+    applyScaleForProbe(human);                         // scale by position
+    rotorEl.dataset.probe = String(human); 
+    positionProbeDots(bucket);
+  }
+
+
+
+  // load the value once (initial build only)
   (async () => {
     try {
       const val = await Promise.resolve().then(valueGetter);
-      console.log('[kWh] setupRotor build value:', val);
       buildContent(rotorEl, val);
     } catch (e) {
       console.error(`setupRotor(${role}) failed to populate:`, e);
@@ -1668,78 +1437,523 @@ function setupRotor({
   const toIdx = (human) => Math.max(0, Math.min(4, (human ?? 1) - 1));
 
   // initial placement
-  RotorFactory.toProbe(bucket, rotorEl, toIdx(1)); // center for tidy start
+  
   if (startHidden) {
-    // prefer CSS class; also set display:none as a fallback so it truly hides even if class isn't defined
-    rotorEl.classList.add('is-hidden');
-    //rotorEl.style.display = 'none';
+    rotorEl.classList.add('is-hidden'); // CSS controls opacity/pointer-events
   }
 
   // visibility predicate
-  const appearPredicate = (bucket) => {
-    if (typeof appearWhen === 'function') return !!appearWhen(bucket);
+  const appearPredicate = (b) => {
+    if (typeof appearWhen === 'function') return !!appearWhen(b);
     if (appearWhen === 'always') return true;
-    if (appearWhen === 'focus') return bucket.classList.contains('focused');
+    if (appearWhen === 'focus') return b.classList.contains('focused');
     return false;
   };
 
   // hide rule
-  const shouldHide = (bucket) => {
+  const shouldHide = (b) => {
     if (hideWhen === 'never') return false;
-    // default: 'blur' → hide when not focused
-    return !bucket.classList.contains('focused');
+    return !b.classList.contains('focused'); // default: blur
   };
 
-  // reveal & move
-  async function revealAndMove() {
-    if (syncReveal === 'transitionEnd') {
-      await waitForTransitionEndOnce(bucket); // your existing helper
-    }
-    // show
-    //rotorEl.classList.remove('is-hidden');
-    //rotorEl.style.display = ''; // remove fallback hiding
+  
 
+  // Initial spawn: prefer positions[0] if provided; else appearAt
+  const initialLevel = 0;
+  const initialHuman = resolveProbeForLevel(initialLevel) ?? appearAt;
+  RotorFactory.toProbe(bucket, rotorEl, Math.max(0, Math.min(4, (initialHuman - 1) || 0)));
+
+
+  /* my code recommendation: */
+  applyScaleForProbe(initialHuman);
+rotorEl.dataset.probe = String(initialHuman);
+
+
+/* my code recommendation: */
+async function revealAndMove() {
+  if (syncReveal === 'transitionEnd') {
+    await waitForTransitionEndOnce(bucket);
+  }
+  rotorEl.classList.remove('is-hidden');
+
+  // Optional tiny delay (one frame) to overlap roll into fade cleanly
+  await new Promise(r => requestAnimationFrame(() => r()));
+
+  // Roll current value
   const s = rotorEl.querySelector('.speedRead');
-  if (s && s.dataset.odometer) {
-    // use the same valueGetter as at build step
+  if (s) {
     const v = await Promise.resolve().then(valueGetter);
-    window.Helpers.rollOdometer(s, Math.round(v));
-  }
-
-    // move to appearAt
-    RotorFactory.toProbe(bucket, rotorEl, toIdx(appearAt));
-
-    // optional secondary move
-    if (moveAfterAppearTo != null) {
-      RotorFactory.toProbe(bucket, rotorEl, toIdx(moveAfterAppearTo));
+    if (typeof digitsRoller === 'function') {
+      digitsRoller(s, Number(v ?? 0));
+    } else {
+      window.Helpers.rollOdometer(s, Math.round(Number(v ?? 0)));
     }
   }
 
-  // hide & reset
-  function hideAndReset() {
-    rotorEl.classList.add('is-hidden');
-    rotorEl.style.display = 'none'; // fallback
-    RotorFactory.toProbe(bucket, rotorEl, toIdx(hideTo));
-  }
+  positionProbeDots(bucket);
+  // (no movement on reveal; we already spawn at appearAt)
+}
 
-  // observe bucket class changes → apply policy
-  const obs = new MutationObserver(muts => {
-    for (const m of muts) {
-      if (m.type !== 'attributes' || m.attributeName !== 'class') continue;
 
-      if (appearPredicate(bucket)) {
-        // appear
-        void revealAndMove();
-      } else if (shouldHide(bucket)) {
-        // hide
-        hideAndReset();
-      }
+
+// hide & reset
+function hideAndReset() {
+  rotorEl.classList.add('is-hidden');
+
+  // Reset digit stacks to "000" so next reveal rolls from zero
+  const s = rotorEl.querySelector('.speedRead');
+  if (s) window.setRotorValue(s, '000');
+}
+
+
+/* my code recommendation: */
+const obs = new MutationObserver((muts) => {
+  for (const m of muts) {
+    if (m.type !== 'attributes') continue;
+    if (m.attributeName !== 'class' && m.attributeName !== 'data-focus') continue;
+
+    const level = getFocusLevel(bucket);
+
+    // Always reposition to the declared position for this level,
+    // but do it after the bucket's transition + one paint so geometry is current.
+    void setToLevelPositionAsync(level);
+
+    if (appearPredicate(bucket)) {
+      // Reveal and re-roll digits after reposition
+      void revealAndMove();
+    } else if (shouldHide(bucket)) {
+      // Hide and reset to "000" so next reveal rolls again
+      hideAndReset();
     }
-  });
-  obs.observe(bucket, { attributes: true, attributeFilter: ['class'] });
+  }
+});
+
+
+obs.observe(bucket, { attributes: true, attributeFilter: ['class','data-focus'] });
+
+
+/* my code recommendation: */
+// In case page loads with focus pre-set
+void setToLevelPositionAsync(getFocusLevel(bucket));
+
 
   // in case the page loads with bucket already focused
   if (appearPredicate(bucket)) void revealAndMove();
 
   return rotorEl;
+}  // ← CLOSES setupRotor PROPERLY
+
+
+
+
+/* my code recommendation: */
+// Magnitude-driven compact formatter with exactly 3 displayed digits.
+// Returns { digitsOnly, dotIndex, unit, fracDigits }.
+// Groups: <1k (''), <1e6 ('k'), <1e9 ('M'), >=1e9 ('B').
+function formatKwhCompact(n) {
+  const abs = Math.max(0, Number(n) || 0);
+
+  // 1) Determine magnitude group and unit
+  let base = 1, unit = '';
+  if (abs >= 1_000 && abs < 1_000_000) { base = 1_000; unit = 'k'; }
+  else if (abs >= 1_000_000 && abs < 1_000_000_000) { base = 1_000_000; unit = 'M'; }
+  else if (abs >= 1_000_000_000) { base = 1_000_000_000; unit = 'B'; }
+
+  // 2) Scale to the group and pick exactly three digits
+  const scaled = abs / base;                // e.g., 207.89 (k), 1.37 (M), 13.478 (M)
+  const i = Math.floor(scaled);
+  const frac = scaled - i;
+
+  if (scaled >= 100) {
+    // Has hundreds → show hundreds, tens, ones (no fractional)
+    const hundreds = Math.floor(i / 100) % 10;
+    const tens     = Math.floor(i / 10)  % 10;
+    const ones     = i % 10;
+    return {
+      digitsOnly: '' + hundreds + tens + ones,  // e.g., "207"
+      dotIndex: -1,                              // no fractional digit
+      unit,
+      fracDigits: 0
+    };
+  } else {
+    // No hundreds → show tens, ones, tenths (last digit is fractional)
+    const tens   = Math.floor(i / 10) % 10;     // keep leading 0 if needed
+    const ones   = i % 10;
+    const tenths = Math.floor(frac * 10) % 10;
+    return {
+      digitsOnly: '' + tens + ones + tenths,    // e.g., "013", "134"
+      dotIndex: 2,                               // fractional starts at index 2 (third digit)
+      unit,
+      fracDigits: 1
+    };
+  }
+}
+
+
+/* my code recommendation: */
+/**
+ * Percent compact formatter: two integer digits + tenths (one fractional).
+ * Input: n (e.g., 87 for 87%).
+ * Returns: { digitsOnly: "875", dotIndex: 2, unit: "", fracDigits: 1 }
+ *          where the third digit ("5") is tenths => tagged .is-frac by builder.
+ */
+
+function formatPercentCompact(n) {
+  const v = Math.max(0, Math.min(125, Number(n) || 0)); // clamp 0..125
+  const i = Math.floor(v);
+  const frac = v - i;
+  const tens   = Math.floor(i / 10) % 10;
+  const ones   = i % 10;
+  const tenths = Math.floor(frac * 10) % 10;            // always present (0..9)
+  return { digitsOnly: '' + tens + ones + tenths, dotIndex: 2 };
+}
+
+
+
+/* my code recommendation: */
+function unitFull(u) {
+  switch (u) {
+    case 'k': return 'Thousand';
+    case 'M': return 'Million';
+    case 'B': return 'Billion';
+    default:  return '';
+  }
+}
+
+
+/* my code recommendation: */
+// Build rolling odometer markup for compact display (no decimal section)
+// Example: "137" + unit "M" → shows 137M
+
+/* my code recommendation: */
+// Build rolling odometer markup; mark fractional digits with .is-frac (no wrapper)
+/**
+ * Expects fmt from formatKwhCompact(...):
+ *   { digitsOnly: "137", dotIndex: 1, unit: "M", ... }
+ * -> digits at indices >= dotIndex are fractional ("37")
+ */
+function buildCompactOdometer(speedEl, fmt) {
+  if (!speedEl || !fmt) return;
+  speedEl.innerHTML = '';
+
+  // helper: one rolling digit with 0..9 stack
+  const makeDigit = () => {
+    const d = document.createElement('span');
+    d.className = 'digit';
+    const stack = document.createElement('span');
+    stack.className = 'stack';
+    for (let i = 0; i < 10; i++) {
+      const s = document.createElement('span');
+      s.textContent = String(i);
+      stack.appendChild(s);
+    }
+    d.appendChild(stack);
+    return d;
+  };
+
+  const digits = String(fmt.digitsOnly || '').split(''); // e.g., "137"
+  const hasFrac = typeof fmt.dotIndex === 'number' && fmt.dotIndex >= 0;
+  const intLen = hasFrac ? fmt.dotIndex : digits.length;
+
+
+  
+/* my code recommendation: */
+// Create a wrapper for the integer digits so we can center the pill on them
+const intWrap = document.createElement('span');
+intWrap.className = 'int';
+speedEl.appendChild(intWrap);
+
+// Build digits: integers go in .int; fractional digits follow in the main container
+for (let i = 0; i < digits.length; i++) {
+  const d = makeDigit();
+  if (hasFrac && i >= intLen) d.classList.add('is-frac'); // mark decimal part
+  (i < intLen ? intWrap : speedEl).appendChild(d);
+}
+
+
+
+
+/* my code recommendation: */
+// Add the spelled-out magnitude pill (hide if < 1,000 => unit '')
+if (fmt.unit) {
+  const tag = document.createElement('span');
+  tag.className = 'magnitudeTag';
+  tag.textContent = unitFull(fmt.unit);  // thousand / million / billion
+  intWrap.appendChild(tag);              // centered on integer digits
+}
+
+  // roll stacks to the target number
+  window.setRotorValue(speedEl, '000');
+}
+
+
+/* my code recommendation: */
+/**
+ * Build a fixed, 3-digit odometer.
+ * - digits3: string with length==3, e.g., "875" or "207" (leading zeros OK)
+ * - dotIndex: number in [0..2] for first fractional digit; -1 for none
+ *      e.g., 2 => only the 3rd digit (index 2) is fractional
+ */
+function buildFixed3Odometer(speedEl, digits3, dotIndex = -1) {
+  if (!speedEl) return;
+
+  // Clear and prepare container
+  speedEl.innerHTML = '';
+
+  // Helper: one rolling digit with 0..9 stack
+  const makeDigit = () => {
+    const d = document.createElement('span');
+    d.className = 'digit';
+    const stack = document.createElement('span');
+    stack.className = 'stack';
+    for (let i = 0; i < 10; i++) {
+      const s = document.createElement('span');
+      s.textContent = String(i);
+      stack.appendChild(s);
+    }
+    d.appendChild(stack);
+    return d;
+  };
+
+  // Ensure exactly 3 characters; pad left with 0 if shorter
+  const s = String(digits3 ?? '').padStart(3, '0');
+  const chars = s.split('');
+
+  // Create .int wrapper so a pill can be centered on non-fractional digits
+  const intWrap = document.createElement('span');
+  intWrap.className = 'int';
+  speedEl.appendChild(intWrap);
+
+
+  // Build three digit stacks
+  for (let i = 0; i < 3; i++) {
+    const d = makeDigit();
+    // Tag fractional digits (>= dotIndex) if any
+    if (dotIndex >= 0 && i >= dotIndex) d.classList.add('is-frac');
+    (dotIndex >= 0 && i >= dotIndex ? speedEl : intWrap).appendChild(d);
+  }
+
+  
+
+
+
+
+  /* my code recommendation: */
+  // Start at "000" so the reveal shows a rolling transition
+  window.setRotorValue(speedEl, '000');
+
+}
+
+
+
+
+
+/* my code recommendation: */
+/**
+ * Ensures non-fractional digits are wrapped in .int, then appends a pill.
+ * - speedEl: the .speedRead container inside the rotor
+ * - pillText: string to render in the pill ('' or null => no pill)
+ */
+function attachRotorPill(speedEl, pillText) {
+  if (!speedEl || !pillText) return;
+
+  // Collect digit nodes and split into integer vs fractional
+  const allDigits = Array.from(speedEl.querySelectorAll('.digit'));
+  const intDigits = allDigits.filter(d => !d.classList.contains('is-frac'));
+
+  if (!intDigits.length) return;
+
+  // Create (or reuse) the .int wrapper
+  let intWrap = speedEl.querySelector('.int');
+  if (!intWrap) {
+    intWrap = document.createElement('span');
+    intWrap.className = 'int';
+    speedEl.insertBefore(intWrap, intDigits[0]); // place wrapper before first int digit
+    // Move only the integer digits into the wrapper
+    intDigits.forEach(d => intWrap.appendChild(d));
+  }
+
+  // If a pill exists, update its text; otherwise create it
+  let tag = intWrap.querySelector('.magnitudeTag');
+  if (!tag) {
+    tag = document.createElement('span');
+    tag.className = 'magnitudeTag';
+    intWrap.appendChild(tag);
+  }
+  tag.textContent = String(pillText);
+}
+
+
+
+/* my code recommendation: */
+async function dR_kWh() {
+  const bucketId = 'rightChartContainer';
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+  const existing = bucket.querySelector('.baseStats[data-role="kwh"]');
+  if (existing) return existing;
+
+  const kwhT12 = await getKwhT12Value();
+
+  return setupRotor({
+    role: 'kwh',
+    bucketId,
+    labelText: 'kWh Provided',
+    valueGetter: () => kwhT12,
+
+    pillText: (val) => {
+      const fmt = formatKwhCompact(val ?? 0);
+      return fmt?.unit ? (unitFull(fmt.unit) + ' kWh') : '';
+    },
+    digitsRenderer: (speedEl, val) => {
+      const fmt = formatKwhCompact(val ?? 0);         // returns {digitsOnly, dotIndex}
+      buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
+    },
+    digitsRoller: (speedEl, val) => {
+      const fmt = formatKwhCompact(val ?? 0);
+      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
+    },
+
+    appearWhen: 'focus',
+    hideWhen: 'blur',
+    startHidden: true, syncReveal: 'transitionEnd',
+    positions: { 1: 2, 2: 5 }
+  });
+}
+
+
+
+async function dR_usage() {
+  const bucketId = 'rightChartContainer';
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+  const existing = bucket.querySelector('.baseStats[data-role="usage"]');
+  if (existing) return existing;
+
+  const { avg } = await getAvgConnQualityT12(); // 0..1.25
+
+  return setupRotor({
+    role: 'usage',
+    bucketId,
+    labelText: 'Shore Power Usage',
+    pillText: 'Usage Rate',
+    valueGetter: () => Math.max(0, avg) * 100,          // pass a float percent (e.g., 87.0)
+
+    digitsRenderer: (speedEl, val) => {
+      const fmt = formatPercentCompact(val ?? 0);
+      buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
+    },
+    digitsRoller: (speedEl, val) => {
+      const fmt = formatPercentCompact(val ?? 0);
+      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
+    },
+
+    appearWhen: 'focus',
+    hideWhen: 'blur',
+    startHidden: true, syncReveal: 'transitionEnd',
+    positions: { 1: 5, 2: 2 }
+  });
+}
+
+/* my code recommendation: */
+// Connections count rotor (T12), 3-digit, no fractional — RIGHT bucket
+async function dR_connections() {
+  const bucketId = 'rightChartContainer';
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+
+  const existing = bucket.querySelector('.baseStats[data-role="connections"]');
+  if (existing) return existing;
+
+  /* my code recommendation: */
+  const { t12ConnectionsCount } = await window.fillBuckets();
+  const connCount = t12ConnectionsCount;
+
+  return setupRotor({
+    role: 'connections',
+    bucketId,
+    labelText: 'Connections',
+    pillText: 'Connections',
+    valueGetter: () => connCount,
+
+    digitsRenderer: (speedEl, val) => {
+      const n = Math.max(0, Math.floor(Number(val) || 0));
+      const s = String(n).padStart(3, '0');
+      buildFixed3Odometer(speedEl, s, -1);
+    },
+    digitsRoller: (speedEl, val) => {
+      const n = Math.max(0, Math.floor(Number(val) || 0));
+      const s = String(n).padStart(3, '0');
+      window.setRotorValue(speedEl, s);
+    },
+
+    appearWhen: 'always',
+    hideWhen: 'never',
+    startHidden: false, syncReveal: 'transitionEnd',
+    
+/* my code recommendation: */
+  positions: { 0: 1, 1: 4, 2: 4 } 
+
+  });
+}
+
+
+
+/* my code recommendation: */
+// Ship calls count rotor (T12), 3-digit, no fractional — LEFT bucket
+
+/* my code recommendation: */
+// Ship calls count rotor (T12), 3-digit, no fractional — LEFT bucket
+async function dR_calls() {
+  const bucketId = 'leftChartContainer';
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+
+  const existing = bucket.querySelector('.baseStats[data-role="calls"]');
+  if (existing) return existing;
+
+  /* my code recommendation: */
+  const { t12Calls } = await window.fillBuckets(); // arrival ∈ T12
+  const callCount = t12Calls.length;
+
+  return setupRotor({
+    role: 'calls',
+    bucketId,
+    labelText: 'Ship Calls (T12)',
+    pillText: 'Ship Calls',
+    valueGetter: () => callCount,                 // function; factory requirement
+
+    // Always 3-digit width, no fractional; start stacks at "000"
+    digitsRenderer: (speedEl, val) => {
+      const n = Math.max(0, Math.floor(Number(val) || 0));
+      const s = String(n).padStart(3, '0');
+      buildFixed3Odometer(speedEl, s, -1);        // dotIndex=-1 ⇒ no .is-frac
+    },
+    digitsRoller: (speedEl, val) => {
+      const n = Math.max(0, Math.floor(Number(val) || 0));
+      const s = String(n).padStart(3, '0');
+      window.setRotorValue(speedEl, s);           // roll during fade
+    },
+
+    appearWhen: 'always',
+    hideWhen: 'never',
+    startHidden: false, syncReveal: 'transitionEnd',
+    positions: { 0: 1, 1: 1, 2: 1 }
+  });
+}
+
+
+/* my code recommendation: */
+// When user clicks the kWh rotor, escalate to level-2 for the right bucket
+document.addEventListener('click', (e) => {
+  const kwhEl = e.target.closest('.baseStats[data-role="kwh"]');
+  if (!kwhEl) return;
+  const bucket = kwhEl.closest('.kpiBucket');
+  if (!bucket) return;
+  bucket.dataset.focus = '2';     // triggers the factory observer to reposition all rotors
+});
+
+// Optional: a way to return to level-1 (e.g., click gauge hub or a back button)
+function backToLevel1(bucket) {
+  bucket.dataset.focus = '1';
 }
