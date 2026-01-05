@@ -106,7 +106,7 @@
     // Output schema
     const headers = [
       'CallID','VesselName','ArrivalDate','Arrival','DepartDate','Depart',
-      'IMO','Vessel','Line','YearOfConstruction',
+      'IMO','Line','YearOfConstruction',
       'ConnectionDate','DisconnectionDate','Connect','Disconnect','Usage(kWh)'
     ];
 
@@ -129,7 +129,6 @@
         DepartDate: c['DepartDate'] || '',
         Depart: c['Depart'] || '',
         IMO: v.IMO || '',
-        Vessel: v.Vessel || '',
         Line: v.Line || '',
         YearOfConstruction: v.YearOfConstruction || '',
         ConnectionDate: sp.ConnectionDate,
@@ -204,5 +203,6 @@
 
   // Attach to window for easy use from HTML
   global.CruiseExporter = CruiseExporter;
+
 
 })(typeof window !== "undefined" ? window : this);
