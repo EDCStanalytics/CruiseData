@@ -27,11 +27,6 @@
 </head>
 
 
-
-
-
-
-
 <header class="hBar" id="theHeaderBar">
   <h1>Cruise Data Portal</h1>
 
@@ -48,7 +43,7 @@
 
   <!-- Export icon (make it a real clickable anchor with the ID your script uses) -->
   
-    <i id ="download-combo"  class="fa-solid fa-database" style="cursor:pointer;" title="Download Combined Excel"></i>
+    <i id ="download-combo"  class="fa-solid fa-database" style="cursor:pointer;" title="Download Excel"></i>
   </a>
 </header>
 
@@ -63,7 +58,7 @@
     trigger.addEventListener('click', async (e) => {
       e.preventDefault();
       try {
-        const count = await CruiseExporter.download();
+       const count = await CruiseExporter.downloadAllSheets('CruiseData.xlsx');
         console.log('Download started. Rows:', count);
       } catch (err) {
         console.error('Export failed:', err);
@@ -81,8 +76,6 @@
 <link rel="stylesheet" ></link>
 
 </header>
-
-
 
   <body>
     <div id="earth"></div>
@@ -122,3 +115,4 @@
   </body>
 
 </html>
+
