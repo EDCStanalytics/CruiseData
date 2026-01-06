@@ -37,10 +37,10 @@
     }
     if (cell.length > 0 || row.length > 0) { row.push(cell); rows.push(row); }
     if (rows.length === 0) return { header: [], data: [] };
-    const header = rows[0].map(h => (h || '').trim());           // NEW: trim headers
+    const header = rows[0].map(h => (h || '').trim());
     const data = rows.slice(1).map(r => {
       const obj = {};
-      header.forEach((h, idx) => { obj[h] = (r[idx] ?? '').trim(); }); // NEW: trim cells
+      header.forEach((h, idx) => { obj[h] = (r[idx] ?? '').trim(); });
       return obj;
     });
     return { header, data };
@@ -59,6 +59,17 @@
     const i = callId.indexOf('-');
     return i > -1 ? callId.slice(0, i) : callId;
   };
+  function fillNA(rows, headers) {
+    for (const row of rows) {
+      for (const h of headers) {
+        const val = row[h];
+        if (val === undefined || val === null || String(val).trim() === '') {
+          row[h] = 'NA';
+        }
+      }
+    }
+    return rows;
+  }
 
   // --- 4) Fetch utility ---
   async function fetchText(url) {
@@ -67,7 +78,7 @@
     return res.text();
   }
 
-  // --- 5) Combine logic ---
+  // --- 5) Build combined + keep raw parsed datasets ---
   async function buildCombinedRows() {
     const [vesselCSV, callsCSV, powerCSV] = await Promise.all([
       fetchText(RAW_VESSEL),
@@ -75,9 +86,9 @@
       fetchText(RAW_POWER)
     ]);
 
-    const vessel = parseCSV(vesselCSV);   // Vessel,IMO,Line,YearOfConstruction
-    const calls  = parseCSV(callsCSV);    // CallID,VesselName,ArrivalDate,Arrival,DepartDate,Depart
-    const power  = parseCSV(powerCSV);    // CallID,ConnectionDate,DisconnectionDate,Connect,Disconnect,Usage(kWh)
+    const vessel = parseCSV(vesselCSV);   // headers: Vessel,IMO,Line,YearOfConstruction
+    const calls  = parseCSV(callsCSV);    // headers: CallID,VesselName,ArrivalDate,Arrival,DepartDate,Depart
+    const power  = parseCSV(powerCSV);    // headers: CallID,ConnectionDate,DisconnectionDate,Connect,Disconnect,Usage(kWh)
 
     // Index vessel by IMO
     const vesselByIMO = new Map();
@@ -90,7 +101,7 @@
       });
     }
 
-    // Index shore power by CallID
+    // Index shore power by CallID (with numeric usage normalization)
     const powerByCallID = new Map();
     for (const p of power.data) {
       powerByCallID.set(p['CallID'], {
@@ -103,8 +114,8 @@
       });
     }
 
-    // Output schema
-    const headers = [
+    // Output schema for the combined sheet
+    const combinedHeaders = [
       'CallID','VesselName','ArrivalDate','Arrival','DepartDate','Depart',
       'IMO','Line','YearOfConstruction',
       'ConnectionDate','DisconnectionDate','Connect','Disconnect','Usage(kWh)'
@@ -139,70 +150,108 @@
       });
     }
 
-    // NEW: replace empty values with "NA" across all rows/headers
-    for (const row of combined) {
-      for (const h of headers) {
-        const val = row[h];
-        if (val === undefined || val === null || String(val).trim() === '') {
-          row[h] = 'NA';
-        }
-      }
-    }
+    // Replace empty values with "NA" in combined
+    fillNA(combined, combinedHeaders);
 
-    return { headers, combined };
+    // Prepare per-CSV rows with NA fill and any needed normalization
+    const vesselHeaders = vessel.header;
+    const callsHeaders  = calls.header;
+    const powerHeaders  = power.header;
+
+    const vesselRows = fillNA([...vessel.data], vesselHeaders);
+    const callsRows  = fillNA([...calls.data], callsHeaders);
+    const powerRows  = fillNA(power.data.map(p => ({
+      ...p,
+      'Usage(kWh)': cleanUsage(p['Usage(kWh)'])
+    })), powerHeaders);
+
+    return {
+      combinedHeaders,
+      combined,
+      sources: {
+        vessel: { headers: vesselHeaders, rows: vesselRows },
+        calls:  { headers: callsHeaders,  rows: callsRows  },
+        power:  { headers: powerHeaders,  rows: powerRows  }
+      }
+    };
   }
 
-  // --- 6) Excel download (SheetJS required on page) ---
-  function downloadExcel(headers, rows, filename = "ComboFile.xlsx") {
-    if (typeof XLSX === "undefined") {
-      throw new Error("SheetJS (XLSX) is not loaded. Include xlsx.full.min.js before this script.");
-    }
-
-    // Create worksheet with fixed column order
-    const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
-
-    // Auto-size columns (basic heuristic)
-    const colWidths = headers.map(h => {
+  // --- 6) Worksheet helpers (SheetJS required on page) ---
+  function makeColWidths(headers, rows) {
+    return headers.map(h => {
       const maxLen = Math.max(h.length, ...rows.map(r => (r[h] ? String(r[h]).length : 0)));
       return { wch: Math.min(Math.max(10, maxLen + 2), 40) };
     });
-    ws['!cols'] = colWidths;
-
-    // NEW: try to bold the header row (A1:...1)
-    // NOTE: In the SheetJS Community Edition, cell styling is not supported in the writer.
-    // This code sets the style objects on cells, but many builds will *not* render them.
-    // See the note below for reliable styling options.
+  }
+  function boldHeaderRow(ws) {
     try {
       const range = XLSX.utils.decode_range(ws['!ref']);
-      // Encode each header cell in the first row (row index 0)
       for (let c = range.s.c; c <= range.e.c; c++) {
         const addr = XLSX.utils.encode_cell({ r: 0, c });
-        const cell = ws[addr] || (ws[addr] = { t: 's', v: headers[c] });
+        const cell = ws[addr];
+        if (!cell) continue;
         cell.s = cell.s || {};
-        cell.s.font = Object.assign({}, cell.s.font, { bold: true }); // attempt bold
+        cell.s.font = Object.assign({}, cell.s.font, { bold: true });
       }
     } catch (e) {
-      // If anything fails, silently continue without styling
       console.warn('Header bold styling not applied:', e);
     }
+  }
+  function createWorksheet(headers, rows) {
+    const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
+    ws['!cols'] = makeColWidths(headers, rows);
+    boldHeaderRow(ws); // may not render in CE build
+    return ws;
+  }
 
-    // Build workbook and trigger download
+  // --- 7) Excel downloads ---
+  function downloadAllSheets(result, filename = "CruiseData.xlsx") {
+    if (typeof XLSX === "undefined") {
+      throw new Error("SheetJS (XLSX) is not loaded. Include xlsx.full.min.js before this script.");
+    }
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Combined");
+
+    // Combined sheet
+    const wsCombined = createWorksheet(result.combinedHeaders, result.combined);
+    XLSX.utils.book_append_sheet(wb, wsCombined, "Combined");
+
+    // Per-CSV sheets
+    const { vessel, calls, power } = result.sources;
+    XLSX.utils.book_append_sheet(wb, createWorksheet(vessel.headers, vessel.rows), "Vessels");
+    XLSX.utils.book_append_sheet(wb, createWorksheet(calls.headers,  calls.rows),  "Calls");
+    XLSX.utils.book_append_sheet(wb, createWorksheet(power.headers,  power.rows),  "ShorePower");
+
     XLSX.writeFile(wb, filename);
   }
 
-  // --- 7) Public API ---
+  // --- 8) Public API ---
   const CruiseExporter = {
+    /** Original single-sheet download (kept for compatibility) */
     async download(filename = "ComboFile.xlsx") {
-      const { headers, combined } = await buildCombinedRows();
-      downloadExcel(headers, combined, filename);
-      return combined.length;
+      const res = await buildCombinedRows();
+      // Keep compatibility: just the Combined sheet
+      if (typeof XLSX === "undefined") throw new Error("SheetJS (XLSX) is not loaded.");
+      const ws = createWorksheet(res.combinedHeaders, res.combined);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Combined");
+      XLSX.writeFile(wb, filename);
+      return res.combined.length;
+    },
+    /** NEW: Multi-sheet download with separate tabs for each CSV + Combined */
+    async downloadAllSheets(filename = "CruiseData.xlsx") {
+      const res = await buildCombinedRows();
+      downloadAllSheets(res, filename);
+      return {
+        combinedRowCount: res.combined.length,
+        vesselRowCount: res.sources.vessel.rows.length,
+        callsRowCount:  res.sources.calls.rows.length,
+        powerRowCount:  res.sources.power.rows.length
+      };
     }
   };
 
   // Attach to window for easy use from HTML
   global.CruiseExporter = CruiseExporter;
 
-
 })(typeof window !== "undefined" ? window : this);
+
