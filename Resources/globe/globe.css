@@ -416,40 +416,65 @@ font-variant-numeric: tabular-nums;
     position: absolute;
     inset: 0;
     overflow: visible;
+    pointer-events: none;
 }
-
-
-#rightRadialChart .power-stay {
-  stroke: var(--brass-mid, #b78a3d);
-  stroke-width: 2px;
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
-}
-
-#rightRadialChart .power-conn {
-  stroke: var(--cp3, #e56335);
-  stroke-width: 3px;
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
-}
-
 
 /* Base appearance (keep lines visible and crisp) */
-#rightRadialChart .power-stay {
-  stroke: var(--brass-mid, #b78a3d);
+.power-stay {
+  stroke: var(--brass-base, #b78a3d);
   stroke-width: 2px;
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
+  pointer-events: none;
 }
 
-#rightRadialChart .power-conn {
+/* Axis styling */
+
+
+
+
+
+
+
+
+/* my code recommendation: REPLACEMENT — globe.css */
+/* REPLACE your existing .plot-area rule (which currently includes `stroke-dasharray: 4 2;`)
+   WITH this solid 2px border (no dash): */
+
+
+
+
+
+
+
+
+
+/* my code recommendation: REPLACEMENT — globe.css */
+/* EXACT BLOCK IN YOUR FILE TO REPLACE:
+.power-conn {
   stroke: var(--cp3, #e56335);
-  stroke-width: 3px;
+  stroke-width: 4px;
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
+  filter: drop-shadow(0 0 0.6px rgba(0,0,0,0.35))
+          drop-shadow(0 0 0.6px rgba(255,255,255,0.15));
+  pointer-events: none;
+}
+*/
+
+/* REPLACEMENT BLOCK (copy/paste to replace the block above): */
+.power-conn {
+  stroke: var(--conn-color, var(--cp3, #e56335)); /* JS sets --conn-color per-visit */
+  stroke-width: 5px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 0.6px rgba(0,0,0,0.35))
+          drop-shadow(0 0 0.6px rgba(255,255,255,0.15));
+  pointer-events: none;
 }
 
-#rightRadialChart .power-hit {
+
+.power-hit {
   pointer-events: all;
   cursor: pointer;
   stroke: transparent;          /* invisible but hoverable */
@@ -458,38 +483,21 @@ font-variant-numeric: tabular-nums;
 }
 
 /* Hover state — call out the item */
-#rightRadialChart g.power-item:hover .power-stay {
+ g.power-item:hover .power-stay {
   stroke: var(--cp4, #2b4d7d);  /* accent color on hover */
   stroke-width: 4px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
 
-#rightRadialChart g.power-item:hover .power-conn {
+ g.power-item:hover .power-conn {
   stroke-width: 5px;            /* emphasize connection line */
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
 
 /* Faint highlight of the angular slot on hover */
-#rightRadialChart g.power-item:hover .power-hit {
+ g.power-item:hover .power-hit {
   stroke: currentColor;         /* uses inherited color if desired */
   stroke-opacity: 0.12;         /* subtle radial highlight */
-}
-
-/* my code recommendation: */
-#leftRadialChart .month-bg.even,
-#rightRadialChart .month-bg.even {
-  fill: rgba(123, 94, 44, 0.10);   /* subtle warm tint */
-}
-
-#leftRadialChart .month-bg.odd,
-#rightRadialChart .month-bg.odd {
-  fill: rgba(40, 80, 120, 0.08);   /* subtle cool tint */
-}
-
-/* Ensure backgrounds sit under lines/arcs visually */
-#leftRadialChart .month-bg,
-#rightRadialChart .month-bg {
-  pointer-events: none;            /* not hoverable */
 }
 
 
@@ -625,12 +633,12 @@ font-variant-numeric: tabular-nums;
 
 #rightRadialChart .conn-gauge .gauge-label {
   fill: var(--brass-deep, #7a5c2b);
-  font-size: 10px;
+  font-size: .75rem;
   font-weight: 600;
 }
 
 #rightRadialChart .conn-gauge .gauge-needle {
-  stroke: var(--cp4, #2b4d7d);
+  stroke: var(--cp4, #b78a3d);
   stroke-width: 2.5px;
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
@@ -657,6 +665,7 @@ font-variant-numeric: tabular-nums;
 
 /* Probe dots inside each bucket */
 .kpiBucket .probe-dot {
+  display: none;
   position: absolute;
   width: 8px;
   height: 8px;
@@ -789,19 +798,164 @@ font-variant-numeric: tabular-nums;
   height: calc(3 * var(--odometerFontWidth) + .5em);
   border-radius: 50%;
 
-  /* OPAQUE fill = needle color */
-  background-color: #081a32;     /* same color you use for the needle */
-  background-image: none;
-  background-blend-mode: normal;
+
+  background: radial-gradient(closest-side,
+              #fbfbfb 0%, #ededed 55%, #dddddd 100%);
+  background-clip: content-box;
+
+
 
   /* Metallic rim via shadows (no reflow) */
+
   box-shadow:
-    0 0 0 2px var(--brass-base, #c4933a),
-    0 0 0 4px var(--brass-deep, #7a5c2b),
-    inset 0 0 0 1px rgba(255,255,255,0.25);
+    inset 0 6px 14px rgba(0,0,0,0.35),    /* top inner shadow (inset) */
+    inset 0 -6px 12px rgba(255,255,255,0.12), /* bottom/light inner bounce */
+    0 0 0 2px var(--brass-base, #c4933a),     /* thin rim */
+    0 0 0 4px var(--brass-deep, #7a5c2b);     /* deeper rim */
+
 
   /* Crucial: draw behind the digits within .speedRead */
   z-index: -1;
   pointer-events: none;
 }
 
+
+/* my code recommendation: */
+/* PowerCanvas: floating info panel for call details */
+#powerCanvas {
+  position: absolute;
+  width: 100%; /* JS will override with bucket width */
+  height: 50%; /* JS will override with bucket height / 2 */
+    background: radial-gradient(closest-side, #fbfbfb 0%, #ededed 55%, #dddddd 100%);
+  border: 2px solid var(--brass-deep, #7a5c2b); /* thin rim like radial chart */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35); /* floating effect */
+  border-radius: 8px; /* optional for softer edges */
+  z-index: 50;
+  pointer-events: none; /* optional if you want it non-interactive for now */
+  
+opacity: 0;                /* start invisible */
+  transition: opacity 0.4s ease;
+
+}
+
+
+#powerCanvas.is-visible {
+  opacity: 1;                /* fade to fully visible */
+}
+
+
+/* my code recommendation: */
+
+/* my code recommendation: REPLACEMENT — visit appearance (geometry handled in JS) */
+#powerCanvas .visit {
+  fill: var(--brass-mid, #b78a3d);
+  stroke: var(--brass-deep, #7a5c2b);
+  stroke-width: 0.75px;
+}
+
+
+/* my code recommendation: REPLACEMENT — connections as stroked lines with rounded caps */
+#powerCanvas .conn {
+  fill: none;                       /* lines: no fill */
+    stroke: var(--conn-color, var(--cp3, #e56335));
+  stroke-width: 4px;                /* thickness similar to radial */
+  stroke-linecap: round;            /* rounded ends */
+  vector-effect: non-scaling-stroke;
+
+}
+
+#powerCanvas svg .y-axis .tick text { fill: var(--brass-deep, #7a5c2b); }
+#powerCanvas svg .month-sep { stroke: var(--ink-300, #999); stroke-width: 1px; }
+#powerCanvas .chart-title { fill: var(--brass-deep, #7a5c2b); font-weight: 700; font-size: 16px; }
+#powerCanvas .chart-legend .legend-pill { fill: var(--brass-deep, #7a5c2b); rx: 12; ry: 12; }
+#powerCanvas .chart-legend .legend-text { fill: #fff; font-weight: 600; }
+
+#powerCanvas svg .hit {
+  fill: transparent;          /* invisible overlay */
+  pointer-events: all;        /* catch hover/click */
+}
+
+/* my code recommendation: INSERTION — add once; there is no existing .plot-area selector */
+#powerCanvas svg .plot-area {
+  fill: none;
+  stroke: #9f0c0c;
+  stroke-dasharray: none;
+}
+
+
+.y-axis text {
+  fill: #7a5c2b; /* explicit theme color for labels */
+}
+
+/* Grid lines */
+.grid-lines line {
+  stroke: #ccc;        /* light gray grid lines */
+  stroke-opacity: 0.4; /* faint appearance */
+}
+
+/* Plot area border */
+.plot-area {
+  stroke-opacity: 0;
+  stroke-width: 10px;
+}
+
+
+
+/* my code recommendation: INSERTION — globe.css */
+/* Remove axis domain paths (baseline lines) for PowerCanvas chart */
+#powerCanvas svg .y-axis .domain,
+#powerCanvas svg .grid-lines .domain,
+#powerCanvas svg .x-axis .domain {
+  stroke: none !important;   /* no color */
+  display: none !important;  /* hide the path entirely */
+}
+
+
+/* my code recommendation: INSERTION — globe.css (apply existing hover outline to selected/related)
+/* Reference point: insert this block immediately AFTER the existing radial hover rules:
+   g.power-item:hover .power-stay { ... }
+   g.power-item:hover .power-conn { ... }
+   g.power-item:hover .power-hit  { ... }
+*/
+
+/* Use the SAME outline/filters as your current hover state for SELECTED calls */
+#leftRadialChart g.power-item.is-selected-call .power-stay,
+#rightRadialChart g.power-item.is-selected-call .power-stay {
+  stroke: var(--cp4, #2b4d7d);
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#leftRadialChart g.power-item.is-selected-call .power-conn,
+#rightRadialChart g.power-item.is-selected-call .power-conn {
+  stroke-width: 5px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+/* SAME faint radial highlight for the hit area, matching hover behavior */
+#leftRadialChart g.power-item.is-selected-call .power-hit,
+#rightRadialChart g.power-item.is-selected-call .power-hit {
+  stroke: currentColor;
+  stroke-opacity: 0.12; /* subtle arc-slot glow identical to hover */
+}
+
+/* Apply the SAME hover outline/filters to RELATED calls (same vessel) */
+#leftRadialChart g.power-item.is-related-call .power-stay,
+#rightRadialChart g.power-item.is-related-call .power-stay {
+  stroke: var(--cp4, #2b4d7d);
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#leftRadialChart g.power-item.is-related-call .power-conn,
+#rightRadialChart g.power-item.is-related-call .power-conn {
+  stroke-width: 5px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+/* Faint highlight band for related calls too */
+#leftRadialChart g.power-item.is-related-call .power-hit,
+#rightRadialChart g.power-item.is-related-call .power-hit {
+  stroke: currentColor;
+  stroke-opacity: 0.12;
+}

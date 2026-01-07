@@ -11,14 +11,16 @@
     <link rel="stylesheet" href="globe.css">
     <script src="globe.js" defer></script>
     <script  src="../JavaScripts/helpers.js" defer></script>
+    
     <script  src="../JavaScripts/callData.js" defer></script>
+    <script  src="../JavaScripts/vesselData.js" defer></script>
     <script  src="../JavaScripts/powerData.js" defer></script>
 
     <script  src="../JavaScripts/header.js" defer></script>
 
     
     <script  src="../JavaScripts/chartEmbed.js" defer></script>
-    <script src="../JavaScripts/focus.js" defer></script>
+    <script src="focus.js" defer></script>
     
 <!-- This installs Font Awesome-->
         <script src="https://kit.fontawesome.com/14dbedf33a.js" crossorigin="anonymous"></script>
@@ -27,55 +29,18 @@
 </head>
 
 
-<header class="hBar" id="theHeaderBar">
-  <h1>Cruise Data Portal</h1>
-
-  <nav>
-    <ul id="navBarItems">
-      <li>Summary</li>
-      <li>Vessels</li>
-      <li>Services</li>
-    </ul>
-  </nav>
-
-  <!-- Help icon -->
-  <i class="fa-regular fa-circle-question" title="Help"></i>
-
-  <!-- Export icon (make it a real clickable anchor with the ID your script uses) -->
-  
-    <i id ="download-combo"  class="fa-solid fa-database" style="cursor:pointer;" title="Download Excel"></i>
-  </a>
-</header>
-
-<!-- Wire up the click AFTER the element exists -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const trigger = document.getElementById('download-combo');
-    if (!trigger) {
-      console.error('download-combo link not found');
-      return;
-    }
-    trigger.addEventListener('click', async (e) => {
-      e.preventDefault();
-      try {
-       const count = await CruiseExporter.downloadAllSheets('CruiseData.xlsx');
-        console.log('Download started. Rows:', count);
-      } catch (err) {
-        console.error('Export failed:', err);
-        alert('Export failed: ' + err.message);
-      }
-    });
-  });
-</script>
-
-<!-- ✅ Scripts go OUTSIDE the header and load in correct order -->
-
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" ></script>
-<script src="../JavaScripts/export.js" defer></script>
-<!-- Font Awesome 6 CSS (for fa-solid / fa-regular icons). Put this in <head> ideally. -->
-<link rel="stylesheet" ></link>
-
-</header>
+  <header class="hBar" id="theHeaderBar">
+          <h1>Cruise NYC Data Portal</h1>
+          <nav>
+            <ul id="navBarItems">
+                <li>Summary</li>
+                <li>Vessels</li>
+                <li>Services</li>
+            </ul>
+          </nav>
+          <i class="fa-regular fa-circle-question"></i>
+          <i class="fa-solid fa-database"></i>
+  </header>
 
   <body>
     <div id="earth"></div>

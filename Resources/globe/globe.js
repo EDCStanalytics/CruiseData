@@ -1,6 +1,16 @@
 const pointsOfInterest = [
+  { name: "King's Wharf (Bermuda)", coords: [-64.8340, 32.3230] },
+  { name: "Nassau, Bahamas", coords: [-77.3554, 25.0582] },
+  { name: "Half Moon Cay (Little San Salvador), Bahamas", coords: [-75.1083, 24.5786] },
+  { name: "Grand Turk, Turks & Caicos", coords: [-71.1389, 21.4670] },
+  { name: "San Juan, Puerto Rico", coords: [-66.1060, 18.4655] },
+  { name: "Charlotte Amalie (St. Thomas), USVI", coords: [-64.9330, 18.3410] },
+  { name: "Halifax, Nova Scotia", coords: [-63.5752, 44.6488] },
+  { name: "Saint John, New Brunswick", coords: [-66.0647, 45.2733] },
+  { name: "Boston, Massachusetts", coords: [-71.0589, 42.3601] },
+  // European port frequently linked via transatlantic QM2 service from Brooklyn
+  { name: "Southampton, United Kingdom", coords: [-1.4043, 50.9097] },
   { name: "Brooklyn Cruise Terminal", coords: [-74.0143, 40.6820] },
-  { name: "Manhattan Cruise Terminal", coords:  [-73.9966, 40.7680]},
   { name: "Portland, Maine", coords:  [-70.2553, 43.6591]}
 ];
 
@@ -152,11 +162,11 @@ poiG.append("text")
 
 poiG.selectAll(".poiHit")
   .on("pointerover", (event, d) => {
-    console.log("[POI hover] pointerover:", d?.name, event.target);
+    //console.log("[POI hover] pointerover:", d?.name, event.target);
     d3.select(event.currentTarget.parentNode).select(".poiLabel").style("opacity", 1);
   })
   .on("pointerout", (event, d) => {
-    console.log("[POI hover] pointerout:", d?.name, event.target);
+    //console.log("[POI hover] pointerout:", d?.name, event.target);
     d3.select(event.currentTarget.parentNode).select(".poiLabel").style("opacity", 0);
   });
 
@@ -170,7 +180,7 @@ poiG.selectAll(".poiLabel")
   
 pointsOfInterest.forEach(d => {
   const p = projection(d.coords);
-  console.log("[projection]", d.name, "→", p);
+  //console.log("[projection]", d.name, "→", p);
 });
 
 svgEarth.on("pointermove.debug", (event) => {
