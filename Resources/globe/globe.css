@@ -823,6 +823,11 @@ font-variant-numeric: tabular-nums;
 /* my code recommendation: */
 /* PowerCanvas: floating info panel for call details */
 #powerCanvas {
+  
+  transform: scale(0.90);
+  transform-origin: center;
+  transition: opacity 0.4s ease, transform 450ms ease;
+
   position: absolute;
   width: 100%; /* JS will override with bucket width */
   height: 50%; /* JS will override with bucket height / 2 */
@@ -841,6 +846,7 @@ opacity: 0;                /* start invisible */
 
 #powerCanvas.is-visible {
   opacity: 1;                /* fade to fully visible */
+  transform: scale(1);
 }
 
 
@@ -959,3 +965,32 @@ opacity: 0;                /* start invisible */
   stroke: currentColor;
   stroke-opacity: 0.12;
 }
+
+
+/* my code recommendation: INSERTION — globe.css (optional, local table polish) */
+#powerCanvas .pc-table-host {
+  padding: 8px 12px;
+  overflow: auto;
+}
+
+#powerCanvas .pc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+#powerCanvas .pc-table thead th {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 2px solid var(--brass-deep, #7a5c2b);
+}
+
+#powerCanvas .pc-table tbody td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+#powerCanvas .pc-table tbody tr:hover {
+  background: rgba(0,0,0,0.06);
+}
+

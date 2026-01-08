@@ -252,6 +252,21 @@ window.buildConnColorScale = function () {
 
                 
                 updateFocusOffsetFor(bucket);
+
+                
+/* my code recommendation: INSERTION — focus.js (rightChartContainer branch, right after updateFocusOffsetFor(bucket)) */
+{
+  // Show the existing PowerCanvas at focus-time (no replacement of any bucket)
+  const hostBucket = document.getElementById('leftChartContainer') ?? bucket;
+  let pc = document.getElementById('powerCanvas');
+  if (!pc) {
+    pc = createPowerCanvas(hostBucket);           // uses your existing function
+    document.body.appendChild(pc);
+  }
+  requestAnimationFrame(() => {pc.classList.add('is-visible'); drawPowerCanvasChart(null);} ); // timing: appear on focus
+  // (No chart draw here; clicking an individual visit will still update content)
+}
+
                 positionProbeDots(bucket);
                 
   
@@ -272,6 +287,9 @@ await dR_usage();
 
 
                 await window.drawPowerArcs('rightRadialChart');
+
+
+
                 
 
             } else {
@@ -959,11 +977,6 @@ hit.on('click', function (event, d) {
   const callId = d?.call?.id ?? null;
   if (!bucket || callId == null) return;
 
-if (existing && activeCallId === callId) {
-  existing.classList.remove('is-visible'); // start fade-out
-  setTimeout(() => existing.remove(), 400); // match CSS transition
-}
-
   // Create the canvas positioned relative to the LEFT KPI bucket per earlier spec,
   // or change to right bucket if you want it anchored there.
 
@@ -983,14 +996,12 @@ requestAnimationFrame(() => {
 // Pass correct info to updateRadialHighlights:
 // - If the user clicked the SAME call again → sweep (pass nulls)
 // - If the user clicked a DIFFERENT call → highlight selected + related
-const isSameSelection = (activeCallId === callId);
-updateRadialHighlights(
-  isSameSelection ? null : callId,
-  isSameSelection ? null : (d?.call?.vessel ?? null)
-);
 
-// Track selection state (null when sweeping)
-activeCallId = isSameSelection ? null : callId;
+updateRadialHighlights(callId, d?.call?.vessel ?? null);
+activeCallId = callId;
+
+
+
 
 });
 
@@ -2207,7 +2218,8 @@ async function drawPowerCanvasChart(shipName) {
   if (!canvas) return;
 
   canvas.innerHTML = '';
-
+await buildPowerCanvasTable(canvas);
+if (!shipName) return; 
   // --- helpers (local; no external scorer dependency) ---
   const norm = s => String(s || '')
     .toLowerCase()
@@ -2643,3 +2655,167 @@ function updateRadialHighlights(selectedCallId = null, selectedVessel = null) {
   });
 }
 
+
+/* my code recommendation: INSERTION — focus.js */
+/*
+ * buildPowerCanvasTable()
+ * Creates/updates an interactive table inside #powerCanvas showing,
+ * per vessel with at least one visit in T12:
+ * 1) Cruise line
+ * 2) Vessel name
+ * 3) # of visits (T12)
+ * 4) # of connections
+ * 5) Usage rate score (avg of per-visit connection ratio, 0..1.25)
+ * 6) kWh power provided (sum of usage)
+ *
+ * Keeps everything self-contained: computes data, builds a <table>,
+ * attaches minimal sort handlers (click on header to sort), and mounts
+ * into #powerCanvas. No CSS inline beyond essentials.
+ */
+async function buildPowerCanvasTable() {
+  const canvas = document.getElementById('powerCanvas');
+  if (!canvas) return;
+
+  // Clear canvas area reserved for the table container (or create it)
+  let tblHost = canvas.querySelector('.pc-table-host');
+  if (!tblHost) {
+    tblHost = document.createElement('div');
+    tblHost.className = 'pc-table-host';
+    // keep table isolated in its own container
+    canvas.appendChild(tblHost);
+  }
+  tblHost.innerHTML = '';
+
+  // ----- Data prep (isolated; uses your existing helpers/promises) -----
+  const { t12Calls } = await window.fillBuckets();  // arrival ∈ T12
+  // Group by vessel
+  const byVessel = new Map();
+  for (const c of t12Calls) {
+    const key = c.vessel ?? 'Unknown';
+    const rec = byVessel.get(key) ?? {
+      vessel: key,
+      cruiseLine: (window.getVesselInfo ? (window.getVesselInfo(key)?.cruiseLine ?? '') : ''),
+      visits: 0,
+      connections: 0,
+      usageRateNumerator: 0, // sum of connMs / adjusted stay
+      usageRateDenominator: 0, // count of visits where denominator > 0
+      kwhTotal: 0
+    };
+    rec.visits += 1;
+
+    const conn = c.connection ?? null;
+    const stayMsRaw = (c.departure && c.arrival) ? (c.departure - c.arrival) : 0;
+    const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000)); // stay minus 3h
+
+    if (conn) {
+      rec.connections += 1;
+      // usage rate component
+      if (stayMsAdj > 0) {
+        const connMs = conn.disconnect - conn.connect;
+        const val = Math.max(0, Math.min(1.25, connMs / stayMsAdj));
+        rec.usageRateNumerator += val;
+        rec.usageRateDenominator += 1;
+      }
+      // kWh total: your data model uses c.usage as energy (if present)
+      rec.kwhTotal += (conn.usage ?? 0);
+    }
+
+    byVessel.set(key, rec);
+  }
+
+  // Final rows
+  const rows = Array.from(byVessel.values()).map(r => ({
+    cruiseLine: r.cruiseLine || '',
+    vessel: r.vessel,
+    visits: r.visits,
+    connections: r.connections,
+    usageRate: r.usageRateDenominator ? (r.usageRateNumerator / r.usageRateDenominator) : 0, // 0..1.25
+    kwh: r.kwhTotal
+  }));
+
+  // ----- Table UI (isolated) -----
+  // Build table skeleton
+  const table = document.createElement('table');
+  table.className = 'pc-table';
+  const thead = document.createElement('thead');
+  const tbody = document.createElement('tbody');
+
+  const cols = [
+    { key: 'cruiseLine', label: 'Cruise Line' },
+    { key: 'vessel',     label: 'Vessel' },
+    { key: 'visits',     label: 'Visits', numeric: true },
+    { key: 'connections',label: 'Shore Power Connections',  numeric: true },
+    { key: 'kwh',        label: 'Power Provided',   numeric: true },
+    { key: 'usageRate',  label: 'Usage Rate',     numeric: true, format: v => `${Math.round(v * 100)}%` }
+  ];
+
+  // Build header with simple click-to-sort
+  const trH = document.createElement('tr');
+  cols.forEach((col, idx) => {
+    const th = document.createElement('th');
+    th.textContent = col.label;
+    th.dataset.key = col.key;
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', () => {
+      // toggle asc/desc per column
+      const currentSort = table.dataset.sortKey === col.key ? table.dataset.sortDir : null;
+      const nextDir = currentSort === 'asc' ? 'desc' : 'asc';
+      table.dataset.sortKey = col.key;
+      table.dataset.sortDir = nextDir;
+
+      rows.sort((a, b) => {
+        const av = a[col.key]; const bv = b[col.key];
+        if (col.numeric) {
+          return nextDir === 'asc' ? (av - bv) : (bv - av);
+        } else {
+          return nextDir === 'asc'
+            ? String(av).localeCompare(String(bv))
+            : String(bv).localeCompare(String(av));
+        }
+      });
+      renderBody();
+      highlightSorted(th, nextDir);
+    });
+    trH.appendChild(th);
+  });
+  thead.appendChild(trH);
+
+  // helper to render body
+  function renderBody() {
+    tbody.innerHTML = '';
+    for (const r of rows) {
+      const tr = document.createElement('tr');
+      cols.forEach(col => {
+        const td = document.createElement('td');
+        let v = r[col.key];
+        if (col.key === 'usageRate') {
+          // display as percent of 1.25 scale (your score’s max)
+          const pct = Math.round(Math.min(1.25, v) * 100);
+          td.textContent = `${pct}%`;
+        } else if (col.numeric) {
+          td.textContent = Number(v ?? 0).toLocaleString('en-US');
+        } else {
+          td.textContent = String(v ?? '');
+        }
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+  }
+
+  // helper to style sorted header
+  function highlightSorted(th, dir) {
+    // minimal UI cue without adding CSS selectors elsewhere
+    Array.from(thead.querySelectorAll('th')).forEach(h => {
+      h.dataset.sorted = '';
+      h.title = '';
+    });
+    th.dataset.sorted = dir;
+    th.title = dir === 'asc' ? 'Sorted ascending' : 'Sorted descending';
+  }
+
+  renderBody();
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  tblHost.appendChild(table);
+}
