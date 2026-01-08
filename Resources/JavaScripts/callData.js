@@ -55,6 +55,7 @@ const annualCallCount = (calls, start, end) => {
     return n;
   }
 
+/* 
 const popCalls = (calls) => {
     const {lastStart,lastEnd,prevStart,prevEnd} = help.getT24();
 
@@ -89,3 +90,4 @@ const popCalls = (calls) => {
   }
 
 window.callsPromise.then(popCalls);
+*/

@@ -83,6 +83,7 @@ const annualConnectionCount = (connections, start, end) => {
     return n;
   }
 
+  /*
 const popConnections = (connections) => {
     const {lastStart,lastEnd,prevStart,prevEnd} = window.Helpers.getT24();
 
@@ -116,3 +117,4 @@ const popConnections = (connections) => {
   }
 
 window.connectionsPromise.then(popConnections);
+*/

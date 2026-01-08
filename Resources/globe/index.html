@@ -27,11 +27,6 @@
 </head>
 
 
-
-
-
-
-
 <header class="hBar" id="theHeaderBar">
   <h1>Cruise Data Portal</h1>
 
@@ -48,7 +43,7 @@
 
   <!-- Export icon (make it a real clickable anchor with the ID your script uses) -->
   
-    <i id ="download-combo"  class="fa-solid fa-database" style="cursor:pointer;" title="Download Combined Excel"></i>
+    <i id ="download-combo"  class="fa-solid fa-database" style="cursor:pointer;" title="Download Excel"></i>
   </a>
 </header>
 
@@ -63,7 +58,7 @@
     trigger.addEventListener('click', async (e) => {
       e.preventDefault();
       try {
-        const count = await CruiseExporter.download();
+       const count = await CruiseExporter.downloadAllSheets('CruiseData.xlsx');
         console.log('Download started. Rows:', count);
       } catch (err) {
         console.error('Export failed:', err);
@@ -82,8 +77,6 @@
 
 </header>
 
-
-
   <body>
     <div id="earth"></div>
   
@@ -97,9 +90,7 @@
         <div class="kpiBucket" id="leftChartContainer">
           
           <div class="baseStats">
-            <div class='speedRead' id="shipCallCounter">100</div>
-            <div class='baseLabel' id="shipCallLabel">Ship Calls</div>
-            <div class='baseTrend' id="shipCallPerc">10%</div>
+
           </div>
           
           <div id="leftRadialChart" class="radial_anchor"></div>
@@ -111,9 +102,7 @@
         <div class="kpiBucket" id="rightChartContainer">
           
           <div class="baseStats">
-            <div class='speedRead' id="shipConnectionCounter">100</div>
-            <div class='baseLabel' id="shipConnectionLabel">Shore Power Connections</div>
-            <div class='baseTrend' id="shipConnectionPerc">10%</div>
+
           </div>
         
           <div id="rightRadialChart" class="radial_anchor"></div>

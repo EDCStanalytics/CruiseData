@@ -189,7 +189,8 @@ body {
     transition: 
       transform 500ms ease-in-out, 
       opacity 500ms ease-in-out;
-    transform: scale(1);
+--focus-shift-x: 0px;
+    transform: translateX(var(--focus-shift-x)) scale(1);
     will-change: transform;
     display: flex;
     flex-direction: column;
@@ -207,6 +208,7 @@ body {
         0 8px 20px rgba(0,0,0,0.35),
         inset 0 0 0 2px rgba(255,255,255,0.15),
         inset 0 -6px 12px rgba(0,0,0,0.35);
+    
 
 }
 
@@ -257,27 +259,10 @@ body {
         radial-gradient(closest-side, transparent calc(100% - var(--instrument-rim)), black 0);
 }
 
-.kpiBucket .glass {
-    z-index: 20;
-    pointer-events: none;
-    position: absolute; 
-    inset: var(--instrument-rim);
-    border-radius: 50%;
-    background:
-        radial-gradient(120% 120% at 22% 18%, 
-            rgba(255,255,255,0.22) 0%, 
-            rgba(255,255,255,0.12) 35%, 
-            rgba(255,255,255,0.06) 60%,
-            transparent 70%);
-    box-shadow:
-        inset 0 0 0 2px rgba(255,255,255,0.12);   /* glass rim light */
-    backdrop-filter: saturate(1.03) contrast(1.02);
-    transition: transform 400ms ease, opacity 300ms ease;
-    opacity: 0.5; 
-}
 
-.kpiBucket:hover .glass { transform: translateY(-0.5px); opacity: 1; }
-.kpiBucket.focused .glass { transform: translateY(-1px) scale(1.001); }
+.glass {
+  display: none;
+}
 
 .kpiBucket.focused {
     transform: scale(1);
@@ -286,6 +271,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    
 }
 
 .kpiBucket.focused .baseStats {
@@ -296,22 +282,34 @@ body {
 .kpiBucket.shrunk {
     transform: scale(.25);
     opacity: 0.0;
+    pointer-events: none;
 }
 
+
+
+/* my code recommendation: */
+/* Rotor anchored at bucket center; allow fade-in via opacity */
 .baseStats {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 500ms ease-in-out;
-    
-    backface-visibility: hidden;
-      transform:
-    translate(
-      var(--rotor-x, 0px),
-      calc(var(--base-offset-y, 0px) + var(--rotor-y, 0px))
-    )
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center center;
+  transform:
+    translate(-50%, -50%)
+    translate(var(--rotor-x, 0px),
+              calc(var(--base-offset-y, 0px) + var(--rotor-y, 0px)))
     scale(var(--rotor-scale, 1));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* add opacity transition */
+  opacity: 1;
+  transition: transform 500ms ease-in-out, opacity 750ms ease;
+  backface-visibility: hidden;
 }
+
+
 
 .trendingBox {
     display: flex;
@@ -687,5 +685,123 @@ font-variant-numeric: tabular-nums;
 .baseStats.rotor.is-shrunk {
   /* Use your CSS variables—not inline transforms */
   --rotor-scale: 0.25;
+}
+
+
+
+
+
+
+/* my code recommendation: */
+.baseStats.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
+/* my code recommendation: */
+/* Universal rotor pill: shared structure + style */
+.baseStats .speedRead { position: relative; }
+
+.baseStats .speedRead .int {
+  position: relative;           /* anchor for absolute-positioned pill */
+  display: inline-flex;         /* group only integer digits */
+  gap: 0.15rem;                 /* match digit spacing */
+}
+
+.baseStats .speedRead .magnitudeTag {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -0.80em;              /* slight overlap below integer digits */
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0.15em 0.25em;
+  border-radius: 0.25rem;
+  line-height: 1;
+  font-weight: 500;
+  font-size: clamp(0.55rem, 1.2vw, 0.95rem);
+  color: var(--kpi-bg, #f8fafc);   /* inverted scheme for contrast */
+  background: var(--kpi-fg, #0f172a);
+  box-shadow: 0 0 0 1px rgba(15,23,42,0.08);
+  pointer-events: none;
+  z-index: 30;
+}
+
+
+/* my code recommendation: */
+/* Generic: invert colors for any fractional (decimal) digit */
+.baseStats .speedRead .digit.is-frac {
+  background: var(--kpi-fg, #0f172a);
+}
+.baseStats .speedRead .digit.is-frac .stack span {
+  color: var(--kpi-bg, #f8fafc);
+}
+
+
+.baseStats .baseLabel {
+  display: none !important;
+}
+
+
+
+/* my code recommendation: */
+/* Let each rolling row be an anchor for the dot overlay */
+.baseStats .speedRead .digit .stack span {
+  position: relative;         /* anchor pseudo-elements */
+  line-height: 1;             /* your existing baseline */
+}
+
+/* Baseline-aligned dot: inline text, overlaid so it doesn't change spacing */
+.baseStats .speedRead .digit.is-frac .stack span::before {
+  content: ".";               /* use a glyph so it shares the text baseline */
+  position: absolute;         /* overlay (do not consume horizontal space) */
+  left: 0;                    /* anchor at the left edge of the row */
+  bottom: 0;                  /* align to the row’s baseline at the bottom */
+
+  /* shift the dot inside the digit box without affecting spacing */
+  transform: translateX(-0.05ch); /* move into the box; tune -0.30..-0.40ch */
+  /* IMPORTANT: transform, not margin; margin would affect layout widths */
+
+  /* visual style (smaller than numeral, inverted like fractional text) */
+  font-size: 0.7em;          /* smaller dot */
+  font-weight: 400;
+  color: var(--kpi-bg, #f8fafc);  /* same as fractional numeral color */
+  pointer-events: none;
+  z-index: 2;
+}
+
+
+
+
+/* Solid needle-color circle with metallic rim — behind the digits at probe 2 or 4 */
+.kpiBucket .baseStats[data-probe="2"] .speedRead::before,
+.kpiBucket .baseStats[data-probe="4"] .speedRead::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  /* TRUE circle: width == height; sized off your 3-digit rotor width */
+  width: calc(3 * var(--odometerFontWidth) + .5em);
+  height: calc(3 * var(--odometerFontWidth) + .5em);
+  border-radius: 50%;
+
+  /* OPAQUE fill = needle color */
+  background-color: #081a32;     /* same color you use for the needle */
+  background-image: none;
+  background-blend-mode: normal;
+
+  /* Metallic rim via shadows (no reflow) */
+  box-shadow:
+    0 0 0 2px var(--brass-base, #c4933a),
+    0 0 0 4px var(--brass-deep, #7a5c2b),
+    inset 0 0 0 1px rgba(255,255,255,0.25);
+
+  /* Crucial: draw behind the digits within .speedRead */
+  z-index: -1;
+  pointer-events: none;
 }
 
