@@ -37,22 +37,6 @@
 
 
 
-<header class="hBar" id="theHeaderBar">
-  <h1>Cruise Data Portal</h1>
-
-  <nav>
-    <ul id="navBarItems">
-      <li>Summary</li>
-      <li>Vessels</li>
-      <li>Services</li>
-    </ul>
-  </nav>
-
-<!-- Help icon -->
-<i id="help-btn" class="fa-regular fa-circle-question" title="Help" style="cursor:pointer;"></i>
-
-
-
 
   <!-- SheetJS (xlsx) must be available before export.js uses it -->
  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
@@ -77,7 +61,7 @@
     </nav>
 
     <!-- Help icon -->
-    <i class="fa-regular fa-circle-question" title="Help"></i>
+    <i id="help-btn" class="fa-regular fa-circle-question" title="Help" style="cursor:pointer;"></i>
 
     <!-- Export icon (clickable via JS by ID) -->
     <i id="download-combo"
