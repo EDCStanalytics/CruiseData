@@ -2379,12 +2379,26 @@ digitsRenderer: (speedEl, val) => {
   const arrowWrap = speedEl.querySelector('.trendArrow');
   const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
 
-  const onArrow = (e) => {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    handleTrendArrowClick('connections');  // toggles the Connections trend chart
-  };
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Only allow Connections trend arrow clicks when RIGHT KPI bucket is focused */
+const onArrow = (e) => {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  e.stopPropagation();
+
+  const rightBucket = document.getElementById('rightChartContainer');
+  const isRightFocused = !!rightBucket && rightBucket.classList.contains('focused');
+
+  if (!isRightFocused) {
+    // Ignore until the KPI bucket is focused
+    return;
+  }
+
+  // Proceed: toggle the Connections trend chart
+  handleTrendArrowClick('connections');
+};
+
 
   arrowWrap?.addEventListener('click', onArrow, { capture: true });
   arrowSvg ?.addEventListener('click', onArrow, { capture: true });
@@ -2601,14 +2615,25 @@ async function drawPowerCanvasChart(shipName) {
   if (!canvas) return;
 
   // target the dedicated chart host; create if missing
-  let chartHost = canvas.querySelector('.pc-chart');
-  if (!chartHost) {
-    chartHost = document.createElement('div');
-    chartHost.className = 'pc-chart';
-    const tblHost = canvas.querySelector('.pc-table-host');
-    (tblHost ? tblHost.after(chartHost) : canvas.appendChild(chartHost));
-  }
-  chartHost.innerHTML = '';
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Always insert the usage chart ABOVE the table (between trend and table) */
+let chartHost = canvas.querySelector('.pc-chart');
+if (!chartHost) {
+  chartHost = document.createElement('div');
+  chartHost.className = 'pc-chart';
+}
+chartHost.innerHTML = '';
+
+const tblHost = canvas.querySelector('.pc-table-host');
+if (tblHost) {
+  // Chart sits immediately before the table
+  canvas.insertBefore(chartHost, tblHost);
+} else {
+  // No table yet — append chart, table will be added later below it
+  canvas.appendChild(chartHost);
+}
+
 
   // === Data (T12 window) ===
   const { t12Calls, connById, lastStart, lastEnd } = await window.fillBuckets(); // lastStart..lastEnd = 12 completed months
@@ -3193,16 +3218,52 @@ function pcHideAndDestroy(canvas) {
 }
 
 /* 7) Auto-resize when content changes (add/remove) */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Auto-resize AND enforce strict child order: Trend (top) → Chart (middle) → Table (bottom) */
 function pcRefreshSizeOnMutations(canvas, hostBucket, spec) {
   if (canvas.__pcObs) canvas.__pcObs.disconnect();
+
+  // Enforce DOM order in one pass
+  const enforceOrder = () => {
+    const trendEl = canvas.querySelector('.pc-trend');        // top
+    const chartEl = canvas.querySelector('.pc-chart');        // middle
+    const tblHost = canvas.querySelector('.pc-table-host');   // bottom
+
+    // 1) Trend always first (top)
+    if (trendEl) {
+      canvas.insertBefore(trendEl, canvas.firstChild);
+    }
+
+    // 2) Table always last (bottom)
+    if (tblHost) {
+      canvas.appendChild(tblHost);
+    }
+
+    // 3) Chart always between trend and table (middle)
+    if (chartEl && tblHost) {
+      // Ensure chart sits immediately before the table
+      canvas.insertBefore(chartEl, tblHost);
+    } else if (chartEl && !tblHost) {
+      // No table yet: place chart after trend (or at end if no trend)
+      canvas.appendChild(chartEl);
+    }
+  };
+
   const obs = new MutationObserver(() => {
     pcSizeFor(canvas, spec, hostBucket);
     pcPlace(canvas, hostBucket);
+    enforceOrder();          // ← keep order correct after any add/remove
     pcMaybeDestroy(canvas);
   });
+
   obs.observe(canvas, { childList: true, subtree: true });
   canvas.__pcObs = obs;
+
+  // Initial pass so the order is correct immediately after we set up the observer
+  enforceOrder();
 }
+
 
 
 /* my code recommendation: REPLACEMENT — focus.js */
@@ -3222,15 +3283,28 @@ function pcMaybeDestroy(canvas) {
 
 
 /* 9) Orchestrator: run the steps in order; returns the canvas & content host */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Orchestrator: run the steps in order; returns the canvas & content host */
 function pcRender(spec, hostBucket) {
   const canvas = pcEnsureCanvas(hostBucket);
   const contentHost = pcApplyContent(canvas, spec);
+
+  // --- NEW: always (re)build the table whenever PowerCanvas is rendered ---
+  // This ensures the table is present whenever the canvas is visible.
+  // It does not clear existing chart/trend content.
+  void buildPowerCanvasTable();
+
+  // Size/place after content changes so height includes the table
   pcSizeFor(canvas, spec, hostBucket);
   pcPlace(canvas, hostBucket);
+
   pcShow(canvas);
   pcRefreshSizeOnMutations(canvas, hostBucket, spec);
+
   return { canvas, contentHost };
 }
+
 
 
 
