@@ -1,14 +1,20 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Globe Test</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Globe Test</title>
 
+  <!-- Core libraries -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson-client@3"></script>
     <script src="https://unpkg.com/d3-geo-projection@4"></script>
+
+
+  <!-- Styles -->
     <link rel="stylesheet" href="globe.css">
+  <!-- Your app scripts (defer to avoid blocking the parser) -->
     <script src="globe.js" defer></script>
     <script  src="../JavaScripts/helpers.js" defer></script>
     <script  src="../JavaScripts/callData.js" defer></script>
@@ -16,12 +22,10 @@
     <script  src="../JavaScripts/tutorial.js" defer></script>
     <script  src="../JavaScripts/tutorialModule.js" defer></script>
     <script  src="../JavaScripts/header.js" defer></script>
-
-    
     <script  src="../JavaScripts/chartEmbed.js" defer></script>
     <script src="../JavaScripts/focus.js" defer></script>
-    
-<!-- This installs Font Awesome-->
+
+  <!-- Font Awesome (icons) -->
         <script src="https://kit.fontawesome.com/14dbedf33a.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   
@@ -50,77 +54,58 @@
 
 
 
-  <!-- Export icon (make it a real clickable anchor with the ID your script uses) -->
-  
-    <i id ="download-combo"  class="fa-solid fa-database" style="cursor:pointer;" title="Download Combined Excel"></i>
-  </a>
-</header>
+  <!-- SheetJS (xlsx) must be available before export.js uses it -->
+ <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
 
-<!-- Wire up the click AFTER the element exists -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const trigger = document.getElementById('download-combo');
-    if (!trigger) {
-      console.error('download-combo link not found');
-      return;
-    }
-    trigger.addEventListener('click', async (e) => {
-      e.preventDefault();
-      try {
-        const count = await CruiseExporter.download();
-        console.log('Download started. Rows:', count);
-      } catch (err) {
-        console.error('Export failed:', err);
-        alert('Export failed: ' + err.message);
-      }
-    });
-  });
-</script>
+  <!-- Export utilities that define CruiseExporter -->
+ <script src ="../JavaScripts/export.js" defer></script>
 
-<!-- ✅ Scripts go OUTSIDE the header and load in correct order -->
+  <!-- Buttons & modal behavior (the code moved out of the HTML) -->
+<script src ="../JavaScripts/export-modal.js" defer></script>
+</head>
 
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" ></script>
-<script src="../JavaScripts/export.js" defer></script>
-<!-- Font Awesome 6 CSS (for fa-solid / fa-regular icons). Put this in <head> ideally. -->
-<link rel="stylesheet" ></link>
+<body>
+  <header class="hBar" id="theHeaderBar">
+    <h1>Cruise Data Portal</h1>
 
-</header>
+    <nav>
+      <ul id="navBarItems">
+        <li>Summary</li>
+        <li>Vessels</li>
+        <li>Services</li>
+      </ul>
+    </nav>
 
+    <!-- Help icon -->
+    <i class="fa-regular fa-circle-question" title="Help"></i>
 
+    <!-- Export icon (clickable via JS by ID) -->
+    <i id="download-combo"
+       class="fa-solid fa-database"
+       style="cursor:pointer;"
+       title="Export Data"></i>
+  </header>
 
-  <body>
-    <div id="earth"></div>
-  
-    <div id="dataSpace">
-      <div id="berthSpace"></div>
+  <div id="earth"></div>
 
-      <div id="cardSpace"></div>
+  <div id="dataSpace">
+    <div id="berthSpace"></div>
 
-      <div id="D3andME">
+    <div id="cardSpace"></div>
 
-        <div class="kpiBucket" id="leftChartContainer">
-          
-          <div class="baseStats">
+    <div id="D3andME">
+      <div class="kpiBucket" id="leftChartContainer">
+        <div class="baseStats"></div>
+        <div id="leftRadialChart" class="radial_anchor"></div>
+        <div id="leftCentralChart"></div>
+        <div class="glass" aria-hidden="true"></div>
+      </div>
 
-          </div>
-          
-          <div id="leftRadialChart" class="radial_anchor"></div>
-          <div id="leftCentralChart"></div>
-          <div class="glass" aria-hidden="true"></div>
-
-        </div>
-        
-        <div class="kpiBucket" id="rightChartContainer">
-          
-          <div class="baseStats">
-
-          </div>
-        
-          <div id="rightRadialChart" class="radial_anchor"></div>
-          <div id="rightCentralChart"></div>
-          <div class="glass" aria-hidden="true"></div>
-
-        </div>
+      <div class="kpiBucket" id="rightChartContainer">
+        <div class="baseStats"></div>
+        <div id="rightRadialChart" class="radial_anchor"></div>
+        <div id="rightCentralChart"></div>
+        <div class="glass" aria-hidden="true"></div>
       </div>
     </div>
     
@@ -144,4 +129,24 @@
 
   </body>
 
+  </div>
+
+  <!-- Popup Modal -->
+  <dialog id="exportChoiceModal" class="export-modal">
+    <form method="dialog" class="export-modal__content">
+      <div class="export-modal__header">
+        <button
+          type="button"
+          id="exportModalCloseBtn"
+          class="export-modal__close"
+          aria-label="Close">✕</button>
+      </div>
+      <p>Please choose a format to export:</p>
+      <div class="export-modal__actions">
+        <button type="button" id="exportExcelBtn" class="btn btn-primary">Excel (.xlsx)</button>
+        <button type="button" id="exportPdfBtn" class="btn btn-secondary">PDF (.pdf)</button>
+      </div>
+    </form>
+  </dialog>
+</body>
 </html>

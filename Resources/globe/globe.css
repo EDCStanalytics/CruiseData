@@ -189,7 +189,8 @@ body {
     transition: 
       transform 500ms ease-in-out, 
       opacity 500ms ease-in-out;
-    transform: scale(1);
+--focus-shift-x: 0px;
+    transform: translateX(var(--focus-shift-x)) scale(1);
     will-change: transform;
     display: flex;
     flex-direction: column;
@@ -207,6 +208,7 @@ body {
         0 8px 20px rgba(0,0,0,0.35),
         inset 0 0 0 2px rgba(255,255,255,0.15),
         inset 0 -6px 12px rgba(0,0,0,0.35);
+    
 
 }
 
@@ -269,6 +271,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    
 }
 
 .kpiBucket.focused .baseStats {
@@ -279,6 +282,7 @@ body {
 .kpiBucket.shrunk {
     transform: scale(.25);
     opacity: 0.0;
+    pointer-events: none;
 }
 
 
@@ -801,3 +805,15 @@ font-variant-numeric: tabular-nums;
   pointer-events: none;
 }
 
+
+/* export popUp */
+
+.export-modal { border: none; padding: 0; width: min(420px, 90vw); max-width: 420px; position: absolute; }
+.export-modal::backdrop { background: rgba(253, 250, 250, 0.35); }
+.export-modal__content { padding: 16px; background: #c4933a; border-radius: 10px; }
+.export-modal__header { display: flex; justify-content: space-between; align-items: center; }
+.export-modal__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; } 
+.export-modal__close { border: none; background: transparent; font-size: 18px; cursor: pointer; }
+.btn { padding: 10px; border-radius: 6px; cursor: pointer; }
+.exportExcelBtn { background: #2b4d7d; color: #d69f9f; }
+.exportPdfBtn { background: #7a5c2b; color: #330707; }
