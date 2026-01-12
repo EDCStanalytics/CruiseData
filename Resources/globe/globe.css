@@ -417,6 +417,7 @@ font-variant-numeric: tabular-nums;
     inset: 0;
     overflow: visible;
     pointer-events: none;
+    z-index: 40;  
 }
 
 /* Base appearance (keep lines visible and crisp) */
@@ -723,14 +724,14 @@ font-variant-numeric: tabular-nums;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -0.80em;              /* slight overlap below integer digits */
+  bottom: -1.10em;              /* slight overlap below integer digits */
   display: inline-block;
   white-space: nowrap;
   padding: 0.15em 0.25em;
   border-radius: 0.25rem;
   line-height: 1;
   font-weight: 500;
-  font-size: clamp(0.55rem, 1.2vw, 0.95rem);
+  font-size: clamp(0.75rem, 1.6vw, 1.25rem);
   color: var(--kpi-bg, #f8fafc);   /* inverted scheme for contrast */
   background: var(--kpi-fg, #0f172a);
   box-shadow: 0 0 0 1px rgba(15,23,42,0.08);
@@ -836,7 +837,7 @@ font-variant-numeric: tabular-nums;
   box-shadow: 0 8px 20px rgba(0,0,0,0.35); /* floating effect */
   border-radius: 8px; /* optional for softer edges */
   z-index: 50;
-  pointer-events: none; /* optional if you want it non-interactive for now */
+  
   
 opacity: 0;                /* start invisible */
   transition: opacity 0.4s ease;
@@ -847,6 +848,15 @@ opacity: 0;                /* start invisible */
 #powerCanvas.is-visible {
   opacity: 1;                /* fade to fully visible */
   transform: scale(1);
+}
+
+#powerCanvas .pc-chart {
+  height: var(--pc-child-h, 240px);
+}
+#powerCanvas .pc-table {
+  display: block;
+  height: var(--pc-child-h, 240px);
+  overflow: auto;
 }
 
 
@@ -979,6 +989,35 @@ opacity: 0;                /* start invisible */
   font-size: 0.95rem;
 }
 
+
+/* my code recommendation: INSERTION — globe.css */
+/* General rule: center + wrap any table cell (header or body)
+   marked as a numeric column via the "numberColumn" class. */
+
+table thead th.numberColumn,
+table tbody td.numberColumn {
+  text-align: center !important;  /* override local header rules */
+  vertical-align: middle;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  /* vertical divider to visually confirm alignment */
+  border-right: 1px solid var(--brass-deep, #7a5c2b);
+  border-left: 1px solid var(--brass-deep, #7a5c2b);
+}
+
+
+
+
+
+table th.textColumn,
+table td.textColumn {
+  text-align: left;
+}
+
+
+
 #powerCanvas .pc-table thead th {
   text-align: left;
   padding: 6px 8px;
@@ -994,3 +1033,88 @@ opacity: 0;                /* start invisible */
   background: rgba(0,0,0,0.06);
 }
 
+
+
+
+/* my code recommendation: INSERTION — globe.css */
+/* Trend chart host: fixed height; PowerCanvas already adapts to sum of children */
+#powerCanvas .pc-trend {
+  height: var(--pc-child-h, 240px); /* sits at the TOP of the canvas */
+}
+
+/* Optional: tune axis/line/dots for readability (neutral black line already set inline) */
+#powerCanvas .trend-chart .x-axis text { fill: var(--brass-deep, #7a5c2b); }
+#powerCanvas .trend-chart .y-axis text { fill: var(--brass-deep, #7a5c2b); }
+
+
+/* my code recommendation: REPLACEMENT — globe.css */
+/* Arrow host: precise hit-box (same digit width; ~1/3 height); no baseline drift */
+.baseStats .speedRead .trendArrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 0.10em);
+  pointer-events: auto;
+  z-index: 35;
+  cursor: pointer;
+
+  /* precise box */
+  display: inline-block;
+  width: var(--odometerFontWidth, 1.2ch);
+  height: calc(var(--odometerFontWidth, 1.2ch) * 0.33);
+
+  /* fix: prevent inline-line box from adding extra vertical space */
+  line-height: 0;
+  vertical-align: top;
+
+  /* make it a positioned container for the SVG */
+  position: absolute;
+}
+
+/* Optional debug visuals to see the hit-box bounds */
+.baseStats .speedRead .trendArrow.debug {
+  border: 1px dashed rgba(123,123,123,0.8);
+  background: rgba(0,0,0,0.02);
+}
+
+/* SVG fills the box exactly (absolute inset) */
+.baseStats .speedRead .trendArrowSvg {
+  position: absolute;
+  inset: 0;               /* top:0; right:0; bottom:0; left:0; */
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 0 1px rgba(0,0,0,0.20));
+}
+
+/* Fill color via --trend-color */
+.baseStats .speedRead .trendArrowSvg .arrow-shape {
+  fill: var(--trend-color, #2b4d7d);
+}
+
+/* Orientation */
+.baseStats .speedRead .trendArrowSvg.is-down { transform: rotate(180deg); }
+.baseStats .speedRead .trendArrowSvg.is-up   { transform: none; }
+
+
+/* my code recommendation: INSERTION — globe.css */
+/* PowerCanvas fade behavior */
+#powerCanvas {
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+#powerCanvas.is-visible {
+  opacity: 1;
+}
+#powerCanvas.is-fading {
+  opacity: 0; /* explicit target state for fade-out */
+}
+
+/* Trend chart fade behavior */
+#powerCanvas .pc-trend {
+  opacity: 1;
+  transition: opacity 300ms ease;
+}
+#powerCanvas .pc-trend.is-fading {
+  opacity: 0;
+}

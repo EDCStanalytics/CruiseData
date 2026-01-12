@@ -203,6 +203,7 @@ window.buildConnColorScale = function () {
 
 
 //now we add the event listeners to the areas the user can focus on
+/*
     buckets.forEach(bucket => {
         bucket.addEventListener("click", async () => {
           
@@ -253,19 +254,6 @@ window.buildConnColorScale = function () {
                 
                 updateFocusOffsetFor(bucket);
 
-                
-/* my code recommendation: INSERTION — focus.js (rightChartContainer branch, right after updateFocusOffsetFor(bucket)) */
-{
-  // Show the existing PowerCanvas at focus-time (no replacement of any bucket)
-  const hostBucket = document.getElementById('leftChartContainer') ?? bucket;
-  let pc = document.getElementById('powerCanvas');
-  if (!pc) {
-    pc = createPowerCanvas(hostBucket);           // uses your existing function
-    document.body.appendChild(pc);
-  }
-  requestAnimationFrame(() => {pc.classList.add('is-visible'); drawPowerCanvasChart(null);} ); // timing: appear on focus
-  // (No chart draw here; clicking an individual visit will still update content)
-}
 
                 positionProbeDots(bucket);
                 
@@ -307,11 +295,92 @@ await dR_usage();
 
         });
     });
+*/
 
-    
 
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Buckets click handler: ignore clicks from trend arrow; preserve existing logic */
+buckets.forEach(bucket => {
+  bucket.addEventListener("click", async (evt) => {
+    // --- NEW GUARD: do not toggle focus when the trend arrow is clicked ---
+    const t = evt.target;
+    if (t?.closest?.('.trendArrow, .trendArrowSvg')) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      return; // let the arrow’s own handler run (handleTrendArrowClick)
+    }
+    // ----------------------------------------------------------------------
+
+    const isAlreadyFocused = bucket.classList.contains("focused");
+
+    // Reset all buckets and shipCards if clicked again
+    if (isAlreadyFocused) {
+      bucket.classList.remove('focused');
+      const kpi = bucket.querySelector('.baseStats');
+      void setRotorToProbe(bucket, 0);
+      await waitForTransitionEndOnce(kpi);
+      updateFocusOffsetFor(bucket);
+
+      buckets.forEach(b => {
+        b.classList.remove('focused', 'shrunk');
+        b.style.removeProperty('--bucket-h');
+      });
+
+      shipCards.classList.remove("collapsed");
+      removeRadial("leftRadialChart");
+      removeRadial("rightRadialChart");
+      document.getElementById('rightCentralChart')?.replaceChildren();
+      document.getElementById('leftCentralChart')?.replaceChildren();
+      return;
+    }
+
+    // Collapse shipCards
+    shipCards.classList.add("collapsed");
+
+    // Apply focused/shrunk classes
+    buckets.forEach(b => {
+      if (b === bucket) {
+        b.classList.add("focused");
+        b.classList.remove("shrunk");
+      } else {
+        b.classList.remove("focused");
+        b.classList.add("shrunk");
+      }
+    });
+
+    if (bucket.id === "rightChartContainer") {
+      // --- RIGHT branch ---
+      removeRadial("leftRadialChart");
+      await waitForTransitionEndOnce(bucket);
+      updateFocusOffsetFor(bucket);
+      positionProbeDots(bucket);
+
+      await dR_kWh();
+      await dR_usage();
+      // window.drawPerformCentral('rightCentralChart');
+      await window.radialCalendar('rightRadialChart');
+      const { avg, n } = await window.getAvgConnQualityT12();
+      await window.drawConnQualityGauge('rightRadialChart', avg, n);
+      await window.drawPowerArcs('rightRadialChart');
+    } else {
+      // --- LEFT branch ---
+      removeRadial("rightRadialChart");
+      await waitForTransitionEndOnce(bucket);
+      updateFocusOffsetFor(bucket);
+      positionProbeDots(bucket);
+
+      // drawRadialT12('leftRadialChart');
+      await window.radialCalendar('leftRadialChart');
+      await window.drawCallArcs('leftRadialChart');
+    }
+  });
+});
 
 });
+
+
+
+
 
 const fmtShortMD = d =>
     d ? d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : '';
@@ -956,6 +1025,39 @@ const hit = itemG.append('path')
   .style('fill', 'transparent')
   .style('pointer-events', 'all');
 
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Tooltip tied to power-hit: include visit duration + connection details */
+hit.append('title')
+  .text(d => {
+    const v = d.call;
+
+    // Ensure Date objects
+    const arr = (v?.arrival instanceof Date) ? v.arrival : new Date(v?.arrival);
+    const dep = (v?.departure instanceof Date) ? v.departure : new Date(v?.departure);
+
+    // Visit duration (HHh MMm)
+    const durMs = (dep && arr && Number.isFinite(dep - arr)) ? (dep - arr) : 0;
+    const min = Math.round(durMs / 60000);
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    const visitDur = h ? `${h}h ${m}m` : `${m}m`;
+
+    // Connection details (if any)
+    const conn = v.connection;
+    const connText = conn
+      ? `\u000AShore Power: ${fmtShortMD(conn.connect)}, ${fmtTime(conn.connect)} → ${fmtShortMD(conn.disconnect)}, ${fmtTime(conn.disconnect)}\u000AConnection Duration: ${(() => {
+          const ms = (conn.disconnect && conn.connect) ? (conn.disconnect - conn.connect) : 0;
+          const cm = Math.round(ms / 60000), ch = Math.floor(cm / 60), cmm = cm % 60;
+          return ch ? `${ch}h ${cmm}m` : `${cmm}m`;
+        })()}`
+      : `\u000AShore Power: Did not connect`;
+
+    // Use explicit \u000A for newline inside SVG <title>
+    return `${v.vessel ?? 'Unknown'}\u000AVisit: ${fmtShortMD(arr)}, ${fmtTime(arr)} → ${fmtShortMD(dep)}, ${fmtTime(dep)}\u000ADuration: ${visitDur}${connText}`;
+  });
+
+/*
 hit.append('title')
   .text(d => {
     const v = d.call;
@@ -967,8 +1069,12 @@ hit.append('title')
     return `${v.vessel ?? 'Unknown'}\nVisit: ${visit}${connText}`;
   });
 
+  */
+
 /* my code recommendation: */
 hit.on('click', function (event, d) {
+  //removing original powercanvas render  
+/*
   event.stopPropagation(); // prevent bucket toggle back to level 0
 
   // --- toggle powerCanvas (no styling in JS; CSS handles look) ---
@@ -979,6 +1085,7 @@ hit.on('click', function (event, d) {
 
   // Create the canvas positioned relative to the LEFT KPI bucket per earlier spec,
   // or change to right bucket if you want it anchored there.
+
 
   const leftBucket = document.getElementById('leftChartContainer');
   const hostBucket = leftBucket ?? bucket; // anchor left by default
@@ -999,6 +1106,51 @@ requestAnimationFrame(() => {
 
 updateRadialHighlights(callId, d?.call?.vessel ?? null);
 activeCallId = callId;
+*/
+
+  event.stopPropagation(); // don't toggle bucket focus
+
+  
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Host the PowerCanvas off the LEFT bucket to keep it on the left half */
+const hostBucket =
+  document.getElementById('leftChartContainer') ??
+  document.getElementById('rightChartContainer');
+
+  if (!hostBucket) return;
+
+  // 1) Render/ensure canvas; clear previous content
+  const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
+
+  // 2) Set a CSS variable so child elements get exactly 1/3 of focused bucket height
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Use RIGHT bucket height so child elements are exactly one third of it */
+const rightBucket = document.getElementById('rightChartContainer');
+const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) / 3);
+canvas.style.setProperty('--pc-child-h', `${childH}px`);
+
+
+  const clickedId = d?.call?.id ?? null;
+  const chartEl = contentHost.querySelector('.pc-chart');
+
+  // Toggle: same call ⇒ remove chart; different/new ⇒ ensure + update chart
+  if (chartEl && activeCallId === clickedId) {
+    chartEl.remove();                // remove ONLY the chart
+    activeCallId = null;
+    window.activeVesselName = null; 
+    pcMaybeDestroy(canvas);          // auto-destroy if canvas is now empty
+    updateRadialHighlights(null, null);
+    return;
+  }
+
+
+  // Update chart for the clicked vessel/call
+  const vesselName = d?.call?.vessel ?? null;
+  drawPowerCanvasChart(vesselName);  // chart drawer now targets .pc-chart (see patch below)
+  updateRadialHighlights(clickedId, vesselName);  // apply highlight first
+  activeCallId = clickedId;                       // then update the tracker
+  window.activeVesselName = vesselName;
 
 
 
@@ -1036,6 +1188,13 @@ window.drawPerformCentral = async function(containerId) {
 
     //clear out the inner html content of our container
     el.innerHTML = '';
+
+const fmtDuration = (ms) => {
+  const min = Math.round(ms / 60000);
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return h ? `${h}h ${m}m` : `${m}m`;
+}
 
     //next we'll take some measurements to help keep the drawing right where it belongs
     const elWidth = el.clientWidth;
@@ -1125,12 +1284,7 @@ svg.append('g')
 
     
 
-const fmtDuration = (ms) => {
-  const min = Math.round(ms / 60000);
-  const h = Math.floor(min / 60);
-  const m = min % 60;
-  return h ? `${h}h ${m}m` : `${m}m`;
-}
+
 
 
 
@@ -1231,9 +1385,9 @@ svg.append('g')
 
 // === CONFIG for KPI probe points ===
 window.KPIProbeConfig = {
-  innerRatio: 0.6,    // (2) inner circle diameter vs. bucket diameter; tweakable
-  deltaDeg: 50,       // (3-4) +/- degrees around 6 o’clock; default 4 & 8 positions
-  betweenFraction: 0.25, // (5) fraction from center toward the 6-point; tweakable
+  innerRatio: 0.55,    // (2) inner circle diameter vs. bucket diameter; tweakable
+  deltaDeg: 45,       // (3-4) +/- degrees around 6 o’clock; default 4 & 8 positions
+  betweenFraction: -0.35, // (5) fraction from center toward the 6-point; tweakable
   sixDeg: 90          // 6 o’clock angle (0° = 3 o’clock, +CW with screen coords)
 };
 
@@ -1520,10 +1674,11 @@ const rotorEl = adoptSelector
 
 if (!rotorEl) return null;
 
-/* my code recommendation: */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Harden renderer: if digitsRenderer throws, fall back to odometer */
 function buildContent(el, value) {
   el.innerHTML = '';
-
   const speed = document.createElement('div');
   speed.className = 'speedRead';
   speed.id = `rotor-${role}-value`;
@@ -1535,22 +1690,27 @@ function buildContent(el, value) {
   el.appendChild(speed);
   el.appendChild(label);
 
-  // Render digits using the provided renderer or fall back to generic odometer
   const v = Number(value ?? 0);
+
   if (typeof digitsRenderer === 'function') {
-    digitsRenderer(speed, v);
+    try {
+      digitsRenderer(speed, v);
+    } catch (err) {
+      console.error(`digitsRenderer(${role}) failed:`, err);
+      // Safe fallback: plain odometer
+      window.Helpers.initOdometer(speed, Math.round(v));
+      window.Helpers.rollOdometer(speed, Math.round(v));
+    }
   } else {
     window.Helpers.initOdometer(speed, Math.round(v));
     window.Helpers.rollOdometer(speed, Math.round(v));
   }
 
   // Attach pill using provided pillText (string or function)
-  const pill =
-    typeof pillText === 'function' ? pillText(v)
-    : pillText;
-
+  const pill = typeof pillText === 'function' ? pillText(v) : pillText;
   attachRotorPill(speed, pill);
 }
+
 
 
 /* my code recommendation: */
@@ -1635,30 +1795,39 @@ function getFocusLevel(bucket) {
 rotorEl.dataset.probe = String(initialHuman);
 
 
-/* my code recommendation: */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Harden roller: if digitsRoller throws, fall back to plain roll */
 async function revealAndMove() {
   if (syncReveal === 'transitionEnd') {
     await waitForTransitionEndOnce(bucket);
   }
   rotorEl.classList.remove('is-hidden');
 
-  // Optional tiny delay (one frame) to overlap roll into fade cleanly
+  // One frame so the fade/roll overlap cleanly
   await new Promise(r => requestAnimationFrame(() => r()));
 
-  // Roll current value
   const s = rotorEl.querySelector('.speedRead');
   if (s) {
-    const v = await Promise.resolve().then(valueGetter);
-    if (typeof digitsRoller === 'function') {
-      digitsRoller(s, Number(v ?? 0));
-    } else {
-      window.Helpers.rollOdometer(s, Math.round(Number(v ?? 0)));
+    try {
+      const v = await Promise.resolve().then(valueGetter);
+      if (typeof digitsRoller === 'function') {
+        digitsRoller(s, Number(v ?? 0));
+      } else {
+        window.Helpers.rollOdometer(s, Math.round(Number(v ?? 0)));
+      }
+    } catch (err) {
+      console.error(`digitsRoller(${role}) failed:`, err);
+      // Minimal fallback if getter/roller fails
+      window.Helpers.rollOdometer(s, 0);
     }
   }
 
   positionProbeDots(bucket);
   // (no movement on reveal; we already spawn at appearAt)
 }
+``
+
 
 
 
@@ -1920,6 +2089,7 @@ function buildFixed3Odometer(speedEl, digits3, dotIndex = -1) {
  * - speedEl: the .speedRead container inside the rotor
  * - pillText: string to render in the pill ('' or null => no pill)
  */
+/*
 function attachRotorPill(speedEl, pillText) {
   if (!speedEl || !pillText) return;
 
@@ -1948,10 +2118,29 @@ function attachRotorPill(speedEl, pillText) {
   }
   tag.textContent = String(pillText);
 }
+*/
 
 
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Center the pill under the full 3-digit block by attaching it to .speedRead */
+function attachRotorPill(speedEl, pillText) {
+  if (!speedEl || !pillText) return;
+
+  // Create or reuse the pill directly under .speedRead (full-width anchor)
+  let tag = speedEl.querySelector('.magnitudeTag');
+  if (!tag) {
+    tag = document.createElement('span');
+    tag.className = 'magnitudeTag';
+    speedEl.appendChild(tag);
+  }
+  tag.textContent = String(pillText);
+}
+
+
+//replacing old method
 
 /* my code recommendation: */
+/*
 async function dR_kWh() {
   const bucketId = 'rightChartContainer';
   const bucket = document.getElementById(bucketId);
@@ -1986,29 +2175,127 @@ async function dR_kWh() {
     positions: { 1: 2, 2: 5 }
   });
 }
+*/
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* kWh rotor: use T12 trend + SVG arrow */
+async function dR_kWh() {
+  const bucketId = 'rightChartContainer';
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+
+  const existing = bucket.querySelector('.baseStats[data-role="kwh"]');
+  if (existing) return existing;
+
+  const trend = await window.ensureT12Trend();
+  const kwhT = trend.series.kwh;
+
+  return setupRotor({
+    role: 'kwh',
+    bucketId,
+    labelText: 'kWh Provided',
+    pillText: (val) => {
+      const fmt = formatKwhCompact(val ?? 0);
+      return fmt?.unit ? (unitFull(fmt.unit) + ' kWh') : '';
+    },
+    valueGetter: () => kwhT.current,
+
+    // build + arrow (SVG concave sides; color via trend mapping)
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* dR_kWh digitsRenderer: render digits, draw arrow, toggle trend on click */
+digitsRenderer: (speedEl, val) => {
+  // Render compact kWh (three digits; may include tenths depending on magnitude)
+  const fmt = formatKwhCompact(val ?? 0);
+  buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
+
+  // Draw the arrow with direction/color from the T12 trend
+  attachTrendArrow(speedEl, kwhT.dir, kwhT.color);
+
+  // Precise click handler on the arrow (wrapper & SVG), capture phase
+  const arrowWrap = speedEl.querySelector('.trendArrow');
+  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
+
+  const onArrow = (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    handleTrendArrowClick('kwh');     // toggles the kWh Provided trend chart
+  };
+
+  arrowWrap?.addEventListener('click', onArrow, { capture: true });
+  arrowSvg ?.addEventListener('click', onArrow, { capture: true });
+},
 
 
 
+    // roll the three stacks to target digits
+    digitsRoller: (speedEl, val) => {
+      const fmt = formatKwhCompact(val ?? 0);
+      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
+    },
+
+    appearWhen: 'focus',
+    hideWhen: 'blur',
+    startHidden: true,
+    syncReveal: 'transitionEnd',
+    positions: { 1: 2, 2: 5 }
+  });
+}
+
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Usage Rate rotor: use T12 trend + SVG arrow */
 async function dR_usage() {
   const bucketId = 'rightChartContainer';
   const bucket = document.getElementById(bucketId);
   if (!bucket) return null;
+
   const existing = bucket.querySelector('.baseStats[data-role="usage"]');
   if (existing) return existing;
 
-  const { avg } = await getAvgConnQualityT12(); // 0..1.25
+  const trend = await window.ensureT12Trend();
+  const useT = trend.series.usageRate; // 0..1.25 (rate)
 
   return setupRotor({
     role: 'usage',
     bucketId,
     labelText: 'Shore Power Usage',
     pillText: 'Usage Rate',
-    valueGetter: () => Math.max(0, avg) * 100,          // pass a float percent (e.g., 87.0)
+    valueGetter: () => Math.max(0, useT.current) * 100, // percent for digits
 
-    digitsRenderer: (speedEl, val) => {
-      const fmt = formatPercentCompact(val ?? 0);
-      buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
-    },
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* dR_usage digitsRenderer: render digits, draw arrow, toggle trend on click */
+digitsRenderer: (speedEl, val) => {
+  // Render 2 integer digits + tenths
+  const fmt = formatPercentCompact(val ?? 0);
+  buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
+
+  // Draw the arrow with direction/color from the T12 trend
+  attachTrendArrow(speedEl, useT.dir, useT.color);
+
+  // Precise click handler on the arrow (wrapper & SVG), capture phase
+  const arrowWrap = speedEl.querySelector('.trendArrow');
+  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
+
+  const onArrow = (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    handleTrendArrowClick('usage');   // toggles the Usage Rate trend chart
+  };
+
+  arrowWrap?.addEventListener('click', onArrow, { capture: true });
+  arrowSvg ?.addEventListener('click', onArrow, { capture: true });
+},
+
+
+
+    // roll the three stacks to target digits
     digitsRoller: (speedEl, val) => {
       const fmt = formatPercentCompact(val ?? 0);
       window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
@@ -2016,10 +2303,13 @@ async function dR_usage() {
 
     appearWhen: 'focus',
     hideWhen: 'blur',
-    startHidden: true, syncReveal: 'transitionEnd',
+    startHidden: true,
+    syncReveal: 'transitionEnd',
     positions: { 1: 5, 2: 2 }
   });
 }
+
+
 
 /* my code recommendation: */
 // Connections count rotor (T12), 3-digit, no fractional — RIGHT bucket
@@ -2034,7 +2324,7 @@ async function dR_connections() {
   /* my code recommendation: */
   const { t12ConnectionsCount } = await window.fillBuckets();
   const connCount = t12ConnectionsCount;
-
+/*
   return setupRotor({
     role: 'connections',
     bucketId,
@@ -2057,10 +2347,61 @@ async function dR_connections() {
     hideWhen: 'never',
     startHidden: false, syncReveal: 'transitionEnd',
     
-/* my code recommendation: */
   positions: { 0: 1, 1: 4, 2: 4 } 
 
   });
+  */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Replace ONLY the setupRotor(...) block inside dR_connections(...) */
+const trend = await window.ensureT12Trend();
+const connT = trend.series.connections;
+
+return setupRotor({
+  role: 'connections',
+  bucketId,
+  labelText: 'Connections',
+  pillText: 'Connections',
+  valueGetter: () => connT.current,               // T12 count (current window)
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* dR_connections digitsRenderer: render digits, draw arrow, toggle trend on click */
+digitsRenderer: (speedEl, val) => {
+  // Render 3 fixed digits (no fractional)
+  const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
+  buildFixed3Odometer(speedEl, s, -1);
+
+  // Draw the arrow with direction/color from the T12 trend
+  attachTrendArrow(speedEl, connT.dir, connT.color);
+
+  // Precise click handler on the arrow (wrapper & SVG), capture phase
+  const arrowWrap = speedEl.querySelector('.trendArrow');
+  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
+
+  const onArrow = (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    handleTrendArrowClick('connections');  // toggles the Connections trend chart
+  };
+
+  arrowWrap?.addEventListener('click', onArrow, { capture: true });
+  arrowSvg ?.addEventListener('click', onArrow, { capture: true });
+},
+
+
+  digitsRoller: (speedEl, val) => {
+    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
+    window.setRotorValue(speedEl, s);
+  },
+  appearWhen: 'always',
+  hideWhen: 'never',
+  startHidden: false, syncReveal: 'transitionEnd',
+  positions: { 0: 1, 1: 4, 2: 4 }
+});
+
+
 }
 
 
@@ -2082,6 +2423,7 @@ async function dR_calls() {
   const { t12Calls } = await window.fillBuckets(); // arrival ∈ T12
   const callCount = t12Calls.length;
 
+/*
   return setupRotor({
     role: 'calls',
     bucketId,
@@ -2106,6 +2448,35 @@ async function dR_calls() {
     startHidden: false, syncReveal: 'transitionEnd',
     positions: { 0: 1, 1: 1, 2: 1 }
   });
+  */
+
+  
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Inside dR_calls(...) after computing callCount, replace the setupRotor config with: */
+const trend = await window.ensureT12Trend();
+const callsT = trend.series.calls;
+
+return setupRotor({
+  role: 'calls',
+  bucketId,
+  labelText: 'Ship Calls (T12)',
+  pillText: 'Ship Calls',
+  valueGetter: () => callsT.current,
+  digitsRenderer: (speedEl, val) => {
+    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
+    buildFixed3Odometer(speedEl, s, -1);
+    attachTrendArrow(speedEl, callsT.dir, callsT.color);
+  },
+  digitsRoller: (speedEl, val) => {
+    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
+    window.setRotorValue(speedEl, s);
+  },
+  appearWhen: 'always',
+  hideWhen: 'never',
+  startHidden: false, syncReveal: 'transitionEnd',
+  positions: { 0: 1, 1: 1, 2: 1 }
+});
+
 }
 
 
@@ -2131,7 +2502,8 @@ document.addEventListener('click', (e) => {
 /* my code recommendation: */
 // Track currently selected call
 let activeCallId = null;
-
+//removing original powercanvas render  
+/*
 function createPowerCanvas(bucket) {
   const canvas = document.createElement('div');
   canvas.id = 'powerCanvas';
@@ -2151,6 +2523,7 @@ function createPowerCanvas(bucket) {
 
   return canvas;
 }
+  */
 
 // Attach click handler to each call segment in the LEFT radial chart
 document.querySelectorAll('#leftRadialChart g.power-item').forEach(item => {
@@ -2174,7 +2547,8 @@ if (existing && (activeCallId === callId || !bucket.classList.contains('focused'
   return;
 }
 
-
+//removing original powercanvas render  
+/*
     // Replace any existing canvas
     if (existing) existing.remove();
 
@@ -2182,6 +2556,7 @@ if (existing && (activeCallId === callId || !bucket.classList.contains('focused'
     const canvas = createPowerCanvas(bucket);
     document.body.appendChild(canvas);
     activeCallId = callId;
+    */
   });
 });
 
@@ -2212,423 +2587,284 @@ if (leftBucket) {
 
 
 
-/* my code recommendation: REPLACEMENT of the entire drawPowerCanvasChart function */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Full function: drawPowerCanvasChart(shipName)
+   - X-axis: TRUE TIME across the latest 12 completed months (T12), labeled "Jan 25", "Feb 25", …
+   - Each visit renders as a vertical line at its arrival DATE position.
+   - Each shore-power usage renders as a thicker vertical line at the same X, spanning connect→disconnect.
+   - Y-axis: time-of-day 6:00 → 18:00.
+   - Title + legend match usage chart styling.
+*/
 async function drawPowerCanvasChart(shipName) {
   const canvas = document.getElementById('powerCanvas');
   if (!canvas) return;
 
-  canvas.innerHTML = '';
-await buildPowerCanvasTable(canvas);
-if (!shipName) return; 
-  // --- helpers (local; no external scorer dependency) ---
-  const norm = s => String(s || '')
-    .toLowerCase()
-    .replace(/[\s\-]+/g, ' ')
-    .replace(/[^\w\s]/g, '')
-    .trim();
-  const nameScore = (a, b) => (norm(a) === norm(b) ? 1 : 0);
+  // target the dedicated chart host; create if missing
+  let chartHost = canvas.querySelector('.pc-chart');
+  if (!chartHost) {
+    chartHost = document.createElement('div');
+    chartHost.className = 'pc-chart';
+    const tblHost = canvas.querySelector('.pc-table-host');
+    (tblHost ? tblHost.after(chartHost) : canvas.appendChild(chartHost));
+  }
+  chartHost.innerHTML = '';
 
-  const toTOD = d => new Date(0, 0, 0, d.getHours(), d.getMinutes(), d.getSeconds(), 0);
-  const clampTOD = dt => {
-    const min = new Date(0,0,0,6,0);
-    const max = new Date(0,0,0,18,0);
-    const t = toTOD(dt);
-    return t < min ? min : t > max ? max : t;
-  };
-  const isMultiDay = (start, end) => start.toDateString() !== end.toDateString();
-  const fmtDuration = ms => {
-    const min = Math.round(ms / 60000);
-    const h = Math.floor(min / 60);
-    const m = min % 60;
-    return h ? `${h}h ${m}m` : `${m}m`;
-  };
+  // === Data (T12 window) ===
+  const { t12Calls, connById, lastStart, lastEnd } = await window.fillBuckets(); // lastStart..lastEnd = 12 completed months
 
-  // --- data: calls for T12 window + vessel info ---
-  const { t12Calls } = await window.fillBuckets();
-  const vesselInfo = window.getVesselInfo
-    ? window.getVesselInfo(shipName)
-    : { correctedName: shipName, cruiseLine: '' };
-  console.debug('[powerCanvas] vesselInfo:', vesselInfo);
-
-  const callsForShip = t12Calls.filter(c => nameScore(c.vessel, vesselInfo.correctedName) >= 0.75);
-
-  // diagnostics
-  console.log(
-    `[powerCanvas] target ship: "${shipName}" → corrected: "${vesselInfo.correctedName}" (line: ${vesselInfo.cruiseLine})`
-  );
-  console.log(`[powerCanvas] calls matching this ship (score ≥ 0.75): ${callsForShip.length}`);
-
-  if (!callsForShip.length) {
-    canvas.textContent = `No data for ${shipName} (${vesselInfo.cruiseLine})`;
-    return;
+  // Optional vessel normalization
+  let callsForShip = t12Calls;
+  if (shipName) {
+    const vesselInfo = window.getVesselInfo
+      ? (window.getVesselInfo(shipName) || { correctedName: shipName, cruiseLine: '' })
+      : { correctedName: shipName, cruiseLine: '' };
+    const norm = s => String(s || '').toLowerCase().replace(/[\s\-]+/g, ' ').replace(/[^\w\s]/g, '').trim();
+    const target = norm(vesselInfo.correctedName);
+    callsForShip = t12Calls.filter(c => norm(c.vessel) === target);
+    if (!callsForShip.length) {
+      chartHost.textContent = `No data for ${vesselInfo.correctedName} (${vesselInfo.cruiseLine || ''})`;
+      return;
+    }
   }
 
-  callsForShip.sort((a, b) => a.arrival - b.arrival);
+  // === Helpers ===
+  const toTOD = d => new Date(0, 0, 0, d.getHours(), d.getMinutes(), d.getSeconds(), 0);
+  const isMultiDay = (start, end) => start.toDateString() !== end.toDateString();
+  const clampTOD = (dt) => {
+    const min = new Date(0, 0, 0, 6, 0);
+    const max = new Date(0, 0, 0, 18, 0);
+    const t = toTOD(dt);
+    return (t < min) ? min : (t > max) ? max : t;
+  };
+  const fmtShortMD = d => d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+  const fmtTime = d => d ? d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '';
+  const fmtDuration = ms => { const m = Math.round(ms / 60000); const h = Math.floor(m / 60); const r = m % 60; return h ? `${h}h ${r}m` : `${r}m`; };
 
-  // --- layout ---
-  const width = canvas.clientWidth;
-  const height = canvas.clientHeight;
-  const margin = { top: 60, right: 40, bottom: 60, left: 80 };
-  const innerW = width - margin.left - margin.right;
-  const innerH = height - margin.top - margin.bottom;
+  // === Dimensions ===
+  const width  = chartHost.clientWidth;
+  const height = chartHost.clientHeight;
+  const margin = { top: 32, right: 20, bottom: 40, left: 52 };
+  const innerW = Math.max(0, width  - margin.left - margin.right);
+  const innerH = Math.max(0, height - margin.top  - margin.bottom);
 
-  const svg = d3.select(canvas)
+  // === Scales ===
+  const xStart = new Date(lastStart.getFullYear(), lastStart.getMonth(), 1);
+  const xEnd   = new Date(lastEnd.getFullYear(),   lastEnd.getMonth() + 1, 1); // month after lastEnd start
+  const x = d3.scaleTime().domain([xStart, xEnd]).range([0, innerW]);
+
+  const y = d3.scaleTime()
+    .domain([new Date(0, 0, 0, 6, 0), new Date(0, 0, 0, 18, 0)]) // 6:00 → 18:00
+    .range([innerH, 0]);
+
+  // === SVG ===
+  const svg = d3.select(chartHost)
     .append('svg')
     .attr('width', width)
     .attr('height', height);
 
-  const g = svg.append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`);
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-  // --- scales ---
-  const x = d3.scaleBand()
-    .domain(callsForShip.map(c => c.id))
-    .range([0, innerW])
-    .paddingInner(0.2);
+  // === Axes ===
+  const xAxis = d3.axisBottom(x)
+    .ticks(d3.timeMonth.every(1))
+    .tickFormat(d3.timeFormat('%b %y'))  // "Jan 25"
+    .tickSizeOuter(0);
 
-  const y = d3.scaleTime()
-    .domain([new Date(0,0,0,6,0), new Date(0,0,0,18,0)])
-    .range([innerH, 0]);
+  const yAxis = d3.axisLeft(y)
+    .ticks(d3.timeHour.every(2))
+    .tickFormat(d3.timeFormat('%-I %p')) // 6 AM, 8 AM, …
+    .tickSizeOuter(0);
 
-  // --- axis ---
-  /*
+  g.append('g')
+    .attr('class', 'x-axis')
+    .attr('transform', `translate(0,${innerH})`)
+    .call(xAxis);
+
   g.append('g')
     .attr('class', 'y-axis')
+    .call(yAxis);
+
+  // Grid lines (horizontal)
+  g.append('g')
+    .attr('class', 'grid-lines')
     .call(
       d3.axisLeft(y)
         .ticks(d3.timeHour.every(2))
-        .tickFormat(d3.timeFormat('%H:%M'))
+        .tickSize(-innerW)
+        .tickFormat('')
     );
-*/
 
-const yAxis = d3.axisLeft(y)
-  .ticks(d3.timeHour.every(2))
-  .tickFormat(d3.timeFormat('%H:%M'))
-  .tickSizeInner(0)   // prevent short tick stubs along the axis
-  .tickSizeOuter(0);  // prevent the long end ticks at 6:00 and 18:00
-
-
-
-// remove the axis baseline (domain path) so no vertical line appears
-//yAxisG.select('.domain').remove();
-const yAxisG = g.append('g')
-  .attr('class', 'y-axis')
-  .call(yAxis);
-  
-
-  //.selectAll('line')
-
+  // Month separators (vertical at month starts)
   g.append('g')
-  .attr('class', 'grid-lines')
-  .call(
-    d3.axisLeft(y)
-      .ticks(d3.timeHour.every(2))
-      .tickSize(-innerW) // extend ticks across plot width
-      .tickFormat('')    // no labels for grid
-  )
+    .attr('class', 'month-seps')
+    .selectAll('line.month-sep')
+    .data(d3.timeMonth.range(xStart, xEnd))
+    .enter()
+    .append('line')
+    .attr('class', 'month-sep')
+    .attr('x1', d => x(d))
+    .attr('x2', d => x(d))
+    .attr('y1', 0)
+    .attr('y2', innerH)
+    .attr('stroke', getComputedStyle(document.documentElement).getPropertyValue('--ink-300')?.trim?.() || '#999')
+    .attr('stroke-width', 1)
+    .attr('opacity', 0.85);
 
-
-  // --- title (CSS styles .chart-title) ---
+  // Title
   svg.append('text')
     .attr('class', 'chart-title')
     .attr('x', width / 2)
     .attr('y', 20)
     .attr('text-anchor', 'middle')
-    .text('T12 Shore Power Usage Rates');
+    .text('Shore Power Usage');
 
-  // --- legend (measure without bbox) ---
-  const legendText = `${vesselInfo.correctedName} (${vesselInfo.cruiseLine})`;
+  // Legend pill (same style)
+  const legendText = shipName ? `${shipName}` : 'All Vessels';
   const legendG = svg.append('g')
     .attr('class', 'chart-legend')
     .attr('transform', `translate(${width / 2}, ${height - 20})`);
-
   const textEl = legendG.append('text')
     .attr('class', 'legend-text')
     .attr('text-anchor', 'middle')
     .attr('dominant-baseline', 'middle')
     .text(legendText);
-
   const textNode = textEl.node();
-  const textWidth = (textNode && typeof textNode.getComputedTextLength === 'function')
-    ? textNode.getComputedTextLength()
-    : (legendText.length * 7); // conservative fallback
-  const textHeight = 14; // align with CSS font-size for legend
-
+  const textW = (textNode && typeof textNode.getComputedTextLength === 'function') ? textNode.getComputedTextLength() : legendText.length * 7;
+  const textH = 14;
   legendG.insert('rect', ':first-child')
     .attr('class', 'legend-pill')
-    .attr('x', -(textWidth / 2) - 12)
-    .attr('y', -(textHeight / 2) - 6)
-    .attr('width', textWidth + 24)
-    .attr('height', textHeight + 12);
-    // rx/ry handled in CSS (no inline styling)
+    .attr('x', -(textW / 2) - 12)
+    .attr('y', -(textH / 2) - 6)
+    .attr('width', textW + 24)
+    .attr('height', textH + 12);
 
-  // --- plot area (CSS styles .plot-area) ---
-  g.append('rect')
-    .attr('class', 'plot-area')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('width', innerW)
-    .attr('height', innerH);
+  // === Visits & Usage lines ===
+  const connColor = window.buildConnColorScale(); // 0..1.0..1.25 → color
 
-  
+  // hit rect width ≈ 2/3 day
+  const oneDayPx = x(new Date(x.domain()[0].getTime() + 24 * 3600 * 1000)) - x(x.domain()[0]);
+  const hitW = Math.max(8, oneDayPx * 0.66);
 
-/* my code recommendation: REPLACEMENT — visits thinner, centered */
-const visitWidth = x.bandwidth() * 0.45;            // 45% width for visit
-const visitX = (id) => x(id) + (x.bandwidth() - visitWidth) / 2;
+  // Build items
+  const items = callsForShip.map(c => {
+    const arrDateMidnight = new Date(c.arrival.getFullYear(), c.arrival.getMonth(), c.arrival.getDate());
+    const X = x(arrDateMidnight);
 
-/* my code recommendation: REPLACEMENT — visits as lines using radial class .power-stay */
-const centerX = id => x(id) + x.bandwidth() / 2;
+    // Visit Y extents
+    const y1 = y(clampTOD(c.arrival));
+    const y2 = y(isMultiDay(c.arrival, c.departure) ? new Date(0, 0, 0, 18, 0) : clampTOD(c.departure));
 
-/*
-g.selectAll('line.visit')
-  .data(callsForShip)
-  .enter()
-  .append('line')
-  .attr('class', 'visit power-stay')  // add shared selector
-  .attr('x1', d => centerX(d.id))
-  .attr('x2', d => centerX(d.id))
-  .attr('y1', d => {
-    const startY = y(clampTOD(d.arrival));
-    const endY = isMultiDay(d.arrival, d.departure) ? y.range()[0] : y(clampTOD(d.departure));
-    return Math.min(startY, endY);
-  })
-  .attr('y2', d => {
-    const startY = y(clampTOD(d.arrival));
-    const endY = isMultiDay(d.arrival, d.departure) ? y.range()[0] : y(clampTOD(d.departure));
-    return Math.max(startY, endY);
-  })
-  .append('title')
-  .text(d => `${d.vessel} — Visit: ${fmtDuration(d.departure - d.arrival)}`);
-*/
-
-
-
-  // --- connections: draw from connect to disconnect with the same logic ---
-
-/* my code recommendation: REPLACEMENT — connections drawn as lines with quality class */
-const connCenterX = (id) => x(id) + x.bandwidth() / 2;
-
-// Map connection value (0..1.25) to 5 bins: 0..4
-function qualityBin(value) {
-  const v = Math.max(0, Math.min(1.25, Number(value || 0)));
-  if (v < 0.33) return 0;
-  if (v < 0.66) return 1;
-  if (v < 1.00) return 2;
-  if (v < 1.25) return 3;
-  return 4;
-}
-
-
-/* my code recommendation: REPLACEMENT — connections as thicker, centered rectangles overlaying visits */
-const connWidth = x.bandwidth() * 0.70;             // 70% width for connection (thicker than visit)
-const connX = (id) => x(id) + (x.bandwidth() - connWidth) / 2;
-
-/* my code recommendation: REPLACEMENT — connections as lines using radial class .power-conn + quality */
-
-/* my code recommendation: REPLACEMENT — connections (line) with shared selector + quality */
-function binQuality(value) {
-  const v = Math.max(0, Math.min(1.25, Number(value || 0)));
-  if (v < 0.33) return 0;
-  if (v < 0.66) return 1;
-  if (v < 1.00) return 2;
-  if (v < 1.25) return 3;
-  return 4;
-}
-
-//const centerX = id => x(id) + x.bandwidth() / 2;
-
-g.selectAll('line.conn')
-  .data(callsForShip.filter(c => c.connection))
-  .enter()
-  .append('line')
-  /* we originally added the class to try to color the connection lines in css
-  .attr('class', d => {
-    const stayMsRaw = d.departure - d.arrival;
-    const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000));
-    let connValue = 0;
-    if (d.connection && stayMsAdj > 0) {
-      const connMs = d.connection.disconnect - d.connection.connect;
-      connValue = Math.max(0, Math.min(1.25, connMs / stayMsAdj));
+    // Connection (if any)
+    const conn = connById.get(c.id) || null;
+    let cy1 = null, cy2 = null, connVal = 0;
+    if (conn) {
+      const stayMsRaw = c.departure - c.arrival;
+      const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000)); // stay - 3h
+      const connMs = conn.disconnect - conn.connect;
+      connVal = stayMsAdj > 0 ? Math.max(0, Math.min(1.25, connMs / stayMsAdj)) : 0;
+      cy1 = y(clampTOD(conn.connect));
+      cy2 = y(isMultiDay(conn.connect, conn.disconnect) ? new Date(0, 0, 0, 18, 0) : clampTOD(conn.disconnect));
     }
-    return `conn power-conn quality-${binQuality(connValue)}`; // add shared selector + quality
-  })
-  */
-  .attr('x1', d => centerX(d.id))
-  .attr('x2', d => centerX(d.id))
-  .attr('y1', d => {
-    const startY = y(clampTOD(d.connection.connect));
-    const endY = isMultiDay(d.connection.connect, d.connection.disconnect) ? y.range()[0] : y(clampTOD(d.connection.disconnect));
-    return Math.min(startY, endY);
-  })
-  .attr('y2', d => {
-    const startY = y(clampTOD(d.connection.connect));
-    const endY = isMultiDay(d.connection.connect, d.connection.disconnect) ? y.range()[0] : y(clampTOD(d.connection.disconnect));
-    return Math.max(startY, endY);
-  })
-  .append('title')
-  .text(d => `Shore Power: ${fmtDuration(d.connection.disconnect - d.connection.connect)}`);
 
+    return {
+      c,
+      X,
+      y1: Math.min(y1, y2),
+      y2: Math.max(y1, y2),
+      cy1,
+      cy2,
+      connVal
+    };
+  });
 
-/* my code recommendation: REPLACEMENT — group per call, shared selectors, wide hit rectangle */
-//const centerX = id => x(id) + x.bandwidth() / 2;
+  // Group per call
+  const gCalls = g.selectAll('g.power-item')
+    .data(items)
+    .enter()
+    .append('g')
+    .attr('class', 'power-item');
 
-// 1) One group per call (so :hover affects both bars via existing CSS)
-const callGroups = g.selectAll('g.power-item')
-  .data(callsForShip)
-  .enter()
-  .append('g')
-  .attr('class', 'power-item')
-  .attr('transform', d => `translate(${centerX(d.id)},0)`);
+  // Visit stay (thin line)
+  gCalls.append('line')
+    .attr('class', 'power-stay')
+    .attr('x1', d => d.X).attr('x2', d => d.X)
+    .attr('y1', d => d.y1).attr('y2', d => d.y2)
+    .append('title')
+    .text(d => `${d.c.vessel || 'Unknown'} — Visit: ${fmtShortMD(d.c.arrival)} ${fmtTime(d.c.arrival)} → ${fmtShortMD(d.c.departure)} ${fmtTime(d.c.departure)}`);
 
-// 2) Visit line (arrival → departure) — uses .power-stay (shared with radial)
-callGroups.append('line')
-  .attr('class', 'power-stay')
-  .attr('x1', 0).attr('x2', 0)
+  // Connection (thicker, colored)
+  gCalls.filter(d => d.cy1 != null)
+    .append('line')
+    .attr('class', 'power-conn')
+    .style('--conn-color', d => connColor(d.connVal))
+    .attr('x1', d => d.X).attr('x2', d => d.X)
+    .attr('y1', d => Math.min(d.cy1, d.cy2))
+    .attr('y2', d => Math.max(d.cy1, d.cy2))
+    .append('title')
+    .text(d => {
+      const conn = connById.get(d.c.id);
+      return `Shore Power: ${fmtShortMD(conn.connect)} ${fmtTime(conn.connect)} → ${fmtShortMD(conn.disconnect)} ${fmtTime(conn.disconnect)}\nConnection Duration: ${fmtDuration(conn.disconnect - conn.connect)}`;
+    });
 
+  // Hit region (small rect centered on X)
 
-/* my code recommendation: REPLACEMENT — focus.js (drawPowerCanvasChart visit line y1/y2)
-   Find the block that builds the visit line inside:
-   callGroups.append('line').attr('class', 'power-stay')
-   and REPLACE ONLY the two .attr('y1') and .attr('y2') lines with the following: */
-
-.attr('y1', d => {
-  const arrTOD = toTOD(d.arrival);
-  const depClampedY = y(clampTOD(d.departure));
-  const arrivedAfterWindow = arrTOD > new Date(0, 0, 0, 18, 0); // arrival after 6 PM
-
-  if (isMultiDay(d.arrival, d.departure) && arrivedAfterWindow) {
-    // Edge case: arrival after window — show departure-day portion (6 AM → departure)
-    const startY = y.range()[0]; // 6 AM (bottom)
-    const endY = depClampedY;    // departure time (clamped)
-    return Math.min(startY, endY);
-  }
-
-  // Default: arrival-day portion — arrival (clamped) → top edge if multi-day, else departure
-  const startY = y(clampTOD(d.arrival));
-  const endY = isMultiDay(d.arrival, d.departure) ? y.range()[1] : depClampedY; // 6 PM (top) if multi-day
-  return Math.min(startY, endY);
-})
-.attr('y2', d => {
-  const arrTOD = toTOD(d.arrival);
-  const depClampedY = y(clampTOD(d.departure));
-  const arrivedAfterWindow = arrTOD > new Date(0, 0, 0, 18, 0); // arrival after 6 PM
-
-  if (isMultiDay(d.arrival, d.departure) && arrivedAfterWindow) {
-    // Edge case: arrival after window — show departure-day portion (6 AM → departure)
-    const startY = y.range()[0]; // 6 AM (bottom)
-    const endY = depClampedY;    // departure time (clamped)
-    return Math.max(startY, endY);
-  }
-
-  // Default: arrival-day portion — arrival (clamped) → top edge if multi-day, else departure
-  const startY = y(clampTOD(d.arrival));
-  const endY = isMultiDay(d.arrival, d.departure) ? y.range()[1] : depClampedY; // 6 PM (top) if multi-day
-  return Math.max(startY, endY);
-})
-
-
-  .append('title')
-  .text(d => `${d.vessel} — Visit: ${fmtDuration(d.departure - d.arrival)}`);
-
-// 3) Connection line (connect → disconnect) — uses .power-conn + quality-*
-function binQuality(value) {
-  const v = Math.max(0, Math.min(1.25, Number(value || 0)));
-  if (v < 0.33) return 0;
-  if (v < 0.66) return 1;
-  if (v < 1.00) return 2;
-  if (v < 1.25) return 3;
-  return 4;
-}
-
-
-//////
-/*
-callGroups.filter(d => d.connection).append('line')
-  .attr('class', d => {
-    const stayMsRaw = d.departure - d.arrival;
-    const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000));
-    let connValue = 0;
-    if (stayMsAdj > 0) {
-      const connMs = d.connection.disconnect - d.connection.connect;
-      connValue = Math.max(0, Math.min(1.25, connMs / stayMsAdj));
-    }
-    return `conn power-conn quality-${binQuality(connValue)}`;
-  })
-  .attr('x1', 0).attr('x2', 0)
-  .attr('y1', d => {
-    const startY = y(clampTOD(d.connection.connect));
-    const endY = isMultiDay(d.connection.connect, d.connection.disconnect)
-      ? y.range()[0] : y(clampTOD(d.connection.disconnect));
-    return Math.min(startY, endY);
-  })
-  .attr('y2', d => {
-    const startY = y(clampTOD(d.connection.connect));
-    const endY = isMultiDay(d.connection.connect, d.connection.disconnect)
-      ? y.range()[0] : y(clampTOD(d.connection.disconnect));
-    return Math.max(startY, endY);
-  })
-  .append('title')
-  .text(d => `Shore Power: ${fmtDuration(d.connection.disconnect - d.connection.connect)}`);
-*/
-
-const connColor = window.buildConnColorScale(); // use the existing continuous color scale
-
-callGroups.filter(d => d.connection).append('line')
-  .attr('class', 'conn power-conn') // no quality-* class; CSS uses --conn-color
-  .style('--conn-color', d => {
-    const stayMsRaw = d.departure - d.arrival;
-    const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000));
-    let connValue = 0;
-    if (stayMsAdj > 0) {
-      const connMs = d.connection.disconnect - d.connection.connect;
-      connValue = Math.max(0, Math.min(1.25, connMs / stayMsAdj));
-    }
-    return connColor(connValue); // set per-visit color via CSS variable
-  })
-  .attr('x1', 0).attr('x2', 0)
-  .attr('y1', d => {
-  const startY = y(clampTOD(d.connection.connect));
-  const endY = isMultiDay(d.connection.connect, d.connection.disconnect)
-    ? y.range()[1] // extend to top edge for multi-day
-    : y(clampTOD(d.connection.disconnect));
-  return Math.min(startY, endY);
-})
-.attr('y2', d => {
-  const startY = y(clampTOD(d.connection.connect));
-  const endY = isMultiDay(d.connection.connect, d.connection.disconnect)
-    ? y.range()[1]
-    : y(clampTOD(d.connection.disconnect));
-  return Math.max(startY, endY);
-})
-
-  .append('title')
-  .text(d => `Shore Power: ${fmtDuration(d.connection.disconnect - d.connection.connect)}`);
-
-
-
-// 4) Wide rectangular hit area — full column, centered on the line
-const hitWidth = x.bandwidth();                 // half band on each side of the center line
-callGroups.append('rect')
-  .attr('class', 'power-hit')                   // duplicated class selector for hover behavior
-  .attr('x', -hitWidth / 2)                     // center the rect on the line
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Tooltip tied to power-hit: include visit duration + connection details */
+gCalls.append('rect')
+  .attr('class', 'power-hit')
+  .attr('x', d => d.X - hitW / 2)
   .attr('y', 0)
-  .attr('width', hitWidth)
+  .attr('width', hitW)
   .attr('height', innerH)
   .style('fill', 'transparent')
   .style('pointer-events', 'all')
   .append('title')
   .text(d => {
-    const fmtMD = (dt) => dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const fmtHM = (dt) => dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    const visit = `${fmtMD(d.arrival)}, ${fmtHM(d.arrival)} → ${fmtMD(d.departure)}, ${fmtHM(d.departure)}`;
-    const conn = d.connection;
+    const v = d.c;
+
+    // Ensure Date objects
+    const arr = (v?.arrival instanceof Date) ? v.arrival : new Date(v?.arrival);
+    const dep = (v?.departure instanceof Date) ? v.departure : new Date(v?.departure);
+
+    // Visit duration (HHh MMm)
+    const durMs = (dep && arr && Number.isFinite(dep - arr)) ? (dep - arr) : 0;
+    const min = Math.round(durMs / 60000);
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    const visitDur = h ? `${h}h ${m}m` : `${m}m`;
+
+    // Connection details (if any)
+    const conn = connById.get(v.id);
     const connText = conn
-      ? `\nShore Power: ${fmtMD(conn.connect)}, ${fmtHM(conn.connect)} → ${fmtMD(conn.disconnect)}, ${fmtHM(conn.disconnect)}\nConnection Duration: ${fmtDuration(conn.disconnect - conn.connect)}`
-      : `\nShore Power: Did not connect`;
-    return `${d.vessel}\nVisit: ${visit}${connText}`;
+      ? `\u000AShore Power: ${fmtShortMD(conn.connect)}, ${fmtTime(conn.connect)} → ${fmtShortMD(conn.disconnect)}, ${fmtTime(conn.disconnect)}\u000AConnection Duration: ${(() => {
+          const ms = (conn.disconnect && conn.connect) ? (conn.disconnect - conn.connect) : 0;
+          const cm = Math.round(ms / 60000), ch = Math.floor(cm / 60), cmm = cm % 60;
+          return ch ? `${ch}h ${cmm}m` : `${cmm}m`;
+        })()}`
+      : `\u000AShore Power: Did not connect`;
+
+    // Explicit \u000A newline for SVG <title>
+    return `${v.vessel || 'Unknown'}\u000AVisit: ${fmtShortMD(arr)}, ${fmtTime(arr)} → ${fmtShortMD(dep)}, ${fmtTime(dep)}\u000ADuration: ${visitDur}${connText}`;
   });
 
+
+  // Plot area outline (CSS styles stroke)
+  g.append('rect')
+    .attr('class', 'plot-area')
+    .attr('x', 0).attr('y', 0)
+    .attr('width', innerW).attr('height', innerH);
+
+  // After draw: refresh canvas sizing/placement
+  const hostBucket =
+    document.getElementById('leftChartContainer') ??
+    document.getElementById('rightChartContainer');
+  if (hostBucket) {
+    pcSizeFor(canvas, { type: 'chart' }, hostBucket);
+    pcPlace(canvas, hostBucket);
+  }
 }
+
 
 
 function updateRadialHighlights(selectedCallId = null, selectedVessel = null) {
@@ -2756,52 +2992,88 @@ async function buildPowerCanvasTable() {
     th.textContent = col.label;
     th.dataset.key = col.key;
     th.style.cursor = 'pointer';
-    th.addEventListener('click', () => {
-      // toggle asc/desc per column
-      const currentSort = table.dataset.sortKey === col.key ? table.dataset.sortDir : null;
-      const nextDir = currentSort === 'asc' ? 'desc' : 'asc';
-      table.dataset.sortKey = col.key;
-      table.dataset.sortDir = nextDir;
 
-      rows.sort((a, b) => {
-        const av = a[col.key]; const bv = b[col.key];
-        if (col.numeric) {
-          return nextDir === 'asc' ? (av - bv) : (bv - av);
-        } else {
-          return nextDir === 'asc'
-            ? String(av).localeCompare(String(bv))
-            : String(bv).localeCompare(String(av));
-        }
-      });
-      renderBody();
-      highlightSorted(th, nextDir);
-    });
+  // alignment classes for header
+  if (col.key === 'cruiseLine' || col.key === 'vessel') {
+    th.classList.add('textColumn');   // left align
+  } else {
+    th.classList.add('numberColumn'); // center align
+  }
+
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Header click: first click → desc, subsequent clicks toggle asc/desc */
+th.addEventListener('click', () => {
+  const sameCol = table.dataset.sortKey === col.key;
+  const nextDir = sameCol
+    ? (table.dataset.sortDir === 'desc' ? 'asc' : 'desc')
+    : 'desc'; // first click sorts descending
+
+  table.dataset.sortKey = col.key;
+  table.dataset.sortDir = nextDir;
+
+  rows.sort((a, b) => {
+    const av = a[col.key];
+    const bv = b[col.key];
+    if (col.numeric) {
+      return nextDir === 'asc' ? (av - bv) : (bv - av);
+    } else {
+      return nextDir === 'asc'
+        ? String(av).localeCompare(String(bv))
+        : String(bv).localeCompare(String(av));
+    }
+  });
+
+  renderBody();
+  highlightSorted(th, nextDir);
+});
+
     trH.appendChild(th);
   });
   thead.appendChild(trH);
 
-  // helper to render body
-  function renderBody() {
-    tbody.innerHTML = '';
-    for (const r of rows) {
-      const tr = document.createElement('tr');
-      cols.forEach(col => {
-        const td = document.createElement('td');
-        let v = r[col.key];
-        if (col.key === 'usageRate') {
-          // display as percent of 1.25 scale (your score’s max)
-          const pct = Math.round(Math.min(1.25, v) * 100);
-          td.textContent = `${pct}%`;
-        } else if (col.numeric) {
-          td.textContent = Number(v ?? 0).toLocaleString('en-US');
-        } else {
-          td.textContent = String(v ?? '');
-        }
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    }
+function renderBody() {
+  tbody.innerHTML = '';
+
+  for (const r of rows) {
+    const tr = document.createElement('tr');
+    let tdLine = null;
+
+    cols.forEach(col => {
+      const td = document.createElement('td');
+      const v = r[col.key];
+
+      if (col.key === 'cruiseLine') {
+        td.textContent = String(v ?? '');
+        tdLine = td; // don’t apply yet
+      } else if (col.key === 'usageRate') {
+        const pct = Math.round(Math.min(1.25, v) * 100);
+        td.textContent = `${pct}%`;
+      } else if (col.numeric) {
+        td.textContent = Number(v ?? 0).toLocaleString('en-US');
+      } else {
+        td.textContent = String(v ?? '');
+      }
+
+        // alignment classes for header
+  if (col.key === 'cruiseLine' || col.key === 'vessel') {
+    td.classList.add('textColumn');   // left align
+  } else {
+    td.classList.add('numberColumn'); // center align
   }
+
+      tr.appendChild(td);
+    });
+
+    // Mount the row first
+    tbody.appendChild(tr);
+
+
+  }
+}
+
+
 
   // helper to style sorted header
   function highlightSorted(th, dir) {
@@ -2819,3 +3091,601 @@ async function buildPowerCanvasTable() {
   table.appendChild(tbody);
   tblHost.appendChild(table);
 }
+
+
+/* === PowerCanvas: modular lifecycle (size → place → content → show → auto-resize → destroy) === */
+
+/* 1) Ensure a single canvas exists */
+function pcEnsureCanvas(hostBucket) {
+  let pc = document.getElementById('powerCanvas');
+  if (!pc) {
+    pc = document.createElement('div');
+    pc.id = 'powerCanvas';
+    document.body.appendChild(pc);
+  }
+  pc.dataset.host = hostBucket?.id ?? '';
+  return pc;
+}
+
+/* 2) Size canvas for intended content (table/chart); allows overrides via spec.wK/spec.hK */
+
+/* PowerCanvas: size to fit children (chart/table) — no excess height */
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* PowerCanvas: size to fit children (trend + chart + table) + top/bottom margins */
+function pcSizeFor(canvas, spec, hostBucket) {
+  // Width anchored to left bucket
+  const leftBucket = document.getElementById('leftChartContainer') || hostBucket;
+  const hostW = leftBucket?.clientWidth ?? window.innerWidth;
+  const wK = (spec?.wK ?? 1.10);
+  canvas.style.width = `${Math.round(hostW * wK)}px`;
+
+  // Current rendered child heights
+  const trendH = (() => {
+    const el = canvas.querySelector('.pc-trend');
+    return el ? el.clientHeight : 0;
+  })();
+  const chartH = (() => {
+    const el = canvas.querySelector('.pc-chart');
+    return el ? el.clientHeight : 0;
+  })();
+  const tableH = (() => {
+    const el = canvas.querySelector('.pc-table-host .pc-table');
+    return el ? el.clientHeight : 0;
+  })();
+
+  // If no children yet, fallback to 1/3 of RIGHT bucket (unless explicit empty)
+  let contentH = trendH + chartH + tableH;
+  if (contentH === 0) {
+    const rightBucket = document.getElementById('rightChartContainer') || hostBucket;
+    const base = Math.round((rightBucket?.clientHeight ?? leftBucket?.clientHeight ?? window.innerHeight) / 3);
+    contentH = (spec?.type === 'empty') ? 0 : base;
+  }
+
+  const marginTopBottom = spec?.marginY ?? 8; // px, per side
+  const totalH = contentH + (marginTopBottom * 2);
+
+  canvas.style.height = `${totalH}px`;
+  canvas.style.paddingTop = `${marginTopBottom}px`;
+  canvas.style.paddingBottom = `${marginTopBottom}px`;
+}
+
+
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Place the PowerCanvas relative to the LEFT KPI bucket (fallback: hostBucket) */
+function pcPlace(canvas, hostBucket) {
+  const leftHost = document.getElementById('leftChartContainer') || hostBucket;
+  const left = leftHost?.offsetLeft ?? 0;
+  const top = leftHost
+    ? leftHost.offsetTop + Math.round((leftHost.clientHeight - canvas.clientHeight) / 2)
+    : 0;
+
+  canvas.style.position = 'absolute';
+  canvas.style.left = `${left}px`;
+  canvas.style.top = `${top}px`;
+}
+
+
+/* 4) Apply/prepare content container; returns the host for external drawers */
+function pcApplyContent(canvas, spec) {
+  let host = canvas.querySelector('.pc-table-host');
+  if (!host) {
+    host = document.createElement('div');
+    host.className = 'pc-table-host';
+    canvas.appendChild(host);
+  }
+  if (spec?.replace) host.replaceChildren(); // optional clear before re-render
+  return host;
+}
+
+/* 5) Show (fade in via CSS class) */
+function pcShow(canvas) {
+  requestAnimationFrame(() => canvas.classList.add('is-visible'));
+}
+
+/* 6) Hide then destroy when empty */
+function pcHideAndDestroy(canvas) {
+  canvas.classList.remove('is-visible');
+  setTimeout(() => canvas.remove(), 400); // match CSS fade duration
+}
+
+/* 7) Auto-resize when content changes (add/remove) */
+function pcRefreshSizeOnMutations(canvas, hostBucket, spec) {
+  if (canvas.__pcObs) canvas.__pcObs.disconnect();
+  const obs = new MutationObserver(() => {
+    pcSizeFor(canvas, spec, hostBucket);
+    pcPlace(canvas, hostBucket);
+    pcMaybeDestroy(canvas);
+  });
+  obs.observe(canvas, { childList: true, subtree: true });
+  canvas.__pcObs = obs;
+}
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Destroy only when there is neither a chart nor a table present */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Destroy only when there is neither a trend, chart, nor table present */
+function pcMaybeDestroy(canvas) {
+  const hasTrend = !!canvas.querySelector('.pc-trend');                 // TOP
+  const hasChart = !!canvas.querySelector('.pc-chart');                 // MIDDLE
+  const hasTable = !!canvas.querySelector('.pc-table-host .pc-table');  // BOTTOM
+  if (!hasTrend && !hasChart && !hasTable) {
+    pcHideAndDestroy(canvas);
+  }
+}
+
+
+
+/* 9) Orchestrator: run the steps in order; returns the canvas & content host */
+function pcRender(spec, hostBucket) {
+  const canvas = pcEnsureCanvas(hostBucket);
+  const contentHost = pcApplyContent(canvas, spec);
+  pcSizeFor(canvas, spec, hostBucket);
+  pcPlace(canvas, hostBucket);
+  pcShow(canvas);
+  pcRefreshSizeOnMutations(canvas, hostBucket, spec);
+  return { canvas, contentHost };
+}
+
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Cache per vessel ('' = all vessels) */
+window.ensureT12Trend = async function(vesselNameOrNull) {
+  const norm = s => String(s || '')
+    .toLowerCase()
+    .replace(/[\s\-]+/g, ' ')
+    .replace(/[^\w\s]/g, '')
+    .trim();
+
+  const key = vesselNameOrNull ? norm(vesselNameOrNull) : '';
+  if (!window.__T12TrendCache) window.__T12TrendCache = new Map();
+
+  const entry = window.__T12TrendCache.get(key);
+  if (entry && (Date.now() - entry.stamp < 60_000)) return entry.data;
+
+  const data = await computeT12Trend(key || null);  // <-- pass normalized key or null
+  window.__T12TrendCache.set(key, { data, stamp: Date.now() });
+  return data;
+};
+
+
+
+/* my code recommendation: INSERTION — focus.js */
+/* Attach a colored ▲/▼/• arrow above the rotor digits */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Draw a concave-sided arrow as SVG, sized to the middle digit width */
+function attachTrendArrow(speedEl, dir, color) {
+  if (!speedEl) return;
+
+  // host element (above digits)
+  let wrap = speedEl.querySelector('.trendArrow');
+  if (!wrap) {
+    wrap = document.createElement('span');
+    wrap.className = 'trendArrow'; // positioned by CSS
+    speedEl.appendChild(wrap);
+  }
+
+  // svg element (reused if present)
+  let svg = wrap.querySelector('svg.trendArrowSvg');
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+svg.setAttribute('class', 'trendArrowSvg');
+svg.setAttribute('viewBox', '0 0 100 30');             // ↓ half-height box
+svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+svg.setAttribute('aria-hidden', 'true');
+
+const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+path.setAttribute('class', 'arrow-shape');
+
+
+    /* Concave-sided UP arrow shape:
+       - Tip at (50,0)
+       - Side curves bow inward using cubic Beziers
+       - Base is a gentle arc (quadratic) */
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Concave-sided UP arrow with a straight horizontal base */
+
+
+path.setAttribute(
+  'd',
+  'M50,0 ' +                  // tip
+  'A 70 70 0 0 0 88,30 ' +    // right side arc (bows inward toward center)
+  'L 12,30 ' +                // base: perfectly horizontal
+  'A 70 70 0 0 0 50,0 Z'      // left side arc back to tip
+);
+
+    svg.appendChild(path);
+    wrap.appendChild(svg);
+  }
+
+  // orientation
+  svg.classList.toggle('is-down', dir === 'down');
+  svg.classList.toggle('is-up',   dir !== 'down'); // 'up' or 'flat' treated as up orientation
+
+  // color via CSS variable (no inline fill)
+  speedEl.style.setProperty('--trend-color', String(color ?? '#2b4d7d'));
+};
+
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Full function: computeT12Trend()
+   FIXED: 12-month windows now correctly end on the latest completed month.
+   - Build 24 completed-month buckets anchored to lastEnd (index 23 = latest).
+   - Produce 12 rolling 12‑month readings where:
+       windows12[11] = months 12..23  → CURRENT (e.g., Jan–Dec 2025)
+       windows12[10] = months 11..22  → PREVIOUS (e.g., Dec 2024–Nov 2025)
+   - Arrow color mapping: percent change → [0..1] centered at 0.5 (±50% clamp).
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Add optional vesselKey filter (normalized, lowercase, punctuation stripped) */
+async function computeT12Trend(vesselKey = null) {
+  const [calls, connections] = await Promise.all([window.callsPromise, window.connectionsPromise]);
+  const { lastEnd } = window.Helpers.getT24();
+
+  const monthStart = (y, m) => { const d = new Date(y, m, 1); d.setHours(0,0,0,0); return d; };
+  const monthEnd   = (y, m) => { const d = new Date(y, m + 1, 1); d.setMilliseconds(-1); return d; };
+
+  const endY = lastEnd.getFullYear();
+  const endM = lastEnd.getMonth();
+  const spanStart = monthStart(endY, endM - 23);
+  const spanEnd   = monthEnd(endY, endM);
+
+  const byMonth24 = Array.from({ length: 24 }, (_, i) => {
+    const anchor = new Date(endY, endM - 23 + i, 1);
+    const y = anchor.getFullYear(), m = anchor.getMonth();
+    return { i, y, m, start: monthStart(y, m), end: monthEnd(y, m), calls: [] };
+  });
+
+  const connById = new Map();
+  for (const c of connections) {
+    const ts = c.connect ?? c.disconnect;
+    if (ts && window.Helpers.rangeCheck(ts, spanStart, spanEnd) && c.id != null) {
+      connById.set(c.id, c);
+    }
+  }
+
+  const callsSorted = calls
+    .filter(c => window.Helpers.rangeCheck(c.arrival, spanStart, spanEnd))
+    .slice()
+    .sort((a, b) => a.arrival - b.arrival);
+
+  const norm = s => String(s || '')
+    .toLowerCase()
+    .replace(/[\s\-]+/g, ' ')
+    .replace(/[^\w\s]/g, '')
+    .trim();
+
+  // Filter calls to the selected vessel, if provided
+  const callsScoped = vesselKey ? callsSorted.filter(c => norm(c.vessel) === vesselKey) : callsSorted;
+
+  // Assign scoped calls to the 24 buckets
+  for (const c of callsScoped) {
+    const mi = (c.arrival.getFullYear() - spanStart.getFullYear()) * 12 +
+               (c.arrival.getMonth()      - spanStart.getMonth());
+    if (mi >= 0 && mi < 24) byMonth24[mi].calls.push(c);
+  }
+
+  const rateFor = (c) => {
+    const stayMsRaw = c.departure - c.arrival;
+    const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000));
+    const conn = connById.get(c.id) ?? null;
+    if (!conn || stayMsAdj <= 0) return 0;
+    const connMs = conn.disconnect - conn.connect;
+    return Math.max(0, Math.min(1.25, connMs / stayMsAdj));
+  };
+
+  const windows12 = Array.from({ length: 12 }, (_, w) => {
+    const months = byMonth24.slice(w + 1, w + 13); // ensure last window includes latest month
+    const allCalls = months.flatMap(b => b.calls);
+
+    const callsN       = allCalls.length;
+    const connectionsN = allCalls.filter(c => !!connById.get(c.id)).length;
+    const usageVals    = allCalls.map(rateFor).filter(v => Number.isFinite(v));
+    const usageRate    = usageVals.length ? (usageVals.reduce((s, v) => s + v, 0) / usageVals.length) : 0;
+    const kwhTotal     = allCalls.reduce((s, c) => s + ((connById.get(c.id)?.usage ?? 0)), 0);
+
+    return { calls: callsN, connections: connectionsN, usageRate, kwh: kwhTotal };
+  });
+
+  const current = windows12[11];
+  const prev    = windows12[10];
+
+  function pctToColorParam(last, prior) {
+    let r;
+    if (prior > 0) r = (last - prior) / prior;
+    else r = last > 0 ? 1 : 0;
+    const rc = Math.max(-0.5, Math.min(0.5, r));
+    return 0.5 + rc;
+  }
+
+  const colorScale = window.buildConnColorScale();
+  const makeSeries = (key) => {
+    const last  = current[key] ?? 0;
+    const prior = prev[key] ?? 0;
+    const delta = last - prior;
+    const dir   = (delta > 0) ? 'up' : (delta < 0 ? 'down' : 'flat');
+    const color = colorScale(pctToColorParam(last, prior));
+    return { values: windows12.map(w => w[key]), current: last, prev: prior, delta, dir, color };
+  };
+
+  return {
+    windows12,
+    series: {
+      calls:       makeSeries('calls'),
+      connections: makeSeries('connections'),
+      usageRate:   makeSeries('usageRate'),
+      kwh:         makeSeries('kwh')
+    }
+  };
+}
+
+
+
+
+/* my code recommendation: INSERTION — focus.js */
+/* === Trend chart orchestration === */
+
+/* Map rotor role → trend series key + legend label */
+const TrendRoleMap = {
+  usage:       { key: 'usageRate', label: 'Usage Rate' },
+  connections: { key: 'connections', label: 'Connections' },
+  kwh:         { key: 'kwh',        label: 'kWh Provided' }
+};
+
+
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Full function: handleTrendArrowClick(role)
+   Toggle behavior:
+   - 1st click on a role's arrow → insert trend chart at TOP of PowerCanvas.
+   - 2nd click on the SAME role (and same vessel filter) → remove the trend chart.
+   - Clicking a different role replaces the chart with that role.
+*/
+async function handleTrendArrowClick(role) {
+  const leftBucket  = document.getElementById('leftChartContainer');
+  const rightBucket = document.getElementById('rightChartContainer');
+  const hostBucket  = leftBucket ?? rightBucket;
+  if (!hostBucket) return;
+
+  // Ensure PowerCanvas exists; do NOT clear existing content
+  const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
+
+  // Give children a consistent height (one third of right bucket height)
+  const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) / 3);
+  canvas.style.setProperty('--pc-child-h', `${childH}px`);
+
+  // Find existing trend host (top slot) if any
+  let trendHost = contentHost.querySelector('.pc-trend');
+
+  // Determine the desired state (role + vessel)
+  const vessel = window.activeVesselName ?? null;
+  const desiredRole   = role;
+  const desiredVessel = vessel ?? '';
+
+  // If a trend is already showing and matches this role+vessel → TOGGLE OFF
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Toggle OFF: fade the chart and (if it will be empty) the canvas, then remove both */
+if (trendHost && trendHost.dataset.role === role && trendHost.dataset.vessel === (window.activeVesselName ?? '')) {
+  const canvas = document.getElementById('powerCanvas');
+  const willBeEmpty =
+    !contentHost.querySelector('.pc-chart') &&
+    !contentHost.querySelector('.pc-table-host .pc-table'); // only trend is present
+
+  // 1) Start chart fade (always)
+  trendHost.classList.add('is-fading');
+
+  // 2) If canvas will be empty after this removal, start canvas fade too
+  if (canvas && willBeEmpty) {
+    canvas.classList.add('is-fading');     // drive opacity → 0
+    canvas.classList.remove('is-visible'); // ensure we're not holding it at 1
+  }
+
+  // Force a reflow so transitions actually run before we remove anything
+  void trendHost.offsetWidth;
+
+  // 3) When the chart fade completes, remove the chart
+  const onChartFadeEnd = () => {
+    trendHost.remove();
+
+    // 4) If canvas was set to fade (empty after removal), remove it after its fade completes
+    if (canvas && willBeEmpty) {
+      const onCanvasFadeEnd = () => canvas.remove();
+      canvas.addEventListener('transitionend', onCanvasFadeEnd, { once: true });
+
+      // Safety timeout: remove even if transitionend doesn’t fire
+      setTimeout(onCanvasFadeEnd, 400);
+    }
+  };
+
+  trendHost.addEventListener('transitionend', onChartFadeEnd, { once: true });
+
+  // Safety timeout for the chart as well
+  setTimeout(onChartFadeEnd, 400);
+
+  return;
+}
+
+
+  // Otherwise ensure there is a trend host and draw/refresh for the new role
+  if (!trendHost) {
+    trendHost = document.createElement('div');
+    trendHost.className = 'pc-trend';
+    contentHost.insertBefore(trendHost, contentHost.firstChild); // always top
+  }
+
+  // Track what's being displayed for robust toggling next time
+  trendHost.dataset.role   = desiredRole;
+  trendHost.dataset.vessel = desiredVessel;
+
+  // Map rotor role → series key + legend label
+  const cfg = {
+    usage:       { key: 'usageRate',   label: 'Usage Rate' },
+    connections: { key: 'connections', label: 'Connections' },
+    kwh:         { key: 'kwh',         label: 'kWh Provided' }
+  }[desiredRole];
+  if (!cfg) return;
+
+  // Draw chart for this role (respect vessel filter)
+  await drawT12TrendChart(trendHost, cfg.key, cfg.label, vessel);
+
+  // Refresh canvas sizing/placement after content changes
+  pcSizeFor(canvas, { type: 'chart' }, hostBucket);
+  pcPlace(canvas, hostBucket);
+}
+
+
+
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Full function: drawT12TrendChart(hostEl, seriesKey, legendLabel)
+   - Renders a clean T12 Trend line chart at the TOP of PowerCanvas.
+   - X axis: end-month labels "Apr 24", "May 24", … (12 points).
+   - Y axis: starts at 0; auto max per measure; neutral black line; dots with tooltips.
+   - Title: "T12 Trend"; Legend: same pill spacing as usage chart, showing legendLabel. */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Full signature updated to accept vesselName and filter trend */
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Full function: drawT12TrendChart(hostEl, seriesKey, legendLabel, vesselName = null)
+   - Filters to the selected vessel when provided.
+   - X axis: 12 end-month labels "Apr 24", "May 24", …
+   - Y axis: starts at 0; local auto-max.
+   - Title: "T12 Trend"; Legend: pill (usage-chart spacing) with measure + vessel.
+   - Neutral black line; distinct dots with hover tooltips including T12 period window.
+*/
+async function drawT12TrendChart(hostEl, seriesKey, legendLabel, vesselName = null) {
+  if (!hostEl) return;
+  hostEl.innerHTML = '';
+
+  // Get 12 readings for the requested series, filtered to vessel if provided
+  const trend = await window.ensureT12Trend(vesselName ?? null);
+  const series = trend?.series?.[seriesKey];
+  if (!series) return;
+
+  const values = Array.isArray(series.values) ? series.values.slice() : [];
+  if (!values.length) return;
+
+  // Build 12 end-month labels from lastEnd (e.g., "Apr 24")
+  const { lastEnd } = window.Helpers.getT24();
+  const endY = lastEnd.getFullYear();
+  const endM = lastEnd.getMonth();
+
+  const monthStart = (y, m) => { const d = new Date(y, m, 1); d.setHours(0,0,0,0); return d; };
+  const fmtLabel = (d) => d.toLocaleDateString('en-US', { month: 'short' }) + ' ' + String(d.getFullYear()).slice(-2);
+
+  // Windows indexed 0..11 end at months (endM - 11 + w)
+  const endMonths = Array.from({ length: 12 }, (_, w) => monthStart(endY, endM - 11 + w));
+  const xLabels   = endMonths.map(fmtLabel);
+
+  // Tooltip period: each window spans 12 months ending at its end-month
+  const periodLabel = (w) => {
+    const startMonth = monthStart(endY, endM - 22 + w); // start of window
+    const endMonth   = monthStart(endY, endM - 11 + w); // end of window
+    const fmt = (d) => d.toLocaleDateString('en-US', { month: 'short' }) + ' ' + String(d.getFullYear()).slice(-2);
+    return `${fmt(startMonth)} - ${fmt(endMonth)}`;
+  };
+
+  // Dimensions
+  const width  = hostEl.clientWidth;
+  const height = hostEl.clientHeight;
+  const margin = { top: 28, right: 16, bottom: 36, left: 44 };
+  const innerW = Math.max(0, width  - margin.left - margin.right);
+  const innerH = Math.max(0, height - margin.top  - margin.bottom);
+
+  // Scales: X evenly spaced, Y starts at 0; usageRate shown as %
+  const x = d3.scaleLinear().domain([0, 11]).range([0, innerW]);
+  const isPercent = (seriesKey === 'usageRate');
+  const yVals = isPercent ? values.map(v => Math.max(0, v) * 100) : values.map(v => Math.max(0, v));
+  const yMax = Math.max(1, Math.ceil((Math.max(...yVals) || 1) / 10) * 10); // round up to nearest 10
+  const y = d3.scaleLinear().domain([0, yMax]).range([innerH, 0]);
+
+  // SVG
+  const svg = d3.select(hostEl)
+    .append('svg')
+    .attr('class', 'trend-chart')
+    .attr('width', width)
+    .attr('height', height);
+
+  const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  // Axes
+  const xAxis = d3.axisBottom(d3.scalePoint().domain(xLabels).range([0, innerW])).tickSizeOuter(0);
+  const yAxis = d3.axisLeft(y).ticks(5).tickSizeOuter(0);
+  g.append('g').attr('class', 'x-axis').attr('transform', `translate(0,${innerH})`).call(xAxis);
+  g.append('g').attr('class', 'y-axis').call(yAxis);
+
+  // Title
+  svg.append('text')
+    .attr('class', 'chart-title')
+    .attr('x', width / 2)
+    .attr('y', 18)
+    .attr('text-anchor', 'middle')
+    .text('T12 Trend');
+
+  // Legend — same spacing as usage chart; include vesselName when filtered
+  const legendText = vesselName ? `${legendLabel} — ${vesselName}` : legendLabel;
+  const legendG = svg.append('g')
+    .attr('class', 'chart-legend')
+    .attr('transform', `translate(${width / 2}, ${height - 20})`);
+  const textEl = legendG.append('text')
+    .attr('class', 'legend-text')
+    .attr('text-anchor', 'middle')
+    .attr('dominant-baseline', 'middle')
+    .text(legendText);
+  const textNode = textEl.node();
+  const textWidth = (textNode && typeof textNode.getComputedTextLength === 'function')
+    ? textNode.getComputedTextLength()
+    : legendText.length * 7;
+  const textHeight = 14;
+  legendG.insert('rect', ':first-child')
+    .attr('class', 'legend-pill')
+    .attr('x', -(textWidth / 2) - 12)
+    .attr('y', -(textHeight / 2) - 6)
+    .attr('width', textWidth + 24)
+    .attr('height', textHeight + 12);
+
+  // Line path (neutral black)
+  const line = d3.line()
+    .x((_, i) => x(i))
+    .y((d) => y(isPercent ? d * 100 : d));
+  g.append('path')
+    .datum(values)
+    .attr('class', 'trend-line')
+    .attr('d', line)
+    .attr('fill', 'none')
+    .attr('stroke', '#000')
+    .attr('stroke-width', 2);
+
+  // Dots + native tooltips (hover)
+  g.selectAll('circle.trend-dot')
+    .data(values.map((v, i) => ({ v, i })))
+    .enter()
+    .append('circle')
+    .attr('class', 'trend-dot')
+    .attr('r', 3.5)
+    .attr('cx', d => x(d.i))
+    .attr('cy', d => y(isPercent ? d.v * 100 : d.v))
+    .attr('fill', '#000')
+    .append('title')
+    .text(d => {
+      const val = isPercent ? `${Math.round(d.v * 100)}%` : `${Math.round(d.v).toLocaleString('en-US')}`;
+      return `${val}\n${periodLabel(d.i)}`;
+    });
+}
+
+
