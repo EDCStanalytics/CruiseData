@@ -100,12 +100,19 @@ div {
   }
 
 
-/* Overlay container toggled by JS */
+/* Root covers the viewport and centers its children */
 #tutorial-root {
   position: fixed;
   inset: 0;
   z-index: 9999;
+  display: none;                 /* hidden via [hidden] by default */
+  align-items: center;           /* vertical center */
+  justify-content: center;       /* horizontal center */
 }
+
+/* Unhide when not [hidden] (optional) */
+#tutorial-root:not([hidden]) { display: flex; }
+
 
 /* Center the tutorial panel in the viewport */
 .tut-panel.centered {

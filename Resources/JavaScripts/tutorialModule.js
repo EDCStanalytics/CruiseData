@@ -160,12 +160,59 @@ class Tutorial {
   }
 }
 
+/*
+(function () {
+  const arrowEl = document.getElementById('tutorial-arrow');
+  let currentTarget = null;
+  let rafId = null;
+
+  function positionArrowBelow(target) {
+    if (!arrowEl || !target) return;
+    const rect = target.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const belowY  = rect.bottom + 10; // 10px gap
+
+    arrowEl.style.left = `${centerX}px`;
+    arrowEl.style.top  = `${belowY}px`;
+  }
+
+  function onScrollOrResize() {
+    if (!currentTarget) return;
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => positionArrowBelow(currentTarget));
+  }
+
+  // Public API on window for re-use in tutorial steps
+  window.TutorialArrow = {
+    showBelow(targetEl, labelText = 'Export\nhere') {
+      if (!arrowEl || !targetEl) return;
+      currentTarget = targetEl;
+
+      // Optional: update label dynamically
+      const body = arrowEl.querySelector('.arrow-body');
+      if (body) body.innerHTML = labelText.replace('\n', '<br>');
+
+      positionArrowBelow(targetEl);
+      arrowEl.hidden = false;
+      arrowEl.setAttribute('data-show', 'true');
+
+      window.addEventListener('scroll', onScrollOrResize, { passive: true });
+      window.addEventListener('resize', onScrollOrResize);
+    },
+    hide() {
+      if (!arrowEl) return;
+      currentTarget = null;
+      arrowEl.removeAttribute('data-show');
+      arrowEl.hidden = true;
+      window.removeEventListener('scroll', onScrollOrResize);
+      window.removeEventListener('resize', onScrollOrResize);
+    }
+  };
+})();
+*/
 // Expose singleton
 window.Tutorial = new Tutorial();
 
-helpBtn.addEventListener('click', () => {
-  window.Tutorial.start(steps, { centered: true });
-});
 
 
 
