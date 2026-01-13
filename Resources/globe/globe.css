@@ -1129,3 +1129,168 @@ table td.textColumn {
 .btn { padding: 10px; border-radius: 6px; cursor: pointer; }
 .exportExcelBtn { background: #2b4d7d; color: #d69f9f; }
 .exportPdfBtn { background: #7a5c2b; color: #330707; }
+
+
+/* my code recommendation: */
+/* REPLACEMENT: compact tutorial UI styles */
+
+/* ===== Tokens (adjust green to your brand) ===== */
+:root {
+  --tut-overlay: rgba(0, 0, 0, 0.35);
+  --tut-panel-bg: rgba(20, 20, 24, 0.92);
+  --tut-text: #fff;
+  --tut-green: #2e7d32;   /* set to your brand green */
+  --tut-red:   #d9534f;
+  --tut-grey:  #3a3f4a;
+  --tut-radius: 12px;
+  --tut-shadow: 0 18px 40px rgba(0,0,0,0.45);
+  --tut-z: 1000;          /* base z-index; panel uses +1 */
+}
+
+/* ===== Overlay root & layers ===== */
+#tutorial-root[hidden] { display: none; }
+#tutorial-root {
+  position: fixed; inset: 0; z-index: var(--tut-z);
+  pointer-events: none; /* children handle events */
+}
+
+.tut-overlay {
+  position: fixed; inset: 0;
+  background: var(--tut-overlay);
+  backdrop-filter: blur(2px);
+  pointer-events: auto;
+}
+
+.tut-spotlight {
+  position: fixed;
+  box-shadow: 0 0 0 9999px var(--tut-overlay);
+  outline: 2px solid rgba(255,215,0,0.85);
+  pointer-events: none;
+}
+
+/* ===== Panel (message window) ===== */
+.tut-panel {
+  position: fixed; z-index: calc(var(--tut-z) + 1);
+  max-width: 520px;
+  background: var(--tut-panel-bg);
+  color: var(--tut-text);
+  border-radius: var(--tut-radius);
+  box-shadow: var(--tut-shadow);
+  padding: 16px 18px;
+
+  display: flex;           /* lets actions dock to bottom */
+  flex-direction: column;
+}
+
+.tut-panel.centered {
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+}
+
+.tut-title {
+  margin: 0 0 8px;
+  font: 600 1.1rem/1.3 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+.tut-content {
+  margin: 0 0 12px;
+  font: 400 0.95rem/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* ===== Actions row: Skip left | Back + Next right ===== */
+.tut-actions {
+  margin-top: auto; padding-top: 8px;
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* Base button look */
+.tut-actions .tut-prev,
+.tut-actions .tut-next,
+.tut-actions .tut-done {
+  display: inline-flex;            /* keep icon+text aligned */
+  align-items: center; justify-content: center;
+  padding: 8px 12px; border: 0; border-radius: 10px;
+  color: var(--tut-text);
+  font: 600 0.95rem/1.1 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  cursor: pointer;
+}
+
+/* Role colors */
+.tut-actions .tut-next { background: var(--tut-green); }  /* Begin/Next/Finish */
+.tut-actions .tut-done { background: var(--tut-red);   }  /* Skip/Exit */
+.tut-actions .tut-prev { background: var(--tut-grey);  }  /* Back */
+
+/* Placement: Skip/Exit at left; Back + Next grouped at right */
+.tut-actions .tut-done { order: 1; margin-right: auto; }
+.tut-actions .tut-prev { order: 2; margin-left: auto; }
+.tut-actions .tut-next { order: 3; }
+
+/* ===== Force label BEFORE icon in each button ===== */
+/* Wrap your labels in <span> (your JS does this). We then set explicit child order. */
+.tut-actions .tut-prev > span,
+.tut-actions .tut-next > span,
+.tut-actions .tut-done > span { order: 1 !important; }
+
+.tut-actions .tut-prev > i,
+.tut-actions .tut-next > i,
+.tut-actions .tut-done > i {
+  order: 2 !important;            /* icon always AFTER text */
+  margin-left: 6px !important;    /* spacing for trailing icon */
+  margin-right: 0 !important;
+  font-size: 1em;                 /* match text size */
+  line-height: 1;
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* Respect JS hiding of Back on intro */
+.tut-actions .tut-prev[style*="display: none"] { display: none !important; }
+
+/* Guard against any pseudo “keycap” arrows */
+.tut-actions .tut-prev::before,
+.tut-actions .tut-next::before,
+.tut-actions .tut-done::before { content: none !important; }
+
+
+/* my code recommendation: */
+/* INSERTION: stronger hover + custom focus ring for tutorial buttons */
+
+/* Ensure the panel accepts pointer events (needed for :hover) */
+.tut-panel { pointer-events: auto; }
+
+/* Stronger lighten on hover (about +20%) + slight lift */
+.tut-actions .tut-prev,
+.tut-actions .tut-next,
+.tut-actions .tut-done {
+  transition: filter 160ms ease, box-shadow 160ms ease, opacity 140ms ease;
+  will-change: filter, box-shadow;
+}
+
+.tut-actions .tut-prev:hover,
+.tut-actions .tut-next:hover,
+.tut-actions .tut-done:hover {
+  filter: brightness(1.20);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+.tut-actions .tut-prev:active,
+.tut-actions .tut-next:active,
+.tut-actions .tut-done:active {
+  filter: brightness(1.10);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.20);
+}
+
+/* Custom focus ring that matches the dark panel — removes the white border look */
+.tut-actions .tut-prev:focus-visible,
+.tut-actions .tut-next:focus-visible,
+.tut-actions .tut-done:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.75);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.30); /* subtle inner contrast on dark panel */
+}
+
+/* If your browser is showing a default ring via :focus (not :focus-visible), normalize it */
+.tut-actions .tut-prev:focus,
+.tut-actions .tut-next:focus,
+.tut-actions .tut-done:focus {
+  outline: none;
+}
+
