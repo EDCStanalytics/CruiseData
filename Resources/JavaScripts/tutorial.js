@@ -2,8 +2,8 @@
   document.addEventListener('DOMContentLoaded', () => {
     const steps = [
       {
-        title: 'Welcome to the NYC Cruise Data Portal',
-        content: 'This tutorial will provide a brief walkthrough of the dashboard. If this is not your first time visiting the website, please feel free to close out of this tutorial. Otherwise, click the "next" button or "right" arrow key to continue. Press "ESC" at any point to close the tutorial.',
+        title: 'Welcome Aboard the NYC Cruise Data Portal!',
+        content: 'If this is your first visit we encourage you to take a quick tour to get familiar with how we organize our data.',
         position: 'right',
         padding: 12
       },
@@ -123,13 +123,15 @@
       }
     ];
 
-    // Start on first visit or on demand:
-     window.Tutorial.start(steps);
+    
+// Start on first visit or on demand:
+window.Tutorial.start(steps, { centered: true });
 
-    // Example: tie to your help icon
-    const helpBtn = document.getElementById('help-btn') || document.querySelector('.fa-circle-question');
-    if (helpBtn) {
-      helpBtn.addEventListener('click', () => window.Tutorial.start(steps));
-    }
+// Example: tie to your help icon
+const helpBtn = document.getElementById('help-btn') || document.querySelector('.fa-circle-question');
+if (helpBtn) {
+  helpBtn.addEventListener('click', () => window.Tutorial.start(steps, { centered: true }));
+}
+
   });
 

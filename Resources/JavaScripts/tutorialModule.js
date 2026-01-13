@@ -84,132 +84,231 @@ class Tutorial {
     }
   }
 
-  render() {
-    const step = this.steps[this.index];
-    if (!step) return;
 
-    const el = step.target ? document.querySelector(step.target) : null;
 
-    // Update text and buttons
-    this.titleEl.textContent = step.title || `Step ${this.index + 1} of ${this.steps.length}`;
-    this.contentEl.innerHTML = step.content || '';
-    this.prevBtn.disabled = this.index === 0;
-    this.nextBtn.textContent = this.index === this.steps.length - 1 ? 'Finish ▶' : 'Next ▶';
+/* my code recommendation: */
+// REPLACEMENT: replace the entire render() function in tutorialModule.js with this one.
+render() {
+  const step = this.steps[this.index];
+  if (!step) return;
 
-    if (this.centered) {
-      // Hide spotlight and center the panel
-      this.spotlight.style.width = '0';
-      this.spotlight.style.height = '0';
-      this.spotlight.style.left = '0';
-      this.spotlight.style.top = '0';
-      this.panel.classList.add('centered');
-      return; // nothing else to position
+  const el = step.target ? document.querySelector(step.target) : null;
+
+  // Update title & content
+  this.titleEl.textContent = step.title || `Step ${this.index + 1} of ${this.steps.length}`;
+  this.contentEl.innerHTML = step.content || '';
+
+  // Stages
+  const isFirst = this.index === 0;                  // Intro screen
+  const isSecond = this.index === 1;                 // First real step
+  const isLast = this.index === this.steps.length - 1;
+
+  // ---------- Button visibility ----------
+  // Intro: Begin Tour + Skip Tour; no Prev
+  // Step 1: Next + Exit; no Prev
+  // Step ≥ 2: Back + Next/Finish + Exit
+  this.prevBtn.style.display  = (isFirst || isSecond) ? 'none' : '';
+  this.nextBtn.style.display  = '';        // always visible
+  this.doneBtn.style.display  = '';        // always visible
+
+  // ---------- Button labels (icon AFTER text) ----------
+  // Prev: Back (only when visible) — regular icon
+  this.prevBtn.innerHTML = '<span>Back</span><i class="fa-regular fa-square-caret-left" aria-hidden="true" style="margin-left:6px"></i>';
+  this.prevBtn.setAttribute('aria-label', 'Back');
+
+  // Next: Begin Tour on intro; Next afterward; Finish on last — SOLID icon
+  if (isFirst) {
+    this.nextBtn.innerHTML = '<span>Begin Tour</span><i class="fa-solid fa-square-caret-right" aria-hidden="true" style="margin-left:6px"></i>';
+    this.nextBtn.setAttribute('aria-label', 'Begin Tour');
+  } else if (isLast) {
+    this.nextBtn.innerHTML = '<span>Finish</span><i class="fa-solid fa-square-caret-right" aria-hidden="true" style="margin-left:6px"></i>';
+    this.nextBtn.setAttribute('aria-label', 'Finish');
+  } else {
+    this.nextBtn.innerHTML = '<span>Next</span><i class="fa-solid fa-square-caret-right" aria-hidden="true" style="margin-left:6px"></i>';
+    this.nextBtn.setAttribute('aria-label', 'Next');
+  }
+
+  // Done: Skip Tour on intro; Exit thereafter — text-only (no icon)
+  this.doneBtn.textContent = isFirst ? 'Skip Tour' : 'Exit';
+  this.doneBtn.setAttribute('aria-label', isFirst ? 'Skip tutorial' : 'Exit tutorial');
+
+  // ---------- Centered intro handling ----------
+  if (this.centered) {
+    this.spotlight.style.width = '0';
+    this.spotlight.style.height = '0';
+    this.spotlight.style.left = '0';
+    this.spotlight.style.top = '0';
+    this.panel.classList.add('centered');
+    return; // intro stays centered
+  }
+
+  // ---------- Default: spotlight target + float panel ----------
+  if (el) {
+    el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
+
+    const rect = el.getBoundingClientRect();
+    const pad = step.padding ?? 8;
+    const x = rect.left - pad;
+    const y = rect.top - pad;
+    const w = rect.width + pad * 2;
+    const h = rect.height + pad * 2;
+
+    Object.assign(this.spotlight.style, {
+      left: `${x}px`,
+      top: `${y}px`,
+      width: `${w}px`,
+      height: `${h}px`,
+      borderRadius: `${step.radius ?? 8}px`
+    });
+
+    const panelMargin = 12;
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight;
+    const panelW = Math.min(380, viewportW * 0.9);
+    const panelH = this.panel.offsetHeight || 140;
+
+    let panelLeft = viewportW - panelW - 16;
+    let panelTop  = 16;
+
+    const preferred = step.position || 'top-right';
+    if (preferred === 'top-right') {
+      panelLeft = Math.min(viewportW - panelW - 16, x + w + panelMargin);
+      panelTop  = Math.max(16, y - panelH - panelMargin);
+      if (panelTop < 0) panelTop = y + h + panelMargin;
+      if (panelLeft + panelW > viewportW - 16) panelLeft = viewportW - panelW - 16;
+    } else if (preferred === 'bottom') {
+      panelLeft = Math.max(16, Math.min(viewportW - panelW - 16, x));
+      panelTop  = y + h + panelMargin;
+    } else if (preferred === 'right') {
+      panelLeft = x + w + panelMargin;
+      panelTop  = Math.max(16, Math.min(viewportH - panelH - 16, y));
     }
 
-    // Default behavior: highlight target + position panel
-    if (el) {
-      el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
-
-      const rect = el.getBoundingClientRect();
-      const pad = step.padding ?? 8;
-      const x = rect.left - pad;
-      const y = rect.top - pad;
-      const w = rect.width + pad * 2;
-      const h = rect.height + pad * 2;
-
-      Object.assign(this.spotlight.style, {
-        left: `${x}px`,
-        top: `${y}px`,
-        width: `${w}px`,
-        height: `${h}px`,
-        borderRadius: `${step.radius ?? 8}px`
-      });
-
-      const panelMargin = 12;
-      const viewportW = window.innerWidth;
-      const viewportH = window.innerHeight;
-      const panelW = Math.min(380, viewportW * 0.9);
-      const panelH = this.panel.offsetHeight || 140;
-
-      let panelLeft = viewportW - panelW - 16;
-      let panelTop = 16;
-
-      const preferred = step.position || 'top-right';
-      if (preferred === 'top-right') {
-        panelLeft = Math.min(viewportW - panelW - 16, x + w + panelMargin);
-        panelTop  = Math.max(16, y - panelH - panelMargin);
-        if (panelTop < 0) panelTop = y + h + panelMargin;
-        if (panelLeft + panelW > viewportW - 16) panelLeft = viewportW - panelW - 16;
-      } else if (preferred === 'bottom') {
-        panelLeft = Math.max(16, Math.min(viewportW - panelW - 16, x));
-        panelTop  = y + h + panelMargin;
-      } else if (preferred === 'right') {
-        panelLeft = x + w + panelMargin;
-        panelTop  = Math.max(16, Math.min(viewportH - panelH - 16, y));
-      }
-
-      this.panel.classList.remove('centered'); // ensure default positioning
-      this.panel.style.left = `${panelLeft}px`;
-      this.panel.style.top  = `${panelTop}px`;
-    } else {
-      // No target: center panel as fallback
-      this.panel.classList.add('centered');
-      this.spotlight.style.width = '0';
-      this.spotlight.style.height = '0';
-    }
+    this.panel.classList.remove('centered');
+    this.panel.style.left = `${panelLeft}px`;
+    this.panel.style.top  = `${panelTop}px`;
+  } else {
+    this.panel.classList.add('centered');
+    this.spotlight.style.width = '0';
+    this.spotlight.style.height = '0';
   }
 }
 
-/*
-(function () {
-  const arrowEl = document.getElementById('tutorial-arrow');
-  let currentTarget = null;
-  let rafId = null;
 
-  function positionArrowBelow(target) {
-    if (!arrowEl || !target) return;
-    const rect = target.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const belowY  = rect.bottom + 10; // 10px gap
 
-    arrowEl.style.left = `${centerX}px`;
-    arrowEl.style.top  = `${belowY}px`;
+
+/* my code recommendation: */
+// REPLACEMENT: replace the entire render() function in tutorialModule.js with this one.
+render() {
+  const step = this.steps[this.index];
+  if (!step) return;
+
+  const el = step.target ? document.querySelector(step.target) : null;
+
+  // Update title & content
+  this.titleEl.textContent = step.title || `Step ${this.index + 1} of ${this.steps.length}`;
+  this.contentEl.innerHTML = step.content || '';
+
+  // Stages
+  const isFirst = this.index === 0;                  // Intro screen
+  const isSecond = this.index === 1;                 // First real step
+  const isLast = this.index === this.steps.length - 1;
+
+  // ---------- Button visibility ----------
+  // Intro: Begin Tour + Skip Tour; no Prev
+  // Step 1: Next + Exit; no Prev
+  // Step >= 2: Back + Next/Finish + Exit
+  this.prevBtn.style.display  = (isFirst || isSecond) ? 'none' : '';
+  this.nextBtn.style.display  = '';        // always visible
+  this.doneBtn.style.display  = '';        // always visible
+
+  // ---------- Button labels (icon + text) ----------
+  // Prev: Back (only when visible)
+  this.prevBtn.innerHTML = '<i class="fa-regular fa-square-caret-left" aria-hidden="true"></i><span style="margin-left:6px">Back</span>';
+  this.prevBtn.setAttribute('aria-label', 'Back');
+
+  // Next: Begin Tour on intro; Next afterward; Finish on last step
+  if (isFirst) {
+    this.nextBtn.innerHTML = '<i class="fa-regular fa-square-caret-right" aria-hidden="true"></i><span style="margin-left:6px">Begin Tour</span>';
+    this.nextBtn.setAttribute('aria-label', 'Begin Tour');
+  } else if (isLast) {
+    this.nextBtn.innerHTML = '<i class="fa-regular fa-square-caret-right" aria-hidden="true"></i><span style="margin-left:6px">Finish</span>';
+    this.nextBtn.setAttribute('aria-label', 'Finish');
+  } else {
+    this.nextBtn.innerHTML = '<i class="fa-regular fa-square-caret-right" aria-hidden="true"></i><span style="margin-left:6px">Next</span>';
+    this.nextBtn.setAttribute('aria-label', 'Next');
   }
 
-  function onScrollOrResize() {
-    if (!currentTarget) return;
-    cancelAnimationFrame(rafId);
-    rafId = requestAnimationFrame(() => positionArrowBelow(currentTarget));
+  // Done: Skip Tour on intro; Exit thereafter
+  this.doneBtn.textContent = isFirst ? 'Skip Tour' : 'Exit';
+  this.doneBtn.setAttribute('aria-label', isFirst ? 'Skip tutorial' : 'Exit tutorial');
+
+  // ---------- Centered intro handling ----------
+  if (this.centered) {
+    this.spotlight.style.width = '0';
+    this.spotlight.style.height = '0';
+    this.spotlight.style.left = '0';
+    this.spotlight.style.top = '0';
+    this.panel.classList.add('centered');
+    return; // intro stays centered
   }
 
-  // Public API on window for re-use in tutorial steps
-  window.TutorialArrow = {
-    showBelow(targetEl, labelText = 'Export\nhere') {
-      if (!arrowEl || !targetEl) return;
-      currentTarget = targetEl;
+  // ---------- Default: spotlight target + float panel ----------
+  if (el) {
+    el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' });
 
-      // Optional: update label dynamically
-      const body = arrowEl.querySelector('.arrow-body');
-      if (body) body.innerHTML = labelText.replace('\n', '<br>');
+    const rect = el.getBoundingClientRect();
+    const pad = step.padding ?? 8;
+    const x = rect.left - pad;
+    const y = rect.top - pad;
+    const w = rect.width + pad * 2;
+    const h = rect.height + pad * 2;
 
-      positionArrowBelow(targetEl);
-      arrowEl.hidden = false;
-      arrowEl.setAttribute('data-show', 'true');
+    Object.assign(this.spotlight.style, {
+      left: `${x}px`,
+      top: `${y}px`,
+      width: `${w}px`,
+      height: `${h}px`,
+      borderRadius: `${step.radius ?? 8}px`
+    });
 
-      window.addEventListener('scroll', onScrollOrResize, { passive: true });
-      window.addEventListener('resize', onScrollOrResize);
-    },
-    hide() {
-      if (!arrowEl) return;
-      currentTarget = null;
-      arrowEl.removeAttribute('data-show');
-      arrowEl.hidden = true;
-      window.removeEventListener('scroll', onScrollOrResize);
-      window.removeEventListener('resize', onScrollOrResize);
+    const panelMargin = 12;
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight;
+    const panelW = Math.min(380, viewportW * 0.9);
+    const panelH = this.panel.offsetHeight || 140;
+
+    let panelLeft = viewportW - panelW - 16;
+    let panelTop  = 16;
+
+    const preferred = step.position || 'top-right';
+    if (preferred === 'top-right') {
+      panelLeft = Math.min(viewportW - panelW - 16, x + w + panelMargin);
+      panelTop  = Math.max(16, y - panelH - panelMargin);
+      if (panelTop < 0) panelTop = y + h + panelMargin;
+      if (panelLeft + panelW > viewportW - 16) panelLeft = viewportW - panelW - 16;
+    } else if (preferred === 'bottom') {
+      panelLeft = Math.max(16, Math.min(viewportW - panelW - 16, x));
+      panelTop  = y + h + panelMargin;
+    } else if (preferred === 'right') {
+      panelLeft = x + w + panelMargin;
+      panelTop  = Math.max(16, Math.min(viewportH - panelH - 16, y));
     }
-  };
-})();
-*/
+
+    this.panel.classList.remove('centered');
+    this.panel.style.left = `${panelLeft}px`;
+    this.panel.style.top  = `${panelTop}px`;
+  } else {
+    this.panel.classList.add('centered');
+    this.spotlight.style.width = '0';
+    this.spotlight.style.height = '0';
+  }
+}
+
+
+
+}
+
 // Expose singleton
 window.Tutorial = new Tutorial();
 
