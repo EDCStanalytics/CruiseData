@@ -1,4 +1,4 @@
-CallID,Shore Power Connection Note
+CallID,ConnectionNote
 9760512-251214,"Feeder (1B53) developed a fault on Friday, 11/12, which required extensive repairs. The repairs were ultimately completed in the early morning hours of 12/15. "
 9241061-251126,USCG inspection 
 9760512-251116,The vessel connected to shore power following necessary adjustments to reposition the Mobile Cable Positioning Device (MCPD) for optimal alignment 
@@ -31,4 +31,5 @@ CallID,Shore Power Connection Note
 9241061-240523,Ongoing technical issue with the ship's shore power system 
 9241061-240505,Ongoing technical issue with the ship's shore power system 
 9241061-240103,Ongoing technical issue with the ship's shore power system 
+
 
