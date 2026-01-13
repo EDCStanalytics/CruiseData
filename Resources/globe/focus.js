@@ -28,9 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
   window.fillBuckets = async () => {
 
   //start by loading/cleaning the call and connection data
-  const [calls, connections] = await Promise.all([
+  const [calls, connections,NotesMap] = await Promise.all([
         window.callsPromise,
-        window.connectionsPromise
+        window.connectionsPromise,
+        window.connectionNotesPromise
     ]);
 
   //now get the filter dates and use them to filter the data sets
@@ -49,12 +50,83 @@ document.addEventListener("DOMContentLoaded", () => {
         .slice()
         .sort((a, b) => a.arrival - b.arrival)
 
-  // Build the connection lookup map (id -> connection)
-  const connById = new Map();
-    t12Connections.forEach(c => { if (c.id != null) connById.set(c.id, c); });
+
+// Build the connection lookup map (id -> connection) and attach notes
+
+/* const connById = new Map();
+    t12Connections.forEach(c => { if (c.id != null) connById.set(c.id, c); }); 
+
+
+const connById = new Map();
+t12Connections.forEach(c => {
+  if (c.id != null) {
+    // Add the note using CallID or id
+    const note = window.getConnectionNote(c.id);
+    
+ console.log(`Connection ID: ${c.id}, Note:`, note); // ✅ Log connection and note
+
+    c.note = note; // attach note to the connection object
+    connById.set(c.id, c);
+  }
+});
+
+
 
   // Attach the matched connection onto each sorted call (or null)
-  sortedCalls.forEach(c => { c.connection = connById.get(c.id) ?? null; });
+  sortedCalls.forEach(c => { c.connection = connById.get(c.id) ?? null; }); */
+
+  
+// Build a lookup map from calls (id -> call)
+const callsById = new Map();
+t12Calls.forEach(call => {
+  if (call.id != null) {
+    callsById.set(call.id, call);
+  }
+});
+
+// Build a lookup map from connections (id -> connection) and preserve note on connection
+const connById = new Map();
+t12Connections.forEach(conn => {
+  if (conn.id != null) {
+    // If you still want to keep notes on the connection object for reference:
+    const connNote = window.getConnectionNote(conn.id);
+    conn.note = connNote ?? null;
+    connById.set(conn.id, conn);
+
+    console.log(`Connection ID: ${conn.id}, Connection Note:`, connNote);
+  }
+});
+
+// Attach connection + note to each call (note for ALL calls)
+sortedCalls.forEach(call => {
+  // Attach the matched connection (or null)
+  const mappedConnection = connById.get(call.id) ?? null;
+  call.connection = mappedConnection;
+
+  // ✅ Attach note for every call using NotesMap (preferred) or fallback
+  // Assumes NotesMap is a Map keyed by call.id. If it is an object, adapt to NotesMap[call.id].
+  const noteFromMap = NotesMap?.get ? NotesMap.get(call.id) : NotesMap?.[call.id];
+  const finalNote = noteFromMap ?? window.getConnectionNote(call.id) ?? null;
+
+  call.note = finalNote;
+
+  // Debug log: show both IDs and the note
+  console.log(
+    `Call ID: ${call.id}, Connection ID: ${mappedConnection ? mappedConnection.id : 'null'}, Note:`,
+    finalNote
+  );
+  
+// Count how many calls have a note
+const callsWithNotesCount = sortedCalls.filter(call => call.note && call.note.trim() !== '').length;
+
+console.log(`Total calls: ${sortedCalls.length}`);
+console.log(`Calls with notes: ${callsWithNotesCount}`);
+console.log(`Calls without notes: ${sortedCalls.length - callsWithNotesCount}`);
+``
+
+});
+``
+
 
   // Month labels + 12 completed-month buckets (shared by both charts)
   const labels = window.Helpers.monthLabels();
@@ -1053,8 +1125,12 @@ hit.append('title')
         })()}`
       : `\u000AShore Power: Did not connect`;
 
+    const note = window.getConnectionNote(v.CallID ?? v.id);
+
+const noteText = v.note ? `\u000AConnection Note: ${v.note}` : '';
+
     // Use explicit \u000A for newline inside SVG <title>
-    return `${v.vessel ?? 'Unknown'}\u000AVisit: ${fmtShortMD(arr)}, ${fmtTime(arr)} → ${fmtShortMD(dep)}, ${fmtTime(dep)}\u000ADuration: ${visitDur}${connText}`;
+    return `${v.vessel ?? 'Unknown'}\u000AVisit: ${fmtShortMD(arr)}, ${fmtTime(arr)} → ${fmtShortMD(dep)}, ${fmtTime(dep)}\u000ADuration: ${visitDur}${connText}${noteText}`;
   });
 
 /*
