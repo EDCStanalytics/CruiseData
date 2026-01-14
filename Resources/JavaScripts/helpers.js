@@ -171,6 +171,11 @@ if (num !== 0) hitNonZero = true;
 }
 
 
+// Lightweight intent logger available to all scripts.
+function help_emitIntent(type, payload) {
+  try { console.debug('[intent]', type, payload); } catch (e) {}
+}
+
 
 
   const coerceDate = help_CoerceDate;
@@ -182,6 +187,8 @@ if (num !== 0) hitNonZero = true;
   const initOdometer = help_initOdometer;
   const rollOdometer = help_rollOdometer;
   const monthLabels = help_monthLabels;
+const emitIntent = help_emitIntent;
+
 
   window.Helpers = {
     coerceDate, 
@@ -192,5 +199,6 @@ if (num !== 0) hitNonZero = true;
     getCSV,
     initOdometer,
     rollOdometer,
-    monthLabels
+    monthLabels,
+    emitIntent
   };
