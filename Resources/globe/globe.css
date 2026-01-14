@@ -18,6 +18,10 @@
     --odometerFontWidth: 1.2ch;
     --rim-band: 15%;
     --focus-offset-y: 60px;
+    
+  --series-alpha: var(--cp4); /* blue */
+  --series-bravo: var(--cp2); /* red */
+
 }
 
 * {
@@ -429,39 +433,18 @@ font-variant-numeric: tabular-nums;
   pointer-events: none;
 }
 
-/* Axis styling */
 
+/* INSERT HERE 👉 PowerCanvas compare: call “stay” lines in series colors */
+#powerCanvas .series.alpha .power-stay { stroke: var(--series-alpha); }
+#powerCanvas .series.bravo .power-stay { stroke: var(--series-bravo); }
 
-
-
-
-
-
-
-/* my code recommendation: REPLACEMENT — globe.css */
-/* REPLACE your existing .plot-area rule (which currently includes `stroke-dasharray: 4 2;`)
-   WITH this solid 2px border (no dash): */
-
-
-
-
-
-
-
-
-
-/* my code recommendation: REPLACEMENT — globe.css */
-/* EXACT BLOCK IN YOUR FILE TO REPLACE:
-.power-conn {
-  stroke: var(--cp3, #e56335);
-  stroke-width: 4px;
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 0.6px rgba(0,0,0,0.35))
-          drop-shadow(0 0 0.6px rgba(255,255,255,0.15));
-  pointer-events: none;
+#powerCanvas .chart-legend .legend-pill { 
+  fill: var(--brass-deep, #7a5c2b); rx: 12; ry: 12;
 }
-*/
+
+
+
+
 
 /* REPLACEMENT BLOCK (copy/paste to replace the block above): */
 .power-conn {
@@ -883,7 +866,11 @@ opacity: 0;                /* start invisible */
 #powerCanvas svg .y-axis .tick text { fill: var(--brass-deep, #7a5c2b); }
 #powerCanvas svg .month-sep { stroke: var(--ink-300, #999); stroke-width: 1px; }
 #powerCanvas .chart-title { fill: var(--brass-deep, #7a5c2b); font-weight: 700; font-size: 16px; }
-#powerCanvas .chart-legend .legend-pill { fill: var(--brass-deep, #7a5c2b); rx: 12; ry: 12; }
+
+#powerCanvas .chart-legend .legend-pill.alpha { fill: var(--series-alpha); }
+#powerCanvas .chart-legend .legend-pill.bravo { fill: var(--series-bravo); }
+
+
 #powerCanvas .chart-legend .legend-text { fill: #fff; font-weight: 600; }
 
 #powerCanvas svg .hit {
@@ -941,6 +928,59 @@ opacity: 0;                /* start invisible */
   stroke-width: 4px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
+
+
+/* INSERT HERE 👉 Selection v2: .is-selected/.is-related × .is-alpha/.is-bravo */
+
+/* Alpha highlights (use --series-alpha for call “stay” lines) */
+#leftRadialChart  g.power-item.is-selected.is-alpha .power-stay,
+#rightRadialChart g.power-item.is-selected.is-alpha .power-stay {
+  stroke: var(--series-alpha);
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+#leftRadialChart  g.power-item.is-related.is-alpha .power-stay,
+#rightRadialChart g.power-item.is-related.is-alpha .power-stay {
+  stroke: var(--series-alpha);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.20));
+}
+
+/* Bravo highlights (use --series-bravo for call “stay” lines) */
+#leftRadialChart  g.power-item.is-selected.is-bravo .power-stay,
+#rightRadialChart g.power-item.is-selected.is-bravo .power-stay {
+  stroke: var(--series-bravo);
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+#leftRadialChart  g.power-item.is-related.is-bravo .power-stay,
+#rightRadialChart g.power-item.is-related.is-bravo .power-stay {
+  stroke: var(--series-bravo);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.20));
+}
+
+/* For connection lines, keep the per-visit color; just thicken on selection */
+#leftRadialChart  g.power-item.is-selected .power-conn,
+#rightRadialChart g.power-item.is-selected .power-conn {
+  stroke-width: 5px; /* color remains var(--conn-color) set by JS */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+#leftRadialChart  g.power-item.is-related .power-conn,
+#rightRadialChart g.power-item.is-related .power-conn {
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.20));
+}
+
+/* Optional: faint arc-slot glow (like your hover) */
+#leftRadialChart  g.power-item.is-selected .power-hit,
+#rightRadialChart g.power-item.is-selected .power-hit,
+#leftRadialChart  g.power-item.is-related .power-hit,
+#rightRadialChart g.power-item.is-related .power-hit {
+  stroke: currentColor;
+  stroke-opacity: 0.12;
+}
+
 
 #leftRadialChart g.power-item.is-selected-call .power-conn,
 #rightRadialChart g.power-item.is-selected-call .power-conn {

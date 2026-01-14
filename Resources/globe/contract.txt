@@ -1,0 +1,179 @@
+Global rules
+
+Single source of truth (AppState)
+
+focusedBucket: left | right | null
+activeCallId: string | null
+activeVesselName: string | null
+powerCanvas: { hasTrend: boolean, chartCount: number, hasTable: boolean }
+activeTrendRole: usage | connections | kwh | null
+
+
+Event model
+
+Interaction listeners emit semantic intents only:
+
+FOCUS_BUCKET(side)
+UNFOCUS_BUCKET()
+SELECT_CALL({ vessel, callId, shiftKey })
+TOGGLE_T12_TREND({ role, vessel })
+
+
+Orchestrators execute deterministic sequences for each intent.
+
+
+Rendering model
+
+Draw functions are idempotent and scoped: Radials, Gauge, Rotors, Trend chart, Usage chart(s), Table.
+CSS owns visuals; JS sets classes/variables and mounts/unmounts containers.
+
+
+
+
+KPI Bucket interactions
+
+
+Click Left KPI bucket
+
+Intent: FOCUS_BUCKET('left') when not focused; UNFOCUS_BUCKET() when already focused.
+On focus: Collapse cards; remove Right radial; draw Left radial calendar + call arcs.
+On unfocus: Clear both central charts + radials; expand cards; clear selections/highlights.
+Note: Left bucket’s per-call deep dive is not yet active (see “Left radial call clicks” below).
+
+
+
+Click Right KPI bucket
+
+Intent: FOCUS_BUCKET('right') when not focused; UNFOCUS_BUCKET() when already focused.
+On focus (immediate):
+
+Collapse cards; remove Left radial.
+Draw Right radial calendar, Conn Quality gauge, Power arcs, and Rotors (kWh, Usage, Connections).
+
+
+On focus (deferred addition, 5 seconds):
+
+After the radial settles, show PowerCanvas (anchored on the left) and add the Table automatically.
+Rationale: reduce cognitive load—user sees the radial first, then the supporting table.
+
+
+On unfocus: Clear both central charts + radials; expand cards; if PowerCanvas becomes empty, fade/remove it.
+
+
+
+PowerCanvas anchoring
+
+Always anchors on the left side (left KPI bucket’s position) to avoid covering right-side elements.
+
+
+
+
+Right radial call clicks (primary deep dive)
+
+Target: Call “slots” in the right radial (transparent power-hit overlays).
+Intent: SELECT_CALL({ vessel, callId, shiftKey })
+Decision rules (chart behavior)
+
+No existing usage chart
+
+Any click → Create a usage chart for the clicked vessel (center chart area in PowerCanvas).
+
+
+Chart exists with the same vessel & call
+
+Unshifted click → Remove that chart (keep Trend/Table if present).
+Shift-click → Add a second chart (compare stacked).
+
+
+Chart exists with a different vessel/call
+
+Unshifted click → Replace existing chart with the new vessel/call.
+Shift-click → Add another chart (compare stacked).
+
+
+
+
+Comparison layout
+
+Stacked vertically (top-to-bottom) to compare when (yearly position) calls occurred; time-of-day similarities remain visible.
+
+
+Highlights
+
+Always reset then apply:
+
+.is-selected-call to the clicked call
+.is-related-call to all calls of the same vessel across both radials
+
+
+
+
+Canvas lifecycle
+
+After any add/remove/replace, run one layout tick (size/place, then exit cleanly).
+If a removal leaves no Trend, no Charts, and no Table → fade out and remove PowerCanvas.
+
+
+
+
+Rotor trend arrow clicks (kWh / Usage / Connections)
+
+Intent: TOGGLE_T12_TREND({ role, vessel })
+Behavior
+
+No trend showing → Insert Trend chart at the top of PowerCanvas.
+Trend showing for same role & same vessel filter → Remove Trend only. If the canvas becomes empty, fade/remove it.
+Trend showing for different role or vessel → Replace with the new role/vessel Trend.
+
+
+Notes
+
+Arrow clicks do not bubble to bucket clicks.
+Trend and usage charts are independent; either can exist without the other.
+
+
+
+
+Left radial call clicks (future deep dive)
+
+Current state: The click target exists and can emit an intent, but the deep-dive sequence is a placeholder.
+Intent: SELECT_CALL_LEFT({ vessel, callId, shiftKey }) (emitted but no activation yet).
+Behavior now: No chart/table changes; optionally apply highlights only.
+Later: Will trigger a separate deep-dive suite (different charts and info than the right-side power focus).
+
+
+Ordered Sequences (concise)
+Sequence: FOCUS_BUCKET('right')
+
+Collapse cards; set focus classes (focused on right, shrunk on left).
+Await bucket transition; update CSS vars; position rotors.
+Draw Right radial calendar → Conn Quality gauge → Power arcs → Rotors.
+Schedule deferred step (5s): If still right-focused, render PowerCanvas (left-anchored) and insert Table.
+Single layout tick: size (based on children), place (left anchor), show (fade-in), arm mutation observer (passive).
+
+Sequence: SELECT_CALL({ vessel, callId, shiftKey })
+
+Stop propagation; verify right bucket focused.
+Reset highlights; set .is-selected-call and .is-related-call.
+Chart op (stacked):
+
+None → create chart.
+Same vessel+call → unshifted=remove; shifted=add comparison chart.
+Different → unshifted=replace; shifted=add chart.
+
+
+Layout tick (once): measure children → set canvas size → place left → maintain Trend (top) → Charts (middle, stacked) → Table (bottom).
+Update activeCallId, activeVesselName, powerCanvas.chartCount.
+
+Sequence: TOGGLE_T12_TREND({ role, vessel })
+
+Ensure PowerCanvas exists (or render it without clearing charts).
+If same role+vessel: fade/remove Trend; if canvas empty, fade/remove canvas.
+Else insert/replace Trend at top; draw T12 line; keep existing charts/table.
+Layout tick (once).
+
+Sequence: UNFOCUS_BUCKET()
+
+Remove focus/shrunk classes; expand cards.
+Clear radials/centrals.
+If PowerCanvas is now empty, fade/remove it; reset highlights & AppState.

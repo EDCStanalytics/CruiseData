@@ -1,4 +1,636 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+
+/* my code recommendation: INSERTION — focus.js */
+/* PURPOSE: Step 2 — add orchestration skeletons (no behavior change) and wire them from existing handlers. */
+/* Place this first block once (global scope, near the top of focus.js, e.g., after DOMContentLoaded begins). */
+
+
+//1st insertion
+/* === AppState + orchestrator stubs (NO-OP) === */
+window.AppState = window.AppState || {
+  focusedBucket: null,
+  activeCallId: null,
+  activeVesselName: null,
+  powerCanvas: { hasTrend: false, chartCount: 0, hasTable: false },
+  activeTrendRole: null
+};
+
+
+(function () {
+  const S = window.AppState;
+
+  // Compare slots (null or { callId, vessel })
+  if (!('alpha' in S)) S.alpha = null;
+  if (!('bravo' in S)) S.bravo = null;
+
+  // Slot presence
+  S.hasAlpha = function () { return !!this.alpha; };
+  S.hasBravo = function () { return !!this.bravo; };
+
+  // Return a Set of currently selected callIds (for highlight sweeps)
+  S.getSelectedIds = function () {
+    const ids = new Set();
+    if (this.alpha?.callId != null) ids.add(this.alpha.callId);
+    if (this.bravo?.callId != null) ids.add(this.bravo.callId);
+    return ids;
+  };
+
+  // Return { alpha?: vesselName, bravo?: vesselName }
+  S.getVessels = function () {
+    const v = {};
+    if (this.alpha?.vessel) v.alpha = this.alpha.vessel;
+    if (this.bravo?.vessel) v.bravo = this.bravo.vessel;
+    return v;
+  };
+
+  // Set/clear a slot; payload = null OR { callId, vessel }
+  S.setSlot = function (slot, payload) {
+    if (slot !== 'alpha' && slot !== 'bravo') return;
+    this[slot] = payload ? { callId: payload.callId, vessel: payload.vessel } : null;
+  };
+  S.clearSlot = function (slot) { this.setSlot(slot, null); };
+
+  // Utilities for later orchestrator steps
+  S.isSelected = function (callId) {
+    return (this.alpha?.callId === callId) || (this.bravo?.callId === callId);
+  };
+  S.whichSlotByVessel = function (vessel) {
+    if (this.alpha?.vessel === vessel) return 'alpha';
+    if (this.bravo?.vessel === vessel) return 'bravo';
+    return null;
+  };
+})();
+ 
+
+window.emitIntent = window.emitIntent || function (type, payload) {
+  // Delegate to helpers (defined earlier in helpers.js)
+  if (window.Helpers && typeof window.Helpers.emitIntent === 'function') {
+    window.Helpers.emitIntent(type, payload);
+  } else {
+    try { console.debug('[intent]', type, payload); } catch (e) {}
+  }
+};
+
+
+// INSERT HERE 👉 orchestrator + utilities for call selection (Alpha/Bravo)
+
+// 0) Helper: is RIGHT KPI focused?
+function isRightFocused() {
+  const rb = document.getElementById('rightChartContainer');
+  return !!rb && rb.classList.contains('focused');
+}
+
+// 1) Ensure PowerCanvas is visible ONLY when right bucket is focused
+
+function ensurePowerCanvasVisible() {
+  if (!isRightFocused()) return null; // respect focus-driven visibility
+  const leftHost = document.getElementById('leftChartContainer') ||
+                   document.getElementById('rightChartContainer');
+  const { canvas, contentHost } = pcRender({ type: 'chart' }, leftHost);
+  
+  const rightBucket = document.getElementById('rightChartContainer');
+  const childH = Math.round((rightBucket?.clientHeight ?? leftHost.clientHeight) * 0.40);
+  canvas.style.setProperty('--pc-child-h', `${childH}px`);
+  return { canvas, contentHost };
+}
+
+
+// 2) Selection rules (Alpha/Bravo) — per your updated D3:
+//    - If both empty → Alpha = picked
+//    - If only Alpha used:
+//        • same call → clear Alpha (no selections)
+//        • same vessel (different call) → replace Alpha
+//        • different vessel → Bravo = picked
+//    - If Alpha + Bravo used:
+//        • unrelated vessel → replace Bravo with picked
+//        • related to Alpha → remove Alpha; Bravo → Alpha; clear Bravo
+//        • related to Bravo → set Bravo = picked (same vessel, new call)
+
+function computeNextSelectionSlots(state, picked) {
+  const A = state.alpha, B = state.bravo;
+  const same = (x) => x?.callId === picked.callId && x?.vessel === picked.vessel;
+  const sameVessel = (x) => x?.vessel === picked.vessel;
+
+  // no selections
+  if (!A && !B) {
+    return { alpha: { callId: picked.callId, vessel: picked.vessel }, bravo: null };
+  }
+
+  // INSERT HERE 👉 only-Alpha: any click on the same vessel should toggle OFF
+  if (A && !B) {
+    if (same(A) || sameVessel(A)) {
+      // toggle off (hide usage chart)
+      return { alpha: null, bravo: null };
+    }
+    // different vessel → add Bravo
+    return { alpha: A, bravo: { callId: picked.callId, vessel: picked.vessel } };
+  }
+
+  // Alpha + Bravo present
+  const pickedIsAlphaVessel = sameVessel(A);
+  const pickedIsBravoVessel = sameVessel(B);
+
+  if (!pickedIsAlphaVessel && !pickedIsBravoVessel) {
+    // unrelated vessel → replace Bravo
+    return { alpha: A, bravo: { callId: picked.callId, vessel: picked.vessel } };
+  }
+
+  if (pickedIsAlphaVessel) {
+    // click related to Alpha → remove Alpha; Bravo becomes new Alpha; Bravo cleared
+    return { alpha: B ? { ...B } : null, bravo: null };
+  }
+
+  // pickedIsBravoVessel: this call becomes the new Bravo
+  return { alpha: A, bravo: { callId: picked.callId, vessel: picked.vessel } };
+}
+
+
+// 3) State writer: apply slots to AppState
+function applySelectionsToState(next) {
+  const S = window.AppState;
+  S.setSlot('alpha', next.alpha);
+  S.setSlot('bravo', next.bravo);
+}
+
+// 4) Orchestrator: single entry point all click sites can use
+
+
+window.orchestrateCallSelect = function orchestrateCallSelect(payload) {
+  const S = window.AppState;
+  const picked = { callId: payload.callId, vessel: payload.vessel };
+
+  // Decide next slots
+  let next = computeNextSelectionSlots(S, picked);
+
+  // Shift+click on an unrelated vessel ⇒ force compare
+  if (payload.shiftKey && S.alpha?.vessel && S.alpha.vessel !== picked.vessel) {
+    next = { alpha: { ...S.alpha }, bravo: { callId: picked.callId, vessel: picked.vessel } };
+  }
+
+  applySelectionsToState(next);
+
+  // Ensure PC visibility for right-focus
+  const pc = ensurePowerCanvasVisible();
+
+  if (typeof window.renderUsageForSelections === 'function') {
+    window.renderUsageForSelections({ alpha: next.alpha, bravo: next.bravo });
+  } else {
+    // (fallback omitted here)
+  }
+
+  // INSERT HERE 👉 apply highlights for Alpha/Bravo selections
+  if (typeof window.updateRadialHighlightsForSelections === 'function') {
+    window.updateRadialHighlightsForSelections({ alpha: next.alpha, bravo: next.bravo });
+  } else {
+    // Legacy fallback: highlight Alpha only
+    const id = next?.alpha?.callId ?? null;
+    const vessel = next?.alpha?.vessel ?? null;
+    updateRadialHighlights(id, vessel);
+  }
+  // (highlights block unchanged)
+};
+
+
+
+
+// ...surrounding context above...
+
+// INSERT HERE 👉 render (single or dual) with full compare redraw
+window.renderUsageForSelections = async function ({ alpha, bravo }) {
+  const leftHost = document.getElementById('leftChartContainer') ||
+                   document.getElementById('rightChartContainer');
+
+  // No selections → remove chart and maybe destroy canvas
+  if (!alpha && !bravo) {
+    const canvas = document.getElementById('powerCanvas');
+    const chartEl = canvas?.querySelector('.pc-chart');
+    if (chartEl) chartEl.remove();
+    if (canvas) pcMaybeDestroy(canvas);
+    return;
+  }
+
+  // Ensure PowerCanvas (visibility already governed by right focus)
+  const { canvas } = pcRender({ type: 'chart' }, leftHost);
+  const rightBucket = document.getElementById('rightChartContainer');
+  const childH = Math.round((rightBucket?.clientHeight ?? leftHost.clientHeight) * 0.40);
+  canvas.style.setProperty('--pc-child-h', `${childH}px`);
+
+  // Single ship → existing single-series chart
+  if (alpha && !bravo) {
+    await drawPowerCanvasChart(alpha.vessel);
+    window.activeVesselName = alpha.vessel || null;
+    return;
+  }
+
+  // Dual ship → full compare chart (split vertical panes + common X)
+  if (alpha && bravo) {
+    await drawPowerCanvasChartCompare(alpha.vessel, bravo.vessel);
+    // Keep Alpha as the active vessel for trend filters
+    window.activeVesselName = alpha.vessel || null;
+    return;
+  }
+};
+
+// ...surrounding context below...
+
+// INSERT HERE 👉 dual-ship compare chart with split Y panes and common X
+async function drawPowerCanvasChartCompare(alphaName, bravoName) {
+  const canvas = document.getElementById('powerCanvas');
+  if (!canvas) return;
+
+  // Host directly above the table (middle slot)
+  let chartHost = canvas.querySelector('.pc-chart');
+  if (!chartHost) {
+    chartHost = document.createElement('div');
+    chartHost.className = 'pc-chart';
+  }
+  chartHost.innerHTML = '';
+  const tblHost = canvas.querySelector('.pc-table-host');
+  if (tblHost) canvas.insertBefore(chartHost, tblHost); else canvas.appendChild(chartHost);
+
+  // === Data (T12 window) ===
+  const { t12Calls, connById, lastStart, lastEnd } = await window.fillBuckets();
+  const norm = s => String(s || '').toLowerCase().replace(/[ \-]+/g, ' ').replace(/[^\w\s]/g, '').trim();
+
+  const aKey = norm(alphaName);
+  const bKey = norm(bravoName);
+  const aCalls = t12Calls.filter(c => norm(c.vessel) === aKey);
+  const bCalls = t12Calls.filter(c => norm(c.vessel) === bKey);
+  if (!aCalls.length && !bCalls.length) {
+    chartHost.textContent = 'No data available for comparison';
+    return;
+  }
+
+  // === Dimensions ===
+  const width  = chartHost.clientWidth;
+  const height = chartHost.clientHeight;
+
+const margin = { top: 32, right: 20, bottom: 64, left: 52 };
+const innerW = Math.max(0, width  - margin.left - margin.right);
+const innerH = Math.max(0, height - margin.top  - margin.bottom)
+
+
+  // Vertical split: 5% gap; each pane gets 47.5% of innerH
+  const gapH   = Math.round(innerH * 0.05);
+  const paneH  = Math.max(0, Math.floor((innerH - gapH) / 2));
+
+  // === Scales ===
+  const xStart = new Date(lastStart.getFullYear(), lastStart.getMonth(), 1);
+  const xEnd   = new Date(lastEnd.getFullYear(),   lastEnd.getMonth() + 1, 1);
+  const x = d3.scaleTime().domain([xStart, xEnd]).range([0, innerW]);
+
+  const yTop = d3.scaleTime()
+    .domain([new Date(0,0,0,6,0), new Date(0,0,0,18,0)]) // 6 → 18
+    .range([paneH, 0]);
+
+  const yBot = d3.scaleTime()
+    .domain([new Date(0,0,0,6,0), new Date(0,0,0,18,0)])
+    .range([paneH, 0]);
+
+  // === SVG + groups ===
+  const svg = d3.select(chartHost)
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height);
+
+  const gRoot = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  const gTop = gRoot.append('g').attr('class', 'series alpha');               // Alpha (top)
+  const gBot = gRoot.append('g').attr('class', 'series bravo')                // Bravo (bottom)
+                   .attr('transform', `translate(0,${paneH + gapH})`);
+
+  // === Axes ===
+  // Common X axis at bottom of the full plot
+  const xAxis = d3.axisBottom(x)
+    .ticks(d3.timeMonth.every(1))
+    .tickFormat(d3.timeFormat('%b %y'))
+    .tickSizeOuter(0);
+
+  gRoot.append('g')
+    .attr('class', 'x-axis')
+    .attr('transform', `translate(0,${innerH})`)
+    .call(xAxis);
+
+  // Y axes (every 4 hours) on each pane
+  const yAxisTop = d3.axisLeft(yTop).ticks(d3.timeHour.every(4)).tickSizeOuter(0);
+  const yAxisBot = d3.axisLeft(yBot).ticks(d3.timeHour.every(4)).tickSizeOuter(0);
+
+  gTop.append('g').attr('class', 'y-axis').call(yAxisTop);
+  gBot.append('g').attr('class', 'y-axis').call(yAxisBot);
+
+  // === Helpers ===
+  const toTOD     = d => new Date(0,0,0, d.getHours(), d.getMinutes(), d.getSeconds(), 0);
+  const isMulti   = (a, b) => a.toDateString() !== b.toDateString();
+  const clampTOD  = dt => {
+    const min = new Date(0,0,0,6,0), max = new Date(0,0,0,18,0);
+    const t = toTOD(dt); return (t < min) ? min : (t > max) ? max : t;
+  };
+
+  const connColor = window.buildConnColorScale();
+
+
+const itemsFor = calls => calls.map(c => {
+  const xMidnight = new Date(c.arrival.getFullYear(), c.arrival.getMonth(), c.arrival.getDate());
+  const X  = x(xMidnight);
+  const y1 = clampTOD(c.arrival);
+  const y2 = isMulti(c.arrival, c.departure) ? new Date(0,0,0,18,0) : clampTOD(c.departure);
+  const conn = connById.get(c.id) || null;
+  let cy1 = null, cy2 = null, connVal = 0;
+  if (conn) {
+    const stayMsRaw = c.departure - c.arrival;
+    const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000));
+    const connMs    = conn.disconnect - conn.connect;
+    connVal = stayMsAdj > 0 ? Math.max(0, Math.min(1.25, connMs / stayMsAdj)) : 0;
+    cy1 = clampTOD(conn.connect);
+    cy2 = isMulti(conn.connect, conn.disconnect) ? new Date(0,0,0,18,0) : clampTOD(conn.disconnect);
+  }
+  return { c, X, y1, y2, cy1, cy2, connVal };
+});
+
+
+  const A = itemsFor(aCalls);
+  const B = itemsFor(bCalls);
+
+  // === Draw (Alpha, top pane) ===
+  gTop.append('g').attr('class', 'calls')
+    .selectAll('line.power-stay')
+    .data(A)
+    .enter().append('line')
+    .attr('class', 'power-stay')
+    .attr('x1', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
+    .attr('x2', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
+    .attr('y1', d => yTop(d.y1))
+    .attr('y2', d => yTop(d.y2));
+
+
+gTop.append('g').attr('class', 'connections')
+  .selectAll('line.power-conn')
+  .data(A.filter(d => d.cy1 != null))
+  .enter().append('line')
+  .attr('class', 'power-conn')
+  // INSERT HERE 👉 per-visit color (CSS variable picked up by .power-conn rule)
+  .style('--conn-color', d => connColor(d.connVal))
+  .attr('x1', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
+  .attr('x2', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
+  .attr('y1', d => Math.min(yTop(d.cy1), yTop(d.cy2)))
+  .attr('y2', d => Math.max(yTop(d.cy1), yTop(d.cy2)));
+
+
+  // === Draw (Bravo, bottom pane) ===
+  gBot.append('g').attr('class', 'calls')
+    .selectAll('line.power-stay')
+    .data(B)
+    .enter().append('line')
+    .attr('class', 'power-stay')
+    .attr('x1', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
+    .attr('x2', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
+    .attr('y1', d => yBot(d.y1))
+    .attr('y2', d => yBot(d.y2));
+
+
+gBot.append('g').attr('class', 'connections')
+  .selectAll('line.power-conn')
+  .data(B.filter(d => d.cy1 != null))
+  .enter().append('line')
+  .attr('class', 'power-conn')
+  // INSERT HERE 👉 per-visit color (CSS variable picked up by .power-conn rule)
+  .style('--conn-color', d => connColor(d.connVal))
+  .attr('x1', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
+  .attr('x2', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
+  .attr('y1', d => Math.min(yBot(d.cy1), yBot(d.cy2)))
+  .attr('y2', d => Math.max(yBot(d.cy1), yBot(d.cy2)));
+
+
+  // === Title (include "Comparison") ===
+  svg.append('text')
+    .attr('class', 'chart-title')
+    .attr('x', width / 2)
+    .attr('y', 20)
+    .attr('text-anchor', 'middle')
+    .text('Shore Power Usage Comparison');
+
+  // === Legend pills (bottom-left, Alpha + Bravo) — styling via CSS
+
+// === Legend pills (Alpha + Bravo) — centered as a pair
+const legendG = svg.append('g').attr('class', 'chart-legend');
+
+// Alpha text to measure
+const aText = (alphaName || '').trim();
+const aTextEl = legendG.append('text')
+  .attr('class', 'legend-text alpha')
+  .attr('text-anchor', 'start')
+  .attr('dominant-baseline', 'middle')
+  .text(aText);
+const aTextW = (typeof aTextEl.node().getComputedTextLength === 'function')
+  ? aTextEl.node().getComputedTextLength() : aText.length * 7;
+const aTextH = 14;
+const aPillW = aTextW + 24;
+
+// Bravo text to measure
+const bText = (bravoName || '').trim();
+const bTextEl = legendG.append('text')
+  .attr('class', 'legend-text bravo')
+  .attr('text-anchor', 'start')
+  .attr('dominant-baseline', 'middle')
+  .text(bText);
+const bTextW = (typeof bTextEl.node().getComputedTextLength === 'function')
+  ? bTextEl.node().getComputedTextLength() : bText.length * 7;
+const bTextH = 14;
+const bPillW = bTextW + 24;
+
+// Center the combined row
+const gap = 12;
+const totalW = aPillW + gap + bPillW;
+const offsetX = Math.max(0, (width - totalW) / 2);
+const offsetY = height - 20;
+legendG.attr('transform', `translate(${offsetX}, ${offsetY})`);
+
+// Alpha pill + text at 0
+legendG.insert('rect', ':first-child')
+  .attr('class', 'legend-pill alpha')
+  .attr('x', -12)
+  .attr('y', -aTextH / 2 - 6)
+  .attr('width', aPillW)
+  .attr('height', aTextH + 12);
+aTextEl.attr('x', 0);
+
+// Bravo pill + text at aPillW + gap
+const bX = aPillW + gap;
+legendG.insert('rect', ':first-child')
+  .attr('class', 'legend-pill bravo')
+  .attr('x', bX - 12)
+  .attr('y', -bTextH / 2 - 6)
+  .attr('width', bPillW)
+  .attr('height', bTextH + 12);
+bTextEl.attr('x', bX);
+
+
+  // After draw: ensure canvas sized/placed for the new content
+  const hostBucket = document.getElementById('leftChartContainer') ||
+                     document.getElementById('rightChartContainer');
+  if (hostBucket) {
+    pcSizeFor(canvas, { type: 'chart' }, hostBucket);
+    pcPlace(canvas, hostBucket);
+  }
+};
+
+
+
+window.onFocusBucket = function (side, meta = {}) {
+  /* Step 2 skeleton — no behavior change; real sequences will be added later */
+};
+
+
+window.onSelectCall = function ({ vessel, callId, shiftKey }) {
+  window.orchestrateCallSelect({ vessel, callId, source: 'radial', shiftKey: !!shiftKey });
+};
+
+
+window.onToggleTrend = function ({ role, vessel }) {
+  /* Step 2 skeleton — no behavior change; real sequences will be added later */
+};
+
+
+/* Deferred PowerCanvas reveal (table) timer holder */
+window.PCReveal = window.PCReveal || { timer: null };
+
+
+// ... existing code above (PCReveal + scheduleDelayedReveal + helpers) ...
+
+// INSERT HERE 👉 lightweight, reusable tick batcher (once per frame)
+window.TickBatch = window.TickBatch || (function () {
+  let q = [];
+  let scheduled = false;
+
+  function run() {
+    scheduled = false;
+    const jobs = q;
+    q = [];
+    // Run jobs; each job should only do DOM writes (no reads causing sync layout)
+    for (let i = 0; i < jobs.length; i++) {
+      try { jobs[i](); } catch (e) { /* no-throw */ }
+    }
+  }
+
+  return {
+    queue(fn) {
+      if (typeof fn !== 'function') return;
+      q.push(fn);
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(run);
+      }
+    }
+  };
+})();
+
+//tick test
+
+// INSERT HERE 👉 TEMP TEST: coalescing check (remove after verifying)
+(function () {
+  // On first right-bucket focus, fire a burst of jobs and measure runs
+  let ran = false;
+  let rafFrames = 0;
+  let jobsExecuted = 0;
+
+  // On-screen status (works even if DevTools is blocked)
+  const badge = document.createElement('div');
+  badge.id = 'tickBatchTest';
+  badge.style.cssText = 'position:fixed;right:8px;bottom:8px;z-index:99999;padding:6px 10px;background:#111;color:#fff;font:12px/1.2 monospace;border-radius:6px;opacity:.9';
+  badge.textContent = 'TickBatch Test: waiting…';
+  document.addEventListener('DOMContentLoaded', () => document.body.appendChild(badge));
+
+  // Count RAF frames while our jobs are pending
+  function frameCounter() {
+    if (!ran) return;
+    rafFrames++;
+    requestAnimationFrame(frameCounter);
+  }
+
+  // Hook into first focus of RIGHT KPI bucket
+  document.addEventListener('click', (e) => {
+    const right = document.getElementById('rightChartContainer');
+    if (!right) return;
+    if (!right.contains(e.target)) return;
+
+    // Fire only once
+    if (ran) return;
+    ran = true;
+
+    // Start counting frames
+    requestAnimationFrame(frameCounter);
+
+    // Queue N small jobs in the same tick
+    const N = 50;
+    for (let i = 0; i < N; i++) {
+      window.TickBatch.queue(() => { jobsExecuted++; });
+    }
+
+    // Check results on next macrotask (after RAF had a chance to run)
+    setTimeout(() => {
+      badge.textContent = `TickBatch Test: jobsExecuted=${jobsExecuted}, rafFrames=${rafFrames}`;
+      // PASS criteria: jobsExecuted === 50 and rafFrames ≈ 1..2 (1 is ideal; 2 is fine due to counter loop)
+      // If jobsExecuted < 50 → some jobs didn’t run.
+      // If rafFrames grows >> 2 → jobs weren’t coalesced.
+    }, 100);
+  }, { capture: true });
+})();
+
+
+
+
+//end tick test
+
+
+/* my code recommendation: INSERTION — focus.js */
+/* Generic deferred reveal utility: schedule, validate, reveal, cancel */
+window.scheduleDelayedReveal = function (opts) {
+  // opts: { delayMs, isValid: () => boolean, reveal: () => void, cancelRef: { timer } }
+  if (!opts || typeof opts.reveal !== 'function') return;
+  // Clear any existing timer on the provided cancelRef
+  if (opts.cancelRef && opts.cancelRef.timer) {
+    clearTimeout(opts.cancelRef.timer);
+    opts.cancelRef.timer = null;
+  }
+  var delay = Math.max(0, Number(opts.delayMs || 0));
+  var isValid = typeof opts.isValid === 'function' ? opts.isValid : function () { return true; };
+  // Schedule
+  var t = setTimeout(function () {
+    try {
+      if (!isValid()) return;     // bail if context changed
+      opts.reveal();              // run caller-provided reveal logic
+    } finally {
+      if (opts.cancelRef) opts.cancelRef.timer = null;
+    }
+  }, delay);
+  if (opts.cancelRef) opts.cancelRef.timer = t;
+};
+
+
+/* my code recommendation: INSERTION — focus.js */
+/* Reuseable: validity check and reveal routine for PowerCanvas Table (right-focus, left-anchor) */
+window.isRightBucketStillFocused = function () {
+  var right = document.getElementById('rightChartContainer');
+  return !!right && right.classList.contains('focused');
+};
+
+window.revealPowerCanvasTableLeftAnchored = function () {
+  var right = document.getElementById('rightChartContainer');
+  var hostBucket = document.getElementById('leftChartContainer') || right;
+  var result = pcRender({ type: 'table' }, hostBucket); // builds/ensures table
+  var canvas = result && result.canvas ? result.canvas : document.getElementById('powerCanvas');
+  if (!canvas) return;
+  var childH = Math.round(((right && right.clientHeight) || hostBucket.clientHeight) / 3);
+  canvas.style.setProperty('--pc-child-h', String(childH) + 'px');
+};
+
+//end 1st insertion
+
+
+
+
+  
   const buckets = document.querySelectorAll(".kpiBucket");
     
   const resizeObs = new ResizeObserver(entries => {
@@ -168,16 +800,25 @@ function updateFocusOffsetFor(bucket) {
 
 
 
-// Minimal digit setter (uses existing .digit .stack markup + CSS transition)
+
+// INSERT HERE 👉 batch digit transforms to one RAF for smoother updates
 window.setRotorValue = function (speedReadEl, value) {
   const s = String(value);
   const stacks = speedReadEl.querySelectorAll('.digit .stack');
   const pad = s.padStart(stacks.length, '0');
-  stacks.forEach((stack, i) => {
-    const d = Number(pad[i]);
-    stack.style.transform = `translateY(-${d}em)`;
+
+  // Queue a single-frame batch of DOM writes
+  window.TickBatch.queue(function () {
+    for (let i = 0; i < stacks.length; i++) {
+      const stack = stacks[i];
+      const d = Number(pad[i]);
+      // Guard against NaN and missing nodes
+      if (!stack || Number.isNaN(d)) continue;
+      stack.style.transform = `translateY(-${d}em)`;
+    }
   });
 };
+
 
 
 //compute the average connection quality for our t12 period
@@ -274,106 +915,20 @@ window.buildConnColorScale = function () {
 
 
 
-//now we add the event listeners to the areas the user can focus on
-/*
-    buckets.forEach(bucket => {
-        bucket.addEventListener("click", async () => {
-          
-            const isAlreadyFocused = bucket.classList.contains("focused");
-
-            // Reset all buckets and shipCards if clicked again
-            if (isAlreadyFocused) {
-                bucket.classList.remove('focused');
-                const kpi = bucket.querySelector('.baseStats');
-                void setRotorToProbe(bucket, 0);               
-                await waitForTransitionEndOnce(kpi);
-                updateFocusOffsetFor(bucket);
-                
-                buckets.forEach(b => {
-                    b.classList.remove('focused', 'shrunk');
-                    b.style.removeProperty('--bucket-h');
-                    });
-                shipCards.classList.remove("collapsed");
-                removeRadial("leftRadialChart");
-                removeRadial("rightRadialChart");
-                document.getElementById('rightCentralChart')?.replaceChildren();
-                document.getElementById('leftCentralChart')?.replaceChildren();
-
-                return;
-            }
-            
-            // Collapse shipCards
-            shipCards.classList.add("collapsed");
-
-            // Apply focused/shrunk classes
-            buckets.forEach(b => {
-                if (b === bucket) {
-                    b.classList.add("focused");
-                    b.classList.remove("shrunk");
-                } else {
-                    b.classList.remove("focused");
-                    b.classList.add("shrunk");
-                    
-                }
-            });
-
-            if (bucket.id === "rightChartContainer") {
-                //this is the RIGHT click branch
-                removeRadial("leftRadialChart");
-                await waitForTransitionEndOnce(bucket);
-
-
-                
-                updateFocusOffsetFor(bucket);
-
-
-                positionProbeDots(bucket);
-                
-  
-  
-
-await dR_kWh(); 
-await dR_usage();
-
-
-
-                //window.drawPerformCentral('rightCentralChart');
-                await window.radialCalendar('rightRadialChart');
-
-
-                const { avg, n } = await window.getAvgConnQualityT12();
-                await window.drawConnQualityGauge('rightRadialChart', avg, n);
-
-
-
-                await window.drawPowerArcs('rightRadialChart');
-
-
-
-                
-
-            } else {
-                //this is the LEFT click branch
-                removeRadial("rightRadialChart");
-                await waitForTransitionEndOnce(bucket);
-                updateFocusOffsetFor(bucket);
-                positionProbeDots(bucket);
-                //drawRadialT12('leftRadialChart');
-
-                
-                await window.radialCalendar('leftRadialChart');
-                await window.drawCallArcs('leftRadialChart');
-            }
-
-        });
-    });
-*/
-
 
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Buckets click handler: ignore clicks from trend arrow; preserve existing logic */
 buckets.forEach(bucket => {
   bucket.addEventListener("click", async (evt) => {
+
+//2nd insertion    
+window.emitIntent('FOCUS_BUCKET', { side: bucket.id === 'rightChartContainer' ? 'right' : 'left', isAlreadyFocused: bucket.classList.contains('focused') });
+window.onFocusBucket(bucket.id === 'rightChartContainer' ? 'right' : 'left', { isAlreadyFocused: bucket.classList.contains('focused') });
+//end 2nd insertion
+
+
+
+
     // --- NEW GUARD: do not toggle focus when the trend arrow is clicked ---
     const t = evt.target;
     if (t?.closest?.('.trendArrow, .trendArrowSvg')) {
@@ -403,6 +958,11 @@ buckets.forEach(bucket => {
       removeRadial("rightRadialChart");
       document.getElementById('rightCentralChart')?.replaceChildren();
       document.getElementById('leftCentralChart')?.replaceChildren();
+
+  /* Cancel any pending delayed PowerCanvas reveal when unfocusing */
+  if (window.PCReveal && window.PCReveal.timer) { clearTimeout(window.PCReveal.timer); window.PCReveal.timer = null; }
+
+
       return;
     }
 
@@ -434,8 +994,26 @@ buckets.forEach(bucket => {
       const { avg, n } = await window.getAvgConnQualityT12();
       await window.drawConnQualityGauge('rightRadialChart', avg, n);
       await window.drawPowerArcs('rightRadialChart');
+
+
+
+
+/* Schedule a 5s delayed reveal of PowerCanvas with its Table (anchored left) */
+window.scheduleDelayedReveal({
+  delayMs: 1000,
+  isValid: window.isRightBucketStillFocused,
+  reveal: window.revealPowerCanvasTableLeftAnchored,
+  cancelRef: window.PCReveal
+});
+  
+
+
     } else {
       // --- LEFT branch ---
+      
+  /* Switching to left focus? cancel any pending right-side delayed reveal */
+  if (window.PCReveal && window.PCReveal.timer) { clearTimeout(window.PCReveal.timer); window.PCReveal.timer = null; }
+
       removeRadial("rightRadialChart");
       await waitForTransitionEndOnce(bucket);
       updateFocusOffsetFor(bucket);
@@ -1133,43 +1711,19 @@ const noteText = v.note ? `\u000AConnection Note: ${v.note}` : '';
     return `${v.vessel ?? 'Unknown'}\u000AVisit: ${fmtShortMD(arr)}, ${fmtTime(arr)} → ${fmtShortMD(dep)}, ${fmtTime(dep)}\u000ADuration: ${visitDur}${connText}${noteText}`;
   });
 
-/*
-hit.append('title')
-  .text(d => {
-    const v = d.call;
-    const conn = v.connection;
-    const visit = `${fmtShortMD(v.arrival)}, ${fmtTime(v.arrival)} → ${fmtShortMD(v.departure)}, ${fmtTime(v.departure)}`;
-    const connText = conn
-      ? `\nShore Power: ${fmtShortMD(conn.connect)}, ${fmtTime(conn.connect)} → ${fmtShortMD(conn.disconnect)}, ${fmtTime(conn.disconnect)}\nConnection Duration: ${fmtDuration(conn.disconnect - conn.connect)}`
-      : `\nShore Power: Did not connect`;
-    return `${v.vessel ?? 'Unknown'}\nVisit: ${visit}${connText}`;
-  });
 
-  */
 
 /* my code recommendation: */
 hit.on('click', function (event, d) {
-  //removing original powercanvas render  
-/*
-  event.stopPropagation(); // prevent bucket toggle back to level 0
-
-  // --- toggle powerCanvas (no styling in JS; CSS handles look) ---
-  const bucket = document.getElementById('rightChartContainer');
-  const existing = document.getElementById('powerCanvas');
-  const callId = d?.call?.id ?? null;
-  if (!bucket || callId == null) return;
-
-  // Create the canvas positioned relative to the LEFT KPI bucket per earlier spec,
-  // or change to right bucket if you want it anchored there.
-
-
-  const leftBucket = document.getElementById('leftChartContainer');
-  const hostBucket = leftBucket ?? bucket; // anchor left by default
-  const canvas = existing ?? createPowerCanvas(hostBucket); // reuse if present
-  if (!existing) document.body.appendChild(canvas);
-
+  //3rd insertion
   
-// Trigger fade-in
+window.emitIntent('SELECT_CALL', { vessel: d?.call?.vessel ?? null, callId: d?.call?.id ?? null, shiftKey: !!event.shiftKey });
+window.onSelectCall({ vessel: d?.call?.vessel ?? null, callId: d?.call?.id ?? null, shiftKey: !!event.shiftKey });
+//end 3rd insertion
+
+  event.stopPropagation();
+  event.stopImmediatePropagation();
+  return;
 
 requestAnimationFrame(() => {
   canvas.classList.add('is-visible');
@@ -1180,6 +1734,11 @@ requestAnimationFrame(() => {
 // - If the user clicked the SAME call again → sweep (pass nulls)
 // - If the user clicked a DIFFERENT call → highlight selected + related
 
+const clickedIdLocal = d?.call?.id ?? null;
+updateRadialHighlights(clickedIdLocal, d?.call?.vessel ?? null);
+activeCallId = clickedIdLocal;
+
+/*
 updateRadialHighlights(callId, d?.call?.vessel ?? null);
 activeCallId = callId;
 */
@@ -1203,7 +1762,7 @@ const hostBucket =
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Use RIGHT bucket height so child elements are exactly one third of it */
 const rightBucket = document.getElementById('rightChartContainer');
-const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) / 3);
+const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
 canvas.style.setProperty('--pc-child-h', `${childH}px`);
 
 
@@ -2745,9 +3304,11 @@ if (tblHost) {
   // === Dimensions ===
   const width  = chartHost.clientWidth;
   const height = chartHost.clientHeight;
-  const margin = { top: 32, right: 20, bottom: 40, left: 52 };
-  const innerW = Math.max(0, width  - margin.left - margin.right);
-  const innerH = Math.max(0, height - margin.top  - margin.bottom);
+
+const margin = { top: 32, right: 20, bottom: 64, left: 52 };
+const innerW = Math.max(0, width - margin.left - margin.right);
+const innerH = Math.max(0, height - margin.top - margin.bottom);
+
 
   // === Scales ===
   const xStart = new Date(lastStart.getFullYear(), lastStart.getMonth(), 1);
@@ -2992,6 +3553,60 @@ function updateRadialHighlights(selectedCallId = null, selectedVessel = null) {
   });
 }
 
+// INSERT HERE 👉 v2 highlights: .is-selected/.is-related × .is-alpha/.is-bravo
+window.updateRadialHighlightsForSelections = function ({ alpha, bravo }) {
+  // All items on both radials
+  const items = document.querySelectorAll('#rightRadialChart g.power-item, #leftRadialChart g.power-item');
+
+  // 1) Clear both the new and legacy highlight classes
+  items.forEach(el => {
+    el.classList.remove(
+      // v2
+      'is-selected','is-related','is-alpha','is-bravo',
+      // v1 (legacy)
+      'is-selected-call','is-related-call'
+    );
+  });
+
+  // Helper: safely read bound data
+  const dataOf = el => el?.__data__ ?? null;
+  const vesselOf = el => (dataOf(el)?.call?.vessel ?? dataOf(el)?.vessel ?? '').toLowerCase();
+  const idOf     = el => (dataOf(el)?.call?.id     ?? dataOf(el)?.id     ?? null);
+
+  // Nothing selected → all clear
+  if (!alpha && !bravo) return;
+
+  // Build simple matchers
+  const aV = (alpha?.vessel ?? '').toLowerCase();
+  const bV = (bravo?.vessel ?? '').toLowerCase();
+  const aId = alpha?.callId ?? null;
+  const bId = bravo?.callId ?? null;
+
+  // 2) Apply selection classes
+  items.forEach(el => {
+    const v = vesselOf(el);
+    const id = idOf(el);
+
+    // Alpha selected/related
+    if (alpha) {
+      if (id != null && aId != null && id === aId) {
+        el.classList.add('is-selected', 'is-alpha');
+      } else if (aV && v === aV) {
+        el.classList.add('is-related', 'is-alpha');
+      }
+    }
+
+    // Bravo selected/related
+    if (bravo) {
+      if (id != null && bId != null && id === bId) {
+        el.classList.add('is-selected', 'is-bravo');
+      } else if (bV && v === bV) {
+        el.classList.add('is-related', 'is-bravo');
+      }
+    }
+  });
+};
+
 
 /* my code recommendation: INSERTION — focus.js */
 /*
@@ -3219,7 +3834,7 @@ function pcSizeFor(canvas, spec, hostBucket) {
   // Width anchored to left bucket
   const leftBucket = document.getElementById('leftChartContainer') || hostBucket;
   const hostW = leftBucket?.clientWidth ?? window.innerWidth;
-  const wK = (spec?.wK ?? 1.10);
+  const wK = (spec?.wK ?? 1.20);
   canvas.style.width = `${Math.round(hostW * wK)}px`;
 
   // Current rendered child heights
@@ -3295,50 +3910,67 @@ function pcHideAndDestroy(canvas) {
 
 /* 7) Auto-resize when content changes (add/remove) */
 
+
+/* 7) Auto-resize when content changes (add/remove) */
 /* my code recommendation: REPLACEMENT — focus.js */
-/* Auto-resize AND enforce strict child order: Trend (top) → Chart (middle) → Table (bottom) */
+/* Auto-resize AND enforce strict child order: Trend (top) → Chart (middle) → Table (bottom), coalesced per frame */
 function pcRefreshSizeOnMutations(canvas, hostBucket, spec) {
   if (canvas.__pcObs) canvas.__pcObs.disconnect();
 
-  // Enforce DOM order in one pass
-  const enforceOrder = () => {
-    const trendEl = canvas.querySelector('.pc-trend');        // top
-    const chartEl = canvas.querySelector('.pc-chart');        // middle
-    const tblHost = canvas.querySelector('.pc-table-host');   // bottom
+  // INSERT HERE 👉 coalesce mutation work to once per animation frame
+  let scheduled = false;
+  const runOnce = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
 
-    // 1) Trend always first (top)
-    if (trendEl) {
-      canvas.insertBefore(trendEl, canvas.firstChild);
-    }
+      // Enforce DOM order only if out of order
+      const trendEl = canvas.querySelector('.pc-trend');        // TOP
+      const chartEl = canvas.querySelector('.pc-chart');        // MIDDLE
+      const tblHost = canvas.querySelector('.pc-table-host');   // BOTTOM
 
-    // 2) Table always last (bottom)
-    if (tblHost) {
-      canvas.appendChild(tblHost);
-    }
+      // 1) Trend should be first
+      if (trendEl && canvas.firstChild !== trendEl) {
+        canvas.insertBefore(trendEl, canvas.firstChild);
+      }
+      // 2) Table should be last
+      if (tblHost && canvas.lastChild !== tblHost) {
+        canvas.appendChild(tblHost);
+      }
+      // 3) Chart should be immediately before the table (or after trend when no table)
+      if (chartEl) {
+        if (tblHost) {
+          const before = tblHost.previousSibling;
+          if (before !== chartEl) canvas.insertBefore(chartEl, tblHost);
+        } else {
+          // No table yet: keep chart after trend (or at end if no trend)
+          const first = canvas.firstChild;
+          const targetNext = trendEl ? trendEl.nextSibling : first;
+          // If not already placed correctly, move to the end as a safe fallback
+          if (chartEl.nextSibling !== targetNext) {
+            canvas.appendChild(chartEl);
+          }
+        }
+      }
 
-    // 3) Chart always between trend and table (middle)
-    if (chartEl && tblHost) {
-      // Ensure chart sits immediately before the table
-      canvas.insertBefore(chartEl, tblHost);
-    } else if (chartEl && !tblHost) {
-      // No table yet: place chart after trend (or at end if no trend)
-      canvas.appendChild(chartEl);
-    }
+      // Recompute size and placement once per frame
+      pcSizeFor(canvas, spec, hostBucket);
+      pcPlace(canvas, hostBucket);
+
+      // Destroy only when empty (no trend, no chart, no table)
+      pcMaybeDestroy(canvas);
+    });
   };
 
-  const obs = new MutationObserver(() => {
-    pcSizeFor(canvas, spec, hostBucket);
-    pcPlace(canvas, hostBucket);
-    enforceOrder();          // ← keep order correct after any add/remove
-    pcMaybeDestroy(canvas);
-  });
-
+  const obs = new MutationObserver(() => runOnce());
   obs.observe(canvas, { childList: true, subtree: true });
   canvas.__pcObs = obs;
 
-  // Initial pass so the order is correct immediately after we set up the observer
-  enforceOrder();
+  // Initial pass so the order & size are correct immediately
+  runOnce();
 }
+
 
 
 
@@ -3362,24 +3994,25 @@ function pcMaybeDestroy(canvas) {
 
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Orchestrator: run the steps in order; returns the canvas & content host */
+
 function pcRender(spec, hostBucket) {
   const canvas = pcEnsureCanvas(hostBucket);
   const contentHost = pcApplyContent(canvas, spec);
 
-  // --- NEW: always (re)build the table whenever PowerCanvas is rendered ---
-  // This ensures the table is present whenever the canvas is visible.
-  // It does not clear existing chart/trend content.
-  void buildPowerCanvasTable();
+  // INSERT HERE 👉 only (re)build table when explicitly asked or if missing
+  const hasTable = !!canvas.querySelector('.pc-table-host .pc-table');
+  if (spec?.type === 'table' || !hasTable) {
+    void buildPowerCanvasTable();
+  }
 
   // Size/place after content changes so height includes the table
   pcSizeFor(canvas, spec, hostBucket);
   pcPlace(canvas, hostBucket);
-
   pcShow(canvas);
   pcRefreshSizeOnMutations(canvas, hostBucket, spec);
-
   return { canvas, contentHost };
 }
+
 
 
 
@@ -3604,16 +4237,40 @@ const TrendRoleMap = {
    - Clicking a different role replaces the chart with that role.
 */
 async function handleTrendArrowClick(role) {
+//4th insertion
+
+window.emitIntent('TOGGLE_T12_TREND', { role, vessel: window.activeVesselName ?? null });
+window.onToggleTrend({ role, vessel: window.activeVesselName ?? null });
+
+//end 4th insertion
+
+
   const leftBucket  = document.getElementById('leftChartContainer');
   const rightBucket = document.getElementById('rightChartContainer');
   const hostBucket  = leftBucket ?? rightBucket;
   if (!hostBucket) return;
 
+  
+  /* my code recommendation: INSERTION — focus.js */
+  /* Instant reveal hook: cancel any pending delayed reveal and show PowerCanvas + Table now */
+  if (window.PCReveal && window.PCReveal.timer) { clearTimeout(window.PCReveal.timer); window.PCReveal.timer = null; }
+  const leftForAnchor = document.getElementById('leftChartContainer') || hostBucket;
+  const resultNow = pcRender({ type: 'table' }, leftForAnchor); // ensures table is present immediately
+  const canvasNow = resultNow && resultNow.canvas ? resultNow.canvas : document.getElementById('powerCanvas');
+  if (canvasNow) {
+    const right = document.getElementById('rightChartContainer');
+    const childH = Math.round(((right && right.clientHeight) || leftForAnchor.clientHeight) * 0.4);
+    canvasNow.style.setProperty('--pc-child-h', String(childH) + 'px');
+  }
+
+  // (continue with existing logic below)
+
+
   // Ensure PowerCanvas exists; do NOT clear existing content
   const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
 
   // Give children a consistent height (one third of right bucket height)
-  const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) / 3);
+  const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) *0.4);
   canvas.style.setProperty('--pc-child-h', `${childH}px`);
 
   // Find existing trend host (top slot) if any
