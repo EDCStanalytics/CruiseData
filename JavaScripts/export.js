@@ -13,9 +13,9 @@
 
 (function (global) {
   // --- 1) CSV source URLs (RAW GitHub endpoints) ---
-  const RAW_VESSEL = "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/dataExport/Data/VesselData_Cruise.csv";
-  const RAW_CALLS  = "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/dataExport/Data/CallData_Cruise.csv";
-  const RAW_POWER  = "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/dataExport/Data/ShorePowerData_Cruise.csv";
+  const RAW_VESSEL = "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/main/Data/VesselData_Cruise.csv";
+  const RAW_CALLS  = "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/main/Data/CallData_Cruise.csv";
+  const RAW_POWER  = "https://raw.githubusercontent.com/EDCStanalytics/CruiseData/main/Data/ShorePowerData_Cruise.csv";
 
   // --- 2) Minimal CSV -> array of objects (handles quotes/commas/newlines) ---
   function parseCSV(text) {
