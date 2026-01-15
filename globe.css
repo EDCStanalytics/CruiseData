@@ -1,0 +1,1336 @@
+:root {
+    --cp1: #d4ac63;
+    --cp2: #cd2435;
+    --cp3: #e56335;
+    --cp4: #2b4d7d;
+    --cp5: #f4f5f7;  
+    --instrument-rim: 8px;
+    --rim-base: #b78a3d;
+    --rim-shadow: #7a5c2b;
+    --rim-highlight: #f8e6b6;
+    --rim-reflect1: #caa35a;
+    --rim-reflect2: #d9b978;   
+    --brass-base: #c4933a;
+    --brass-mid: #d9b15b;
+    --brass-deep: #7a5c2b;
+    --brass-hi: #fff1c2; 
+    --odometerFontSize: 6rem;
+    --odometerFontWidth: 1.2ch;
+    --rim-band: 15%;
+    --focus-offset-y: 60px;
+    
+  --series-alpha: var(--cp4); /* blue */
+  --series-bravo: var(--cp2); /* red */
+
+}
+
+* {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+i {
+    font-size: xx-large;
+    color: var(--cp5);
+    line-height: 1.5rem;
+    margin: 0px 10px 0px 10px;
+}
+
+body {
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    display: grid;
+    grid-template-areas: 
+        "gridHeaderArea"
+        "gridBodyArea"
+    ;
+    grid-template-rows: auto 1fr;
+    grid-template-columns: 100%;
+}
+
+header {
+    grid-row: gridHeaderArea;
+    grid-column: 1;
+    background-color: var(--cp4);
+    height: 1.25rem;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    left: 0px;
+    border-bottom: 2px solid var(--cp3);
+    padding-bottom: 1rem;
+    padding-top: 1.25rem;
+    display: inline-flex;
+    justify-content: space-between;
+    z-index: 100;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0px 0px 0px 0px;
+    color: var(--cp5);
+    font-variant: small-caps;
+    size: 1.5rem;
+    
+}
+ 
+header nav {
+    margin-left: auto; 
+}
+ 
+#navBarItems {
+    display: flex;
+    border-width: 5px;
+    justify-content: space-around;
+    height: 40px;
+    align-items: center;
+    margin: 0px;
+}
+
+#navBarItems li {
+    position: relative;
+    margin: 0px 15px;
+    color: var(--cp5);
+    border: 3px solid transparent;  
+    list-style-type: none;
+    transition: all 500ms ease-in-out 100ms;
+}
+ 
+#navBarItems li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-bottom: 3px solid transparent; /* Initial transparent border for pseudo-element */
+    transform: scale(0, 1);
+    transform-origin: left;
+    transition: transform 0.5s ease, border-color 0.8s ease;content: '';
+}
+ 
+#navBarItems li:hover::before, #navBarItems li.selectedNavItem::before {
+        border-color: var(--cp3);
+        transform: scale(1, 1); 
+    }
+
+body {
+    margin: 0px;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+#earth {
+    grid-row: gridBodyArea;
+    grid-column: 1;
+    display: flex;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+}
+
+#dataSpace {
+    grid-row: gridBodyArea;
+    grid-column: 1;
+    z-index: 1;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#berthSpace {
+    display: inline-flex;
+    justify-content: space-around;
+    height: 30px;
+    width: 100%;
+    
+}
+
+#cardSpace {
+    align-items: center;
+    display: inline-flex;
+    justify-content: space-around;
+    width: 100%;
+    flex: 2;
+    transition: flex 500ms ease;
+}
+
+#cardSpace.collapsed {
+    flex: 0; /* Shrinks to zero height */
+    overflow: hidden; /* Hide content */
+}
+
+.poiLabel {
+  paint-order: stroke;
+  stroke: rgba(0,0,0,0.55);
+  stroke-width: 2px;
+  font-weight: 600;
+  opacity: 1;
+}
+
+#D3andME {
+    flex: 3;
+    display: inline-flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+
+    container-type: size;
+}
+
+.kpiBucket {
+    container-type: size;
+    --bucket-h: 0px;
+
+    padding: var(--instrument-rim);
+    height: 90%;
+    justify-self: center;
+    border-radius: 50%;
+    aspect-ratio: 1/1;
+    overflow: visible;
+    margin: 25px;
+    position: relative;
+    transition: 
+      transform 500ms ease-in-out, 
+      opacity 500ms ease-in-out;
+--focus-shift-x: 0px;
+    transform: translateX(var(--focus-shift-x)) scale(1);
+    will-change: transform;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-blend-mode: normal, screen, multiply, normal;
+
+    background: radial-gradient(closest-side, #fbfbfb 0%, #ededed 55%, #dddddd 100%) content-box;
+ 
+    background-clip: content-box;
+    
+    border-radius: 50%;
+    box-shadow: 
+        0 8px 20px rgba(0,0,0,0.35),
+        inset 0 0 0 2px rgba(255,255,255,0.15),
+        inset 0 -6px 12px rgba(0,0,0,0.35);
+    
+
+}
+
+
+.kpiBucket::before {
+    content: "";
+    position: absolute;
+    inset: 0;                 
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;               
+
+    background:   
+        conic-gradient(
+            from 18deg,
+            transparent 0deg 24deg,
+            var(--brass-hi) 30deg,
+            transparent 36deg 210deg,
+            var(--brass-hi) 216deg,
+            transparent 222deg 360deg
+        ),
+
+        conic-gradient(
+            from 90deg,
+            var(--brass-mid) 0deg,
+            var(--brass-base) 60deg,
+            var(--brass-deep) 120deg,
+            var(--brass-mid) 180deg,
+            var(--brass-base) 240deg,
+            var(--brass-deep) 300deg,
+            var(--brass-mid) 360deg
+        ),
+
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,0.15),
+            rgba(0,0,0,0.05) 20%,
+            rgba(255,255,255,0.22) 50%,
+            rgba(0,0,0,0.06) 80%,
+            rgba(0,0,0,0.18)
+        );
+
+    background-clip: border-box;
+    background-blend-mode: screen, multiply, normal;
+    -webkit-mask:
+        radial-gradient(closest-side, transparent calc(100% - var(--instrument-rim)), black 0);
+    mask:
+        radial-gradient(closest-side, transparent calc(100% - var(--instrument-rim)), black 0);
+}
+
+
+.glass {
+  display: none;
+}
+
+.kpiBucket.focused {
+    transform: scale(1);
+    aspect-ratio: 1 / 1;
+    z-index: 10;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.kpiBucket.focused .baseStats {
+  --base-offset-y: 0px;
+  --rotor-scale: 0.38;
+}
+
+.kpiBucket.shrunk {
+    transform: scale(.25);
+    opacity: 0.0;
+    pointer-events: none;
+}
+
+
+
+/* my code recommendation: */
+/* Rotor anchored at bucket center; allow fade-in via opacity */
+.baseStats {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center center;
+  transform:
+    translate(-50%, -50%)
+    translate(var(--rotor-x, 0px),
+              calc(var(--base-offset-y, 0px) + var(--rotor-y, 0px)))
+    scale(var(--rotor-scale, 1));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* add opacity transition */
+  opacity: 1;
+  transition: transform 500ms ease-in-out, opacity 750ms ease;
+  backface-visibility: hidden;
+}
+
+
+
+.trendingBox {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+#shipCallKPIs {
+    display: flex;
+}
+
+.speedRead {
+    display: inline-flex;
+    gap: 0.15rem;
+    align-items: center;
+    color: var(--kpi-fg, #0f172a);
+    font-weight: 700;
+    font-size: var(--odometerFontSize); /* tune as needed */
+    line-height: 1rem;
+    text-align: center;
+    }
+
+.speedRead .digit {
+    position: relative;
+    overflow: hidden;
+    line-height: 1;
+    width: var(--odometerFontWidth);
+    height: 1em;
+    background: var(--kpi-bg, #f8fafc);
+    border-radius: 0.25rem;
+    box-shadow: inset 0 0 0 1px rgba(15,23,42,0.08);
+}
+
+.speedRead .digit .stack {
+display: flex;
+flex-direction: column;
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%;
+  transition: transform 1200ms ease; /* smooth roll */
+  will-change: transform;
+}
+
+.speedRead .digit .stack span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1em;                              /* equal to digit container height */
+  text-align: center;
+  line-height: 1;
+  padding-block: 0rem;
+  font-family: 'Inter', 'Roboto Mono', 'IBM Plex Mono', system-ui, sans-serif;
+  
+font-variant-numeric: tabular-nums;
+   font-feature-settings: 'tnum' 1
+
+}
+
+/* Optional: commas for thousands */
+.speedRead .sep {
+  width: 1ch;
+  text-align: center;
+  color: #94a3b8;                              /* slate-400 */
+}
+
+/* Optional: leading zeros look faint until animated in */
+.speedRead .digit.is-leading .stack {
+  opacity: 0.45;
+}
+
+
+.baseLabel {
+  font-weight: 300;
+  font-size: clamp(0.9rem, 1.4vw, 1.1rem);
+  color: var(--kpi-fg, #0f172a);
+}
+
+
+.baseTrend {
+    flex: 0 1 auto;
+    white-space: nowrap;
+    min-width: 0;
+    font-size: clamp(1rem, 1.6vw, 1.4rem);
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    margin: 0px 5px;
+    color: var(--kpi-fg, #0f172a);
+}
+
+#leftChartContainer::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:0;
+    height: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+#leftRadialChart, #rightRadialChart {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 40;  
+}
+
+/* Base appearance (keep lines visible and crisp) */
+.power-stay {
+  stroke: var(--brass-base, #b78a3d);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+
+/* INSERT HERE 👉 PowerCanvas compare: call “stay” lines in series colors */
+#powerCanvas .series.alpha .power-stay { stroke: var(--series-alpha); }
+#powerCanvas .series.bravo .power-stay { stroke: var(--series-bravo); }
+
+#powerCanvas .chart-legend .legend-pill { 
+  fill: var(--brass-deep, #7a5c2b); rx: 12; ry: 12;
+}
+
+
+
+
+
+/* REPLACEMENT BLOCK (copy/paste to replace the block above): */
+.power-conn {
+  stroke: var(--conn-color, var(--cp3, #e56335)); /* JS sets --conn-color per-visit */
+  stroke-width: 5px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 0.6px rgba(0,0,0,0.35))
+          drop-shadow(0 0 0.6px rgba(255,255,255,0.15));
+  pointer-events: none;
+}
+
+
+.power-hit {
+  pointer-events: all;
+  cursor: pointer;
+  stroke: transparent;          /* invisible but hoverable */
+  stroke-width: 12px;           /* forgiving hit width */
+  stroke-opacity: 0;
+}
+
+/* Hover state — call out the item */
+ g.power-item:hover .power-stay {
+  stroke: var(--cp4, #2b4d7d);  /* accent color on hover */
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+ g.power-item:hover .power-conn {
+  stroke-width: 5px;            /* emphasize connection line */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+/* Faint highlight of the angular slot on hover */
+ g.power-item:hover .power-hit {
+  stroke: currentColor;         /* uses inherited color if desired */
+  stroke-opacity: 0.12;         /* subtle radial highlight */
+}
+
+
+#leftCentralChart, #rightCentralChart {
+  position: absolute;
+  inset: 0;          /* fill the bucket; SVG will be centered via viewBox */
+  overflow: visible;
+  pointer-events: none;
+  height: auto;
+  min-height: 200px;
+}
+
+#rightChartContainer::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width:0;
+    height: 0;
+    overflow: visible;
+    pointer-events: none;
+}
+
+#rightCentralChart .call-span {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 1px;              
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;          
+}
+
+#rightCentralChart g.call .call-span.multi-day {
+  stroke: var(--cp2, #cd2435);   /* red */
+  stroke-width: 3px;             /* slightly bolder for visibility */
+}
+
+
+#rightCentralChart .call-90 {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+
+#rightCentralChart .power-span {
+  stroke: var(--cp3, #e56335);
+  stroke-width: 2px;        
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightCentralChart .month-sep {
+  stroke: var(--ink-300, #999);
+  stroke-width: 1px;
+}
+
+
+
+/* my code recommendation: */
+#rightCentralChart .glass { pointer-events: none; } /* so hover reaches the lines */
+
+#rightCentralChart g.call .call-span {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightCentralChart g.call .power-span {
+  stroke: var(--cp3, #e56335);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightCentralChart g.call .call-90 {
+  stroke: var(--brass-mid, #b78a3d);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+#rightCentralChart g.call .hit-span {
+  stroke: #000;
+  stroke-width: 12px;         /* wide, forgiving */
+  stroke-opacity: 0;          /* invisible but hoverable */
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* === Hover state: make it unambiguous which call is hot === */
+#rightCentralChart g.call:hover .hit-span {
+  stroke-opacity: 0.15;       /* faint highlight of the hover column */
+}
+
+#rightCentralChart g.call:hover .call-span {
+  stroke-width: 3px;
+  stroke: var(--cp4, #2b4d7d); /* contrasts with brass */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#rightCentralChart g.call:hover .power-span {
+  stroke-width: 5px;          /* emphasize connection if present */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#rightCentralChart g.call:hover .call-90 {
+  stroke-width: 2px;
+}
+
+
+/* my code recommendation: */
+/* Right gauge styles */
+#rightRadialChart .gauge-track { pointer-events: none; }
+#rightRadialChart .gauge-value { pointer-events: none; }
+#rightRadialChart .gauge-label { font-weight: 600; }
+
+/* my code recommendation: */
+/* Right radial gauge styles */
+#rightRadialChart .conn-gauge .gauge-tick.minor {
+  stroke: rgba(0,0,0,0.25);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+#rightRadialChart .conn-gauge .gauge-tick.major {
+  stroke: var(--brass-deep, #7a5c2b);
+  stroke-width: 2px;
+  vector-effect: non-scaling-stroke;
+}
+
+#rightRadialChart .conn-gauge .gauge-label {
+  fill: var(--brass-deep, #7a5c2b);
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+#rightRadialChart .conn-gauge .gauge-needle {
+  stroke: var(--cp4, #b78a3d);
+  stroke-width: 2.5px;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#rightRadialChart .conn-gauge .gauge-hub {
+  fill: var(--brass-mid, #b78a3d);
+  stroke: var(--brass-deep, #7a5c2b);
+  stroke-width: 1px;
+}
+
+#rightRadialChart .conn-gauge .gauge-readout {
+  fill: var(--cp4, #2b4d7d);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* my code recommendation: */
+#rightRadialChart .conn-gauge { --gauge-minor: rgba(0,0,0,0.25); }
+#rightRadialChart .conn-gauge .gauge-tick.minor { stroke: var(--gauge-minor); }
+#rightRadialChart .conn-gauge .gauge-rail { fill: var(--gauge-minor); }
+
+
+/* Probe dots inside each bucket */
+.kpiBucket .probe-dot {
+  display: none;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1e90ff;           /* little blue dot */
+  box-shadow: 0 0 2px rgba(0,0,0,0.25);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 25;                    /* above chart lines, below glass (z:20) if needed */
+}
+
+/* Publishing toggle: add .hide-probes on the bucket to hide all dots */
+.kpiBucket.hide-probes .probe-dot {
+  display: none;
+}
+
+
+
+
+/* Programmatic states (optional) */
+.baseStats.rotor.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.baseStats.rotor.is-shrunk {
+  /* Use your CSS variables—not inline transforms */
+  --rotor-scale: 0.25;
+}
+
+
+
+
+
+
+/* my code recommendation: */
+.baseStats.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
+/* my code recommendation: */
+/* Universal rotor pill: shared structure + style */
+.baseStats .speedRead { position: relative; }
+
+.baseStats .speedRead .int {
+  position: relative;           /* anchor for absolute-positioned pill */
+  display: inline-flex;         /* group only integer digits */
+  gap: 0.15rem;                 /* match digit spacing */
+}
+
+.baseStats .speedRead .magnitudeTag {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -1.10em;              /* slight overlap below integer digits */
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0.15em 0.25em;
+  border-radius: 0.25rem;
+  line-height: 1;
+  font-weight: 500;
+  font-size: clamp(0.75rem, 1.6vw, 1.25rem);
+  color: var(--kpi-bg, #f8fafc);   /* inverted scheme for contrast */
+  background: var(--kpi-fg, #0f172a);
+  box-shadow: 0 0 0 1px rgba(15,23,42,0.08);
+  pointer-events: none;
+  z-index: 30;
+}
+
+
+/* my code recommendation: */
+/* Generic: invert colors for any fractional (decimal) digit */
+.baseStats .speedRead .digit.is-frac {
+  background: var(--kpi-fg, #0f172a);
+}
+.baseStats .speedRead .digit.is-frac .stack span {
+  color: var(--kpi-bg, #f8fafc);
+}
+
+
+.baseStats .baseLabel {
+  display: none !important;
+}
+
+
+
+/* my code recommendation: */
+/* Let each rolling row be an anchor for the dot overlay */
+.baseStats .speedRead .digit .stack span {
+  position: relative;         /* anchor pseudo-elements */
+  line-height: 1;             /* your existing baseline */
+}
+
+/* Baseline-aligned dot: inline text, overlaid so it doesn't change spacing */
+.baseStats .speedRead .digit.is-frac .stack span::before {
+  content: ".";               /* use a glyph so it shares the text baseline */
+  position: absolute;         /* overlay (do not consume horizontal space) */
+  left: 0;                    /* anchor at the left edge of the row */
+  bottom: 0;                  /* align to the row’s baseline at the bottom */
+
+  /* shift the dot inside the digit box without affecting spacing */
+  transform: translateX(-0.05ch); /* move into the box; tune -0.30..-0.40ch */
+  /* IMPORTANT: transform, not margin; margin would affect layout widths */
+
+  /* visual style (smaller than numeral, inverted like fractional text) */
+  font-size: 0.7em;          /* smaller dot */
+  font-weight: 400;
+  color: var(--kpi-bg, #f8fafc);  /* same as fractional numeral color */
+  pointer-events: none;
+  z-index: 2;
+}
+
+
+
+
+/* Solid needle-color circle with metallic rim — behind the digits at probe 2 or 4 */
+.kpiBucket .baseStats[data-probe="2"] .speedRead::before,
+.kpiBucket .baseStats[data-probe="4"] .speedRead::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  /* TRUE circle: width == height; sized off your 3-digit rotor width */
+  width: calc(3 * var(--odometerFontWidth) + .5em);
+  height: calc(3 * var(--odometerFontWidth) + .5em);
+  border-radius: 50%;
+
+
+  background: radial-gradient(closest-side,
+              #fbfbfb 0%, #ededed 55%, #dddddd 100%);
+  background-clip: content-box;
+
+
+
+  /* Metallic rim via shadows (no reflow) */
+
+  box-shadow:
+    inset 0 6px 14px rgba(0,0,0,0.35),    /* top inner shadow (inset) */
+    inset 0 -6px 12px rgba(255,255,255,0.12), /* bottom/light inner bounce */
+    0 0 0 2px var(--brass-base, #c4933a),     /* thin rim */
+    0 0 0 4px var(--brass-deep, #7a5c2b);     /* deeper rim */
+
+
+  /* Crucial: draw behind the digits within .speedRead */
+  z-index: -1;
+  pointer-events: none;
+}
+
+
+/* my code recommendation: */
+/* PowerCanvas: floating info panel for call details */
+#powerCanvas {
+  
+  transform: scale(0.90);
+  transform-origin: center;
+  transition: opacity 0.4s ease, transform 450ms ease;
+
+  position: absolute;
+  width: 100%; /* JS will override with bucket width */
+  height: 50%; /* JS will override with bucket height / 2 */
+    background: radial-gradient(closest-side, #fbfbfb 0%, #ededed 55%, #dddddd 100%);
+  border: 2px solid var(--brass-deep, #7a5c2b); /* thin rim like radial chart */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35); /* floating effect */
+  border-radius: 8px; /* optional for softer edges */
+  z-index: 50;
+  
+  
+opacity: 0;                /* start invisible */
+  transition: opacity 0.4s ease;
+
+}
+
+
+#powerCanvas.is-visible {
+  opacity: 1;                /* fade to fully visible */
+  transform: scale(1);
+}
+
+#powerCanvas .pc-chart {
+  height: var(--pc-child-h, 240px);
+}
+#powerCanvas .pc-table {
+  display: block;
+  height: var(--pc-child-h, 240px);
+  overflow: auto;
+}
+
+
+/* my code recommendation: */
+
+/* my code recommendation: REPLACEMENT — visit appearance (geometry handled in JS) */
+#powerCanvas .visit {
+  fill: var(--brass-mid, #b78a3d);
+  stroke: var(--brass-deep, #7a5c2b);
+  stroke-width: 0.75px;
+}
+
+
+/* my code recommendation: REPLACEMENT — connections as stroked lines with rounded caps */
+#powerCanvas .conn {
+  fill: none;                       /* lines: no fill */
+    stroke: var(--conn-color, var(--cp3, #e56335));
+  stroke-width: 4px;                /* thickness similar to radial */
+  stroke-linecap: round;            /* rounded ends */
+  vector-effect: non-scaling-stroke;
+
+}
+
+#powerCanvas svg .y-axis .tick text { fill: var(--brass-deep, #7a5c2b); }
+#powerCanvas svg .month-sep { stroke: var(--ink-300, #999); stroke-width: 1px; }
+#powerCanvas .chart-title { fill: var(--brass-deep, #7a5c2b); font-weight: 700; font-size: 16px; }
+
+#powerCanvas .chart-legend .legend-pill.alpha { fill: var(--series-alpha); }
+#powerCanvas .chart-legend .legend-pill.bravo { fill: var(--series-bravo); }
+
+
+#powerCanvas .chart-legend .legend-text { fill: #fff; font-weight: 600; }
+
+#powerCanvas svg .hit {
+  fill: transparent;          /* invisible overlay */
+  pointer-events: all;        /* catch hover/click */
+}
+
+/* my code recommendation: INSERTION — add once; there is no existing .plot-area selector */
+#powerCanvas svg .plot-area {
+  fill: none;
+  stroke: #9f0c0c;
+  stroke-dasharray: none;
+}
+
+
+.y-axis text {
+  fill: #7a5c2b; /* explicit theme color for labels */
+}
+
+/* Grid lines */
+.grid-lines line {
+  stroke: #ccc;        /* light gray grid lines */
+  stroke-opacity: 0.4; /* faint appearance */
+}
+
+/* Plot area border */
+.plot-area {
+  stroke-opacity: 0;
+  stroke-width: 10px;
+}
+
+
+
+/* my code recommendation: INSERTION — globe.css */
+/* Remove axis domain paths (baseline lines) for PowerCanvas chart */
+#powerCanvas svg .y-axis .domain,
+#powerCanvas svg .grid-lines .domain,
+#powerCanvas svg .x-axis .domain {
+  stroke: none !important;   /* no color */
+  display: none !important;  /* hide the path entirely */
+}
+
+
+/* my code recommendation: INSERTION — globe.css (apply existing hover outline to selected/related)
+/* Reference point: insert this block immediately AFTER the existing radial hover rules:
+   g.power-item:hover .power-stay { ... }
+   g.power-item:hover .power-conn { ... }
+   g.power-item:hover .power-hit  { ... }
+*/
+
+/* Use the SAME outline/filters as your current hover state for SELECTED calls */
+#leftRadialChart g.power-item.is-selected-call .power-stay,
+#rightRadialChart g.power-item.is-selected-call .power-stay {
+  stroke: var(--cp4, #2b4d7d);
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+
+/* INSERT HERE 👉 Selection v2: .is-selected/.is-related × .is-alpha/.is-bravo */
+
+/* Alpha highlights (use --series-alpha for call “stay” lines) */
+#leftRadialChart  g.power-item.is-selected.is-alpha .power-stay,
+#rightRadialChart g.power-item.is-selected.is-alpha .power-stay {
+  stroke: var(--series-alpha);
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+#leftRadialChart  g.power-item.is-related.is-alpha .power-stay,
+#rightRadialChart g.power-item.is-related.is-alpha .power-stay {
+  stroke: var(--series-alpha);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.20));
+}
+
+/* Bravo highlights (use --series-bravo for call “stay” lines) */
+#leftRadialChart  g.power-item.is-selected.is-bravo .power-stay,
+#rightRadialChart g.power-item.is-selected.is-bravo .power-stay {
+  stroke: var(--series-bravo);
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+#leftRadialChart  g.power-item.is-related.is-bravo .power-stay,
+#rightRadialChart g.power-item.is-related.is-bravo .power-stay {
+  stroke: var(--series-bravo);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.20));
+}
+
+/* For connection lines, keep the per-visit color; just thicken on selection */
+#leftRadialChart  g.power-item.is-selected .power-conn,
+#rightRadialChart g.power-item.is-selected .power-conn {
+  stroke-width: 5px; /* color remains var(--conn-color) set by JS */
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+#leftRadialChart  g.power-item.is-related .power-conn,
+#rightRadialChart g.power-item.is-related .power-conn {
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.20));
+}
+
+/* Optional: faint arc-slot glow (like your hover) */
+#leftRadialChart  g.power-item.is-selected .power-hit,
+#rightRadialChart g.power-item.is-selected .power-hit,
+#leftRadialChart  g.power-item.is-related .power-hit,
+#rightRadialChart g.power-item.is-related .power-hit {
+  stroke: currentColor;
+  stroke-opacity: 0.12;
+}
+
+
+#leftRadialChart g.power-item.is-selected-call .power-conn,
+#rightRadialChart g.power-item.is-selected-call .power-conn {
+  stroke-width: 5px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+/* SAME faint radial highlight for the hit area, matching hover behavior */
+#leftRadialChart g.power-item.is-selected-call .power-hit,
+#rightRadialChart g.power-item.is-selected-call .power-hit {
+  stroke: currentColor;
+  stroke-opacity: 0.12; /* subtle arc-slot glow identical to hover */
+}
+
+/* Apply the SAME hover outline/filters to RELATED calls (same vessel) */
+#leftRadialChart g.power-item.is-related-call .power-stay,
+#rightRadialChart g.power-item.is-related-call .power-stay {
+  stroke: var(--cp4, #2b4d7d);
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+#leftRadialChart g.power-item.is-related-call .power-conn,
+#rightRadialChart g.power-item.is-related-call .power-conn {
+  stroke-width: 5px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+}
+
+/* Faint highlight band for related calls too */
+#leftRadialChart g.power-item.is-related-call .power-hit,
+#rightRadialChart g.power-item.is-related-call .power-hit {
+  stroke: currentColor;
+  stroke-opacity: 0.12;
+}
+
+
+/* my code recommendation: INSERTION — globe.css (optional, local table polish) */
+#powerCanvas .pc-table-host {
+  padding: 8px 12px;
+  overflow: auto;
+}
+
+#powerCanvas .pc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+
+/* my code recommendation: INSERTION — globe.css */
+/* General rule: center + wrap any table cell (header or body)
+   marked as a numeric column via the "numberColumn" class. */
+
+table thead th.numberColumn,
+table tbody td.numberColumn {
+  text-align: center !important;  /* override local header rules */
+  vertical-align: middle;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  /* vertical divider to visually confirm alignment */
+  border-right: 1px solid var(--brass-deep, #7a5c2b);
+  border-left: 1px solid var(--brass-deep, #7a5c2b);
+}
+
+
+
+
+
+table th.textColumn,
+table td.textColumn {
+  text-align: left;
+}
+
+
+
+#powerCanvas .pc-table thead th {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 2px solid var(--brass-deep, #7a5c2b);
+}
+
+#powerCanvas .pc-table tbody td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+#powerCanvas .pc-table tbody tr:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+
+
+
+/* my code recommendation: INSERTION — globe.css */
+/* Trend chart host: fixed height; PowerCanvas already adapts to sum of children */
+#powerCanvas .pc-trend {
+  height: var(--pc-child-h, 240px); /* sits at the TOP of the canvas */
+}
+
+/* Optional: tune axis/line/dots for readability (neutral black line already set inline) */
+#powerCanvas .trend-chart .x-axis text { fill: var(--brass-deep, #7a5c2b); }
+#powerCanvas .trend-chart .y-axis text { fill: var(--brass-deep, #7a5c2b); }
+
+
+/* my code recommendation: REPLACEMENT — globe.css */
+/* Arrow host: precise hit-box (same digit width; ~1/3 height); no baseline drift */
+.baseStats .speedRead .trendArrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(100% + 0.10em);
+  pointer-events: auto;
+  z-index: 35;
+  cursor: pointer;
+
+  /* precise box */
+  display: inline-block;
+  width: var(--odometerFontWidth, 1.2ch);
+  height: calc(var(--odometerFontWidth, 1.2ch) * 0.33);
+
+  /* fix: prevent inline-line box from adding extra vertical space */
+  line-height: 0;
+  vertical-align: top;
+
+  /* make it a positioned container for the SVG */
+  position: absolute;
+}
+
+/* Optional debug visuals to see the hit-box bounds */
+.baseStats .speedRead .trendArrow.debug {
+  border: 1px dashed rgba(123,123,123,0.8);
+  background: rgba(0,0,0,0.02);
+}
+
+/* SVG fills the box exactly (absolute inset) */
+.baseStats .speedRead .trendArrowSvg {
+  position: absolute;
+  inset: 0;               /* top:0; right:0; bottom:0; left:0; */
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 0 1px rgba(0,0,0,0.20));
+}
+
+/* Fill color via --trend-color */
+.baseStats .speedRead .trendArrowSvg .arrow-shape {
+  fill: var(--trend-color, #2b4d7d);
+}
+
+/* Orientation */
+.baseStats .speedRead .trendArrowSvg.is-down { transform: rotate(180deg); }
+.baseStats .speedRead .trendArrowSvg.is-up   { transform: none; }
+
+
+/* my code recommendation: INSERTION — globe.css */
+/* PowerCanvas fade behavior */
+#powerCanvas {
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+#powerCanvas.is-visible {
+  opacity: 1;
+}
+#powerCanvas.is-fading {
+  opacity: 0; /* explicit target state for fade-out */
+}
+
+/* Trend chart fade behavior */
+#powerCanvas .pc-trend {
+  opacity: 1;
+  transition: opacity 300ms ease;
+}
+#powerCanvas .pc-trend.is-fading {
+  opacity: 0;
+}
+/* export popUp */
+
+.export-modal { border: none; padding: 0; width: min(420px, 90vw); max-width: 420px; position: absolute; }
+.export-modal::backdrop { background: rgba(253, 250, 250, 0.35); }
+.export-modal__content { padding: 16px; background: #c4933a; border-radius: 10px; }
+.export-modal__header { display: flex; justify-content: space-between; align-items: center; }
+.export-modal__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; } 
+.export-modal__close { border: none; background: transparent; font-size: 18px; cursor: pointer; }
+.btn { padding: 10px; border-radius: 6px; cursor: pointer; }
+.exportExcelBtn { background: #2b4d7d; color: #d69f9f; }
+.exportPdfBtn { background: #7a5c2b; color: #330707; }
+
+
+/* my code recommendation: */
+/* REPLACEMENT: compact tutorial UI styles */
+
+/* ===== Tokens (adjust green to your brand) ===== */
+:root {
+  --tut-overlay: rgba(0, 0, 0, 0.35);
+  --tut-panel-bg: rgba(20, 20, 24, 0.92);
+  --tut-text: #fff;
+  --tut-green: #2e7d32;   /* set to your brand green */
+  --tut-red:   #d9534f;
+  --tut-grey:  #3a3f4a;
+  --tut-radius: 12px;
+  --tut-shadow: 0 18px 40px rgba(0,0,0,0.45);
+  --tut-z: 1000;          /* base z-index; panel uses +1 */
+}
+
+/* ===== Overlay root & layers ===== */
+#tutorial-root[hidden] { display: none; }
+#tutorial-root {
+  position: fixed; inset: 0; z-index: var(--tut-z);
+  pointer-events: none; /* children handle events */
+}
+
+.tut-overlay {
+  position: fixed; inset: 0;
+  background: var(--tut-overlay);
+  backdrop-filter: blur(2px);
+  pointer-events: auto;
+}
+
+.tut-spotlight {
+  position: fixed;
+  box-shadow: 0 0 0 9999px var(--tut-overlay);
+  outline: 2px solid rgba(255,215,0,0.85);
+  pointer-events: none;
+}
+
+/* ===== Panel (message window) ===== */
+.tut-panel {
+  position: fixed; z-index: calc(var(--tut-z) + 1);
+  max-width: 520px;
+  background: var(--tut-panel-bg);
+  color: var(--tut-text);
+  border-radius: var(--tut-radius);
+  box-shadow: var(--tut-shadow);
+  padding: 16px 18px;
+
+  display: flex;           /* lets actions dock to bottom */
+  flex-direction: column;
+}
+
+.tut-panel.centered {
+  left: 50%; top: 50%; transform: translate(-50%, -50%);
+}
+
+.tut-title {
+  margin: 0 0 8px;
+  font: 600 1.1rem/1.3 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+.tut-content {
+  margin: 0 0 12px;
+  font: 400 0.95rem/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* ===== Actions row: Skip left | Back + Next right ===== */
+.tut-actions {
+  margin-top: auto; padding-top: 8px;
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* Base button look */
+.tut-actions .tut-prev,
+.tut-actions .tut-next,
+.tut-actions .tut-done {
+  display: inline-flex;            /* keep icon+text aligned */
+  align-items: center; justify-content: center;
+  padding: 8px 12px; border: 0; border-radius: 10px;
+  color: var(--tut-text);
+  font: 600 0.95rem/1.1 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  cursor: pointer;
+}
+
+/* Role colors */
+.tut-actions .tut-next { background: var(--tut-green); }  /* Begin/Next/Finish */
+.tut-actions .tut-done { background: var(--tut-red);   }  /* Skip/Exit */
+.tut-actions .tut-prev { background: var(--tut-grey);  }  /* Back */
+
+/* Placement: Skip/Exit at left; Back + Next grouped at right */
+.tut-actions .tut-done { order: 1; margin-right: auto; }
+.tut-actions .tut-prev { order: 2; margin-left: auto; }
+.tut-actions .tut-next { order: 3; }
+
+/* ===== Force label BEFORE icon in each button ===== */
+/* Wrap your labels in <span> (your JS does this). We then set explicit child order. */
+.tut-actions .tut-prev > span,
+.tut-actions .tut-next > span,
+.tut-actions .tut-done > span { order: 1 !important; }
+
+.tut-actions .tut-prev > i,
+.tut-actions .tut-next > i,
+.tut-actions .tut-done > i {
+  order: 2 !important;            /* icon always AFTER text */
+  margin-left: 6px !important;    /* spacing for trailing icon */
+  margin-right: 0 !important;
+  font-size: 1em;                 /* match text size */
+  line-height: 1;
+  font-weight: inherit;
+  color: inherit;
+}
+
+/* Respect JS hiding of Back on intro */
+.tut-actions .tut-prev[style*="display: none"] { display: none !important; }
+
+/* Guard against any pseudo “keycap” arrows */
+.tut-actions .tut-prev::before,
+.tut-actions .tut-next::before,
+.tut-actions .tut-done::before { content: none !important; }
+
+
+/* my code recommendation: */
+/* INSERTION: stronger hover + custom focus ring for tutorial buttons */
+
+/* Ensure the panel accepts pointer events (needed for :hover) */
+.tut-panel { pointer-events: auto; }
+
+/* Stronger lighten on hover (about +20%) + slight lift */
+.tut-actions .tut-prev,
+.tut-actions .tut-next,
+.tut-actions .tut-done {
+  transition: filter 160ms ease, box-shadow 160ms ease, opacity 140ms ease;
+  will-change: filter, box-shadow;
+}
+
+.tut-actions .tut-prev:hover,
+.tut-actions .tut-next:hover,
+.tut-actions .tut-done:hover {
+  filter: brightness(1.20);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+.tut-actions .tut-prev:active,
+.tut-actions .tut-next:active,
+.tut-actions .tut-done:active {
+  filter: brightness(1.10);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.20);
+}
+
+/* Custom focus ring that matches the dark panel — removes the white border look */
+.tut-actions .tut-prev:focus-visible,
+.tut-actions .tut-next:focus-visible,
+.tut-actions .tut-done:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.75);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.30); /* subtle inner contrast on dark panel */
+}
+
+/* If your browser is showing a default ring via :focus (not :focus-visible), normalize it */
+.tut-actions .tut-prev:focus,
+.tut-actions .tut-next:focus,
+.tut-actions .tut-done:focus {
+  outline: none;
+}
+

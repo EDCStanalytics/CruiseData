@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <script src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script type="text/javascript" src="./Resources/JavaScripts/chartEmbed.js"></script>
+
+    <link rel="stylesheet" href="./resources/css/style.css">
+
+    <title>Resizing Charts</title>
+
+  </head>
+
+  <body>
+  
+  <div id="sickFlex"></div>
+
+  <div id="sticky"></div>
+
+  </body>
+</html>
+
+
+<script>
+  const spec = {
+    $schema: "https://vega.github.io/schema/vega/v6.json",
+    description: "Stock prices of 5 Tech Companies over Time.",
+    autosize: { type: "fit", contains: "padding" },
+    padding: 5,
+    style: "cell",
+    signals: [
+      {
+        name: "width",
+        init: "containerSize()[0]",
+        on: [{ events: "window:resize", update: "containerSize()[0]" }]
+      },
+      {
+        name: "height",
+        init: "containerSize()[1]",
+        on: [{ events: "window:resize", update: "containerSize()[1]" }]
+      }
+    ],
+    data: [
+      {
+        name: "source_0",
+        url: "https://vega.github.io/editor/data/stocks.csv",
+        format: { type: "csv", parse: { date: "date" } },
+        transform: [
+          {
+            type: "formula",
+            as: "year_date",
+            expr: 'datetime(year(datum["date"]), 0, 1, 0, 0, 0, 0)'
+          },
+          {
+            type: "aggregate",
+            groupby: ["year_date", "symbol"],
+            ops: ["mean"],
+            fields: ["price"],
+            as: ["mean_price"]
+          }
+        ]
+      },
+      {
+        name: "data_0",
+        source: "source_0",
+        transform: [
+          {
+            type: "filter",
+            expr: 'datum["year_date"] !== null && !isNaN(datum["year_date"])'
+          }
+        ]
+      }
+    ],
+    marks: [
+      {
+        name: "layer_0_pathgroup",
+        type: "group",
+        from: {
+          facet: {
+            name: "faceted_path_layer_0_main",
+            data: "source_0",
+            groupby: ["symbol"]
+          }
+        },
+        encode: {
+          update: {
+            width: { field: { group: "width" } },
+            height: { field: { group: "height" } }
+          }
+        },
+        marks: [
+          {
+            name: "layer_0_marks",
+            type: "line",
+            style: ["line"],
+            sort: { field: 'datum["year_date"]' },
+            from: { data: "faceted_path_layer_0_main" },
+            encode: {
+              update: {
+                stroke: { scale: "color", field: "symbol" },
+                x: { scale: "x", field: "year_date" },
+                y: { scale: "y", field: "mean_price" },
+                defined: {
+                  signal:
+                    'datum["year_date"] !== null && !isNaN(datum["year_date"]) && datum["mean_price"] !== null && !isNaN(datum["mean_price"])'
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        name: "layer_1_marks",
+        type: "symbol",
+        style: ["point"],
+        from: { data: "data_0" },
+        encode: {
+          update: {
+            opacity: { value: 1 },
+            fill: { scale: "color", field: "symbol" },
+            x: { scale: "x", field: "year_date" },
+            y: { scale: "y", field: "mean_price" }
+          }
+        }
+      }
+    ],
+    scales: [
+      {
+        name: "x",
+        type: "time",
+        domain: {
+          fields: [
+            { data: "source_0", field: "year_date" },
+            { data: "data_0", field: "year_date" }
+          ]
+        },
+        range: [0, { signal: "width" }]
+      },
+      {
+        name: "y",
+        type: "linear",
+        domain: {
+          fields: [
+            { data: "source_0", field: "mean_price" },
+            { data: "data_0", field: "mean_price" }
+          ]
+        },
+        range: [{ signal: "height" }, 0],
+        nice: true,
+        zero: true
+      },
+      {
+        name: "color",
+        type: "ordinal",
+        domain: {
+          fields: [
+            { data: "source_0", field: "symbol" },
+            { data: "data_0", field: "symbol" }
+          ],
+          sort: true
+        },
+        range: "category"
+      }
+    ],
+    axes: [
+      {
+        scale: "x",
+        orient: "bottom",
+        gridScale: "y",
+        grid: true,
+        tickCount: { signal: "ceil(width/40)" },
+        domain: false,
+        labels: false,
+        maxExtent: 0,
+        minExtent: 0,
+        ticks: false,
+        zindex: 0
+      },
+      {
+        scale: "y",
+        orient: "left",
+        gridScale: "x",
+        grid: true,
+        tickCount: { signal: "ceil(height/40)" },
+        domain: false,
+        labels: false,
+        maxExtent: 0,
+        minExtent: 0,
+        ticks: false,
+        zindex: 0
+      },
+      {
+        scale: "x",
+        orient: "bottom",
+        grid: false,
+        title: "date (year)",
+        labelFlush: true,
+        labelOverlap: true,
+        tickCount: { signal: "ceil(width/40)" },
+        encode: {
+          labels: {
+            update: { text: { signal: "timeFormat(datum.value, '%Y')" } }
+          }
+        },
+        zindex: 0
+      },
+      {
+        scale: "y",
+        orient: "left",
+        grid: false,
+        title: "Mean of price",
+        labelOverlap: true,
+        tickCount: { signal: "ceil(height/40)" },
+        zindex: 0
+      }
+    ],
+    legends: [
+      {
+        stroke: "color",
+        gradientLength: { signal: "clamp(height, 64, 200)" },
+        symbolType: "circle",
+        title: "symbol",
+        fill: "color",
+        encode: { symbols: { update: { opacity: { value: 1 } } } }
+      }
+    ]
+  };
+  const view = new vega.View(vega.parse(spec), {
+    renderer: "canvas", // renderer (canvas or svg)
+    container: "#sickFlex", // parent DOM container
+    hover: true // enable hover processing
+  });
+  view.runAsync();
+</script>
+

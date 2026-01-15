@@ -1,0 +1,927 @@
+Terminal,Date,CruiseLine,ShipName,EmbarkPAX,DebarkPAX,In-TransitPAX,TotalPAX,SPConnect,Usage(kWh),CallDuration,ConnectionDuration
+MCT,11/16/2021,Arctic Cruises,Kestrel,0,0,0,0,No ,0,15:55:24,0:00:00
+MCT,9/3/2021,Arctic Cruises,Peregrine,175,0,4,179,No ,0,16:45:40,0:00:00
+MCT,10/2/2021,American Cruises,Spinner,1858,0,,1858,No ,0,8:35:51,0:00:00
+MCT,11/6/2021,American Cruises,Orca,149,172,23,344,No ,0,4:53:26,0:00:00
+MCT,9/15/2021,American Cruises,Orca,1518,1808,49,3375,No ,0,11:57:16,0:00:00
+MCT,10/12/2021,Arctic Cruises,Red Feather,0,0,58,58,No ,0,5:39:23,0:00:00
+MCT,10/7/2021,Arctic Cruises,Red Feather,135,147,23,305,No ,0,14:53:12,0:00:00
+MCT,10/3/2021,Pacific Cruises,Tiger,1296,1536,21,2853,No ,0,6:11:50,0:00:00
+MCT,11/24/2021,Arctic Cruises,Peregrine,183,137,19,339,No ,0,9:14:57,0:00:00
+MCT,12/9/2021,Pacific Cruises,Lion,1437,1283,29,2749,No ,0,16:17:57,0:00:00
+MCT,10/5/2021,Atlantic Cruises,Mercedes,0,6,48,54,No ,0,22:47:23,0:00:00
+MCT,12/11/2021,Arctic Cruises,Kestrel,153,180,21,354,No ,0,11:19:07,0:00:00
+MCT,9/9/2021,Atlantic Cruises,BWM,1547,1439,27,3013,No ,0,23:15:43,0:00:00
+MCT,11/7/2021,Arctic Cruises,Peregrine,140,155,17,312,No ,0,21:06:09,0:00:00
+MCT,10/2/2021,Atlantic Cruises,Audi,0,2,109,111,No ,0,15:06:44,0:00:00
+MCT,9/30/2021,American Cruises,Orca,1919,1479,46,3444,No ,0,6:50:21,0:00:00
+MCT,9/29/2021,Atlantic Cruises,Audi,247,116,43,406,No ,0,23:12:11,0:00:00
+MCT,10/20/2021,American Cruises,Orca,1497,1925,35,3457,No ,0,7:02:14,0:00:00
+MCT,11/1/2021,Pacific Cruises,Lion,139,260,29,428,No ,0,19:36:52,0:00:00
+MCT,12/3/2021,Atlantic Cruises,Mercedes,312,142,27,481,No ,0,10:41:58,0:00:00
+MCT,12/3/2021,American Cruises,Orca,1221,1,2,1224,No ,0,22:40:51,0:00:00
+MCT,11/30/2021,Arctic Cruises,Red Feather,202,305,25,532,No ,0,15:59:53,0:00:00
+MCT,11/30/2021,Arctic Cruises,Red Feather,1232,1204,19,2455,No ,0,3:57:29,0:00:00
+MCT,10/25/2021,Pacific Cruises,Lion,1867,2028,85,3980,No ,0,6:23:47,0:00:00
+MCT,9/14/2021,Atlantic Cruises,BWM,982,1227,19,2228,No ,0,15:22:53,0:00:00
+MCT,10/5/2021,Pacific Cruises,Lion,903,983,18,1904,No ,0,20:41:59,0:00:00
+MCT,11/9/2021,American Cruises,Orca,999,901,18,1918,No ,0,9:25:32,0:00:00
+BCT,10/2/2021,Atlantic Cruises,Mercedes,2414,2414,3043,7871,No ,0,21:17:10,0:00:00
+MCT,11/12/2021,Atlantic Cruises,Audi,1419,993,19,2431,No ,0,16:59:51,0:00:00
+MCT,6/20/2022,Atlantic Cruises,Audi,855,1428,8,2291,No ,0,22:04:30,0:00:00
+MCT,8/14/2022,Arctic Cruises,Kestrel,768,835,22,1625,No ,0,22:31:06,0:00:00
+MCT,11/19/2022,Pacific Cruises,Jaguar,576,762,25,1363,No ,0,11:08:02,0:00:00
+MCT,6/26/2022,American Cruises,Orca,569,570,32,1171,No ,0,1:38:02,0:00:00
+MCT,3/18/2022,Arctic Cruises,Red Feather,604,591,13,1208,No ,0,10:41:55,0:00:00
+MCT,12/7/2022,American Cruises,Bottlenose,1135,767,10,1912,No ,0,13:17:29,0:00:00
+MCT,3/17/2022,Arctic Cruises,Kestrel,2001,2,19,2022,No ,0,11:18:39,0:00:00
+BCT,6/11/2022,Pacific Cruises,Tiger,3077,3077,635,6789,No ,0,7:53:59,0:00:00
+MCT,1/11/2022,Atlantic Cruises,BWM,1450,1999,19,3468,No ,0,9:28:17,0:00:00
+MCT,4/20/2022,American Cruises,Orca,867,1132,11,2010,No ,0,22:29:43,0:00:00
+MCT,3/16/2022,Atlantic Cruises,Mercedes,1445,1428,40,2913,No ,0,0:17:37,0:00:00
+BCT,12/28/2022,American Cruises,Spinner,4926,4926,3167,13019,No ,0,21:41:27,0:00:00
+MCT,6/30/2022,Arctic Cruises,Peregrine,1135,841,17,1993,No ,0,5:35:32,0:00:00
+MCT,5/2/2022,Arctic Cruises,Peregrine,2261,1444,38,3743,No ,0,3:40:53,0:00:00
+MCT,1/5/2022,Arctic Cruises,Kestrel,1710,2267,22,3999,No ,0,21:07:34,0:00:00
+MCT,3/10/2022,Atlantic Cruises,Mercedes,1151,1134,15,2300,No ,0,11:11:55,0:00:00
+BCT,5/18/2022,Pacific Cruises,Tiger,960,960,260,2180,No ,0,11:11:36,0:00:00
+MCT,4/23/2022,American Cruises,Bottlenose,1696,1702,27,3425,No ,0,15:41:47,0:00:00
+MCT,1/5/2022,Atlantic Cruises,Audi,1197,1144,18,2359,No ,0,4:57:26,0:00:00
+MCT,8/2/2022,Arctic Cruises,Peregrine,1308,1223,49,2580,No ,0,22:53:45,0:00:00
+MCT,12/4/2022,American Cruises,Spinner,2547,1693,29,4269,No ,0,5:40:43,0:00:00
+MCT,8/14/2022,American Cruises,Bottlenose,1865,1195,13,3073,No ,0,8:31:12,0:00:00
+MCT,8/23/2022,Atlantic Cruises,Mercedes,2532,3142,33,5707,No ,0,7:19:55,0:00:00
+MCT,10/5/2022,American Cruises,Bottlenose,2437,1861,14,4312,No ,0,6:53:24,0:00:00
+BCT,5/4/2022,Pacific Cruises,Tiger,2835,2835,2801,8471,No ,0,6:44:32,0:00:00
+MCT,6/9/2022,Arctic Cruises,Peregrine,4338,3142,27,7507,No ,0,15:39:52,0:00:00
+MCT,5/14/2022,Pacific Cruises,Lion,272,315,13,600,No ,0,16:22:08,0:00:00
+MCT,3/19/2022,Pacific Cruises,Lion,0,2,108,110,No ,0,12:28:57,0:00:00
+BCT,6/24/2022,Arctic Cruises,Kestrel,5529,5529,2528,13586,No ,0,19:16:33,0:00:00
+MCT,3/12/2022,Atlantic Cruises,BWM,1538,4350,9,5897,No ,0,3:14:19,0:00:00
+MCT,7/28/2022,American Cruises,Bottlenose,910,2435,13,3358,No ,0,9:02:22,0:00:00
+MCT,10/3/2022,Pacific Cruises,Jaguar,1501,5,18,1524,No ,0,17:43:19,0:00:00
+MCT,2/10/2022,Arctic Cruises,Red Feather,2167,0,17,2184,No ,0,7:29:36,0:00:00
+MCT,9/3/2022,Atlantic Cruises,BWM,922,1206,38,2166,No ,0,1:58:47,0:00:00
+BCT,2/4/2022,American Cruises,Spinner,2634,2634,550,5818,Yes,46393,5:57:22,5:57:22
+MCT,2/17/2022,Arctic Cruises,Peregrine,2203,2159,24,4386,No ,0,2:01:31,0:00:00
+MCT,2/17/2022,Atlantic Cruises,Mercedes,1911,2193,31,4135,No ,0,8:46:56,0:00:00
+MCT,2/8/2022,Pacific Cruises,Jaguar,5,3,135,143,No ,0,12:38:16,0:00:00
+BCT,6/1/2022,American Cruises,Bottlenose,5300,5300,1458,12058,Yes,43033,5:52:34,5:52:34
+MCT,3/30/2022,Atlantic Cruises,Mercedes,2296,1914,24,4234,No ,0,19:22:25,0:00:00
+MCT,5/9/2022,American Cruises,Bottlenose,2461,2271,38,4770,No ,0,18:54:01,0:00:00
+MCT,8/8/2022,Atlantic Cruises,Mercedes,2906,2469,27,5402,No ,0,20:45:11,0:00:00
+BCT,7/16/2022,Pacific Cruises,Tiger,5754,5754,1457,12965,Yes,26637,3:45:57,3:45:57
+MCT,4/8/2022,American Cruises,Bottlenose,2728,2912,16,5656,No ,0,13:36:13,0:00:00
+MCT,10/26/2022,Pacific Cruises,Tiger,388,415,8,811,No ,0,1:41:42,0:00:00
+MCT,1/7/2022,Arctic Cruises,Kestrel,2636,2713,28,5377,No ,0,13:19:00,0:00:00
+MCT,1/14/2022,Pacific Cruises,Jaguar,3945,4,16,3965,No ,0,23:44:19,0:00:00
+MCT,6/22/2022,Arctic Cruises,Red Feather,3286,2638,20,5944,No ,0,23:23:03,0:00:00
+MCT,8/27/2022,Arctic Cruises,Peregrine,4278,3943,38,8259,No ,0,18:35:46,0:00:00
+MCT,8/1/2022,Atlantic Cruises,Audi,4071,3280,26,7377,No ,0,18:37:03,0:00:00
+MCT,1/24/2022,American Cruises,Orca,4211,4285,43,8539,No ,0,7:18:23,0:00:00
+BCT,12/9/2022,Pacific Cruises,Jaguar,4037,4037,551,8625,Yes,58271,6:50:33,6:50:33
+MCT,8/28/2022,American Cruises,Bottlenose,3744,4075,17,7836,No ,0,20:46:52,0:00:00
+MCT,12/19/2022,American Cruises,Spinner,620,390,14,1024,No ,0,14:11:04,0:00:00
+MCT,2/13/2022,Atlantic Cruises,Mercedes,4225,4206,12,8443,No ,0,4:59:28,0:00:00
+BCT,5/10/2022,Pacific Cruises,Lion,55,55,3097,3207,Yes,58067,7:03:02,7:03:02
+MCT,4/8/2022,American Cruises,Orca,3595,3747,12,7354,No ,0,16:37:55,0:00:00
+MCT,11/24/2022,American Cruises,Spinner,595,597,18,1210,No ,0,18:53:47,0:00:00
+MCT,8/18/2022,Pacific Cruises,Jaguar,4039,4218,30,8287,No ,0,7:29:33,0:00:00
+MCT,3/15/2022,American Cruises,Orca,3742,3578,22,7342,No ,0,2:12:36,0:00:00
+MCT,5/19/2022,Atlantic Cruises,Audi,4120,4043,37,8200,No ,0,12:20:28,0:00:00
+MCT,3/29/2022,American Cruises,Orca,591,595,19,1205,No ,0,11:15:03,0:00:00
+MCT,2/18/2022,Pacific Cruises,Tiger,4194,3753,12,7959,No ,0,12:55:05,0:00:00
+MCT,12/8/2022,American Cruises,Bottlenose,4249,4124,23,8396,No ,0,15:43:44,0:00:00
+MCT,6/20/2022,Pacific Cruises,Tiger,580,591,17,1188,No ,0,9:33:39,0:00:00
+BCT,11/13/2022,Arctic Cruises,Kestrel,5183,5183,214,10580,No ,0,11:57:05,0:00:00
+MCT,1/30/2022,American Cruises,Bottlenose,3762,4186,12,7960,No ,0,4:07:00,0:00:00
+MCT,10/21/2022,Atlantic Cruises,BWM,4257,4237,21,8515,No ,0,15:33:38,0:00:00
+BCT,11/27/2022,Arctic Cruises,Peregrine,4617,4617,2478,11712,No ,0,1:03:58,0:00:00
+BCT,7/15/2022,Atlantic Cruises,BWM,5242,5242,1090,11574,Yes,64907,7:21:30,7:21:30
+MCT,12/22/2022,American Cruises,Spinner,4057,3758,12,7827,No ,0,1:13:40,0:00:00
+MCT,8/3/2022,Atlantic Cruises,BWM,4137,4260,6,8403,No ,0,11:13:13,0:00:00
+MCT,10/23/2022,Atlantic Cruises,Audi,3603,4047,26,7676,No ,0,3:26:04,0:00:00
+MCT,6/16/2022,Atlantic Cruises,Mercedes,4078,4135,7,8220,No ,0,8:20:01,0:00:00
+MCT,9/23/2022,Atlantic Cruises,BWM,4125,0,17,4142,No ,0,8:05:05,0:00:00
+MCT,7/11/2022,Pacific Cruises,Lion,4042,4070,12,8124,No ,0,14:44:08,0:00:00
+MCT,4/9/2022,Pacific Cruises,Jaguar,3345,3602,15,6962,No ,0,12:27:48,0:00:00
+BCT,6/23/2022,Pacific Cruises,Jaguar,5084,5084,1612,11780,Yes,55951,6:30:16,6:30:16
+MCT,7/16/2022,Arctic Cruises,Red Feather,3965,4128,11,8104,No ,0,21:19:41,0:00:00
+MCT,9/21/2022,Atlantic Cruises,BWM,4380,2,4,4386,No ,0,18:07:58,0:00:00
+BCT,4/27/2022,Pacific Cruises,Jaguar,1453,1453,2415,5321,No ,0,1:32:50,0:00:00
+MCT,3/30/2022,Arctic Cruises,Peregrine,4047,4159,16,8222,No ,0,9:07:46,0:00:00
+MCT,5/10/2022,Pacific Cruises,Jaguar,3696,3322,18,7036,No ,0,18:24:15,0:00:00
+MCT,1/29/2022,Pacific Cruises,Jaguar,1197,4363,20,5580,No ,0,6:13:07,0:00:00
+MCT,9/22/2022,Arctic Cruises,Peregrine,3210,3953,20,7183,No ,0,4:19:46,0:00:00
+MCT,5/10/2022,Pacific Cruises,Tiger,3757,4161,17,7935,No ,0,20:58:26,0:00:00
+MCT,12/13/2022,Atlantic Cruises,Mercedes,3667,2889,42,6598,No ,0,23:15:44,0:00:00
+MCT,7/26/2022,Pacific Cruises,Lion,428,350,19,797,No ,0,20:28:45,0:00:00
+MCT,10/7/2022,Atlantic Cruises,Audi,3361,3750,13,7124,No ,0,23:53:50,0:00:00
+MCT,12/31/2022,Arctic Cruises,Red Feather,582,538,13,1133,No ,0,6:46:03,0:00:00
+MCT,12/13/2022,Pacific Cruises,Lion,368,387,7,762,No ,0,3:01:35,0:00:00
+MCT,8/26/2022,Atlantic Cruises,Mercedes,2752,3201,19,5972,No ,0,21:38:20,0:00:00
+MCT,11/20/2022,American Cruises,Orca,1053,1180,35,2268,No ,0,16:51:35,0:00:00
+MCT,2/2/2022,Pacific Cruises,Lion,-35,,,-35,No ,0,16:30:02,0:00:00
+MCT,7/12/2022,American Cruises,Bottlenose,2868,2888,28,5784,No ,0,0:19:24,0:00:00
+BCT,1/1/2022,Arctic Cruises,Red Feather,5588,5588,1079,12255,No ,0,10:37:32,0:00:00
+BCT,10/18/2022,American Cruises,Orca,274,274,3387,3935,No ,0,10:15:41,0:00:00
+MCT,9/20/2022,American Cruises,Bottlenose,3416,3363,13,6792,No ,0,9:13:46,0:00:00
+MCT,7/1/2022,Atlantic Cruises,Audi,338,341,5,684,No ,0,13:24:38,0:00:00
+MCT,4/21/2022,Atlantic Cruises,Mercedes,2988,2759,12,5759,No ,0,20:56:26,0:00:00
+MCT,3/11/2022,American Cruises,Bottlenose,878,854,4,1736,No ,0,21:19:35,0:00:00
+MCT,6/21/2022,Arctic Cruises,Peregrine,2456,1017,21,3494,No ,0,4:15:46,0:00:00
+BCT,7/10/2022,Arctic Cruises,Kestrel,5162,5162,767,11091,Yes,38519,4:42:48,4:42:48
+MCT,10/6/2022,Pacific Cruises,Jaguar,2970,2870,21,5861,No ,0,1:05:41,0:00:00
+BCT,7/17/2022,Atlantic Cruises,Audi,1014,1014,468,2496,No ,0,17:14:39,0:00:00
+MCT,11/12/2022,Arctic Cruises,Red Feather,4,4,1132,1140,No ,0,10:49:39,0:00:00
+MCT,1/15/2022,American Cruises,Bottlenose,3414,3621,10,7045,No ,0,2:28:19,0:00:00
+MCT,4/13/2022,American Cruises,Orca,3096,2973,19,6088,No ,0,0:47:55,0:00:00
+MCT,6/27/2022,Atlantic Cruises,BWM,0,2467,8,2475,No ,0,11:18:09,0:00:00
+MCT,4/17/2022,American Cruises,Orca,2,4,10,16,No ,0,6:52:43,0:00:00
+MCT,7/20/2022,Arctic Cruises,Kestrel,2,3612,4,3618,No ,0,3:36:52,0:00:00
+MCT,9/14/2022,Atlantic Cruises,Audi,1905,1490,43,3438,No ,0,19:10:54,0:00:00
+BCT,1/18/2022,Atlantic Cruises,BWM,5258,5258,2884,13400,No ,0,23:26:31,0:00:00
+MCT,9/1/2022,Arctic Cruises,Red Feather,613,611,7,1231,No ,0,17:53:04,0:00:00
+MCT,5/8/2022,American Cruises,Bottlenose,418,432,0,850,No ,0,3:55:57,0:00:00
+MCT,10/31/2022,American Cruises,Spinner,3542,3098,13,6653,No ,0,9:26:00,0:00:00
+MCT,6/10/2022,Atlantic Cruises,Audi,0,0,2477,2477,No ,0,16:26:32,0:00:00
+MCT,2/25/2022,Arctic Cruises,Red Feather,3562,2942,34,6538,No ,0,4:43:15,0:00:00
+MCT,3/18/2022,American Cruises,Orca,2188,1931,16,4135,No ,0,22:37:31,0:00:00
+BCT,9/19/2022,American Cruises,Spinner,2924,2924,1040,6888,No ,0,5:26:48,0:00:00
+MCT,12/8/2022,Atlantic Cruises,Audi,2122,2124,12,4258,No ,0,7:30:05,0:00:00
+BCT,3/26/2022,Arctic Cruises,Kestrel,3183,3183,799,7165,No ,0,9:26:46,0:00:00
+BCT,6/8/2022,Pacific Cruises,Tiger,235,235,1079,1549,No ,0,8:53:55,0:00:00
+MCT,2/13/2022,Pacific Cruises,Tiger,3410,3553,36,6999,No ,0,0:41:37,0:00:00
+MCT,3/10/2022,Atlantic Cruises,Audi,3560,3523,18,7101,No ,0,7:22:44,0:00:00
+BCT,10/18/2022,Arctic Cruises,Peregrine,839,839,913,2591,No ,0,14:00:28,0:00:00
+MCT,8/27/2022,American Cruises,Orca,1906,2192,8,4106,No ,0,1:02:20,0:00:00
+MCT,11/24/2022,Pacific Cruises,Lion,2881,2082,39,5002,No ,0,13:32:07,0:00:00
+MCT,12/14/2022,Arctic Cruises,Red Feather,343,314,6,663,No ,0,11:41:26,0:00:00
+MCT,5/26/2022,Pacific Cruises,Jaguar,2949,3415,30,6394,No ,0,7:27:57,0:00:00
+MCT,1/25/2022,Arctic Cruises,Kestrel,349,343,6,698,No ,0,19:16:24,0:00:00
+BCT,1/6/2022,Atlantic Cruises,Audi,5645,5645,2133,13423,No ,0,3:01:16,0:00:00
+MCT,8/20/2022,American Cruises,Bottlenose,2107,2861,50,5018,No ,0,20:10:13,0:00:00
+MCT,1/10/2022,American Cruises,Spinner,1712,1870,25,3607,No ,0,11:01:09,0:00:00
+MCT,1/11/2022,Arctic Cruises,Red Feather,3334,3552,17,6903,No ,0,11:50:56,0:00:00
+MCT,7/3/2022,Atlantic Cruises,Mercedes,379,373,6,758,No ,0,13:15:44,0:00:00
+MCT,4/13/2022,Atlantic Cruises,Mercedes,1971,1721,32,3724,No ,0,9:54:14,0:00:00
+MCT,3/21/2022,Atlantic Cruises,BWM,604,614,4,1222,No ,0,13:28:53,0:00:00
+BCT,3/9/2022,Atlantic Cruises,Audi,4834,4834,1490,11158,No ,0,3:09:47,0:00:00
+MCT,9/13/2022,American Cruises,Orca,3171,2929,42,6142,No ,0,9:37:18,0:00:00
+MCT,2/28/2022,American Cruises,Spinner,3120,3330,11,6461,No ,0,9:02:06,0:00:00
+MCT,7/10/2022,Atlantic Cruises,Mercedes,392,403,13,808,No ,0,10:38:59,0:00:00
+BCT,1/7/2022,Arctic Cruises,Kestrel,5378,5378,856,11612,Yes,39519,5:15:26,5:15:26
+MCT,6/23/2022,Pacific Cruises,Lion,2195,1966,41,4202,No ,0,1:16:57,0:00:00
+MCT,5/17/2022,Atlantic Cruises,Audi,20,407,1487,1914,No ,0,14:04:22,0:00:00
+BCT,12/25/2022,Pacific Cruises,Lion,185,185,1556,1926,No ,0,1:07:50,0:00:00
+MCT,5/23/2022,American Cruises,Spinner,3083,3174,26,6283,No ,0,19:02:47,0:00:00
+BCT,6/8/2022,Pacific Cruises,Tiger,2686,2686,1296,6668,No ,0,7:25:19,0:00:00
+MCT,4/20/2022,Pacific Cruises,Tiger,2746,3094,36,5876,No ,0,17:43:00,0:00:00
+MCT,9/22/2022,Pacific Cruises,Jaguar,1143,2194,20,3357,No ,0,17:06:45,0:00:00
+MCT,4/12/2022,Arctic Cruises,Kestrel,262,241,38,541,No ,0,18:06:43,0:00:00
+MCT,3/2/2022,Pacific Cruises,Jaguar,0,1,131,132,No ,0,22:23:00,0:00:00
+MCT,6/11/2022,American Cruises,Bottlenose,248,7,913,1168,No ,0,2:53:38,0:00:00
+BCT,7/21/2022,Pacific Cruises,Jaguar,2165,2165,228,4558,No ,0,12:36:51,0:00:00
+MCT,5/4/2022,Arctic Cruises,Kestrel,3876,3075,26,6977,No ,0,5:03:12,0:00:00
+MCT,2/25/2022,Pacific Cruises,Tiger,2386,2715,65,5166,No ,0,9:54:26,0:00:00
+MCT,2/15/2022,Pacific Cruises,Tiger,12,23,337,372,No ,0,5:12:16,0:00:00
+MCT,5/31/2022,Atlantic Cruises,Mercedes,6,9,612,627,No ,0,22:09:44,0:00:00
+MCT,9/2/2022,Pacific Cruises,Jaguar,3407,3873,17,7297,No ,0,22:21:14,0:00:00
+MCT,7/8/2022,Pacific Cruises,Jaguar,1,2418,7,2426,No ,0,1:46:33,0:00:00
+MCT,3/8/2022,Pacific Cruises,Lion,4041,3406,18,7465,No ,0,17:02:34,0:00:00
+BCT,6/17/2022,Arctic Cruises,Kestrel,2169,2169,108,4446,Yes,40149,5:20:48,5:20:48
+MCT,1/1/2022,Pacific Cruises,Jaguar,3796,4029,23,7848,No ,0,13:45:59,0:00:00
+MCT,1/8/2022,American Cruises,Spinner,0,3799,18,3817,No ,0,14:27:30,0:00:00
+BCT,2/5/2022,Pacific Cruises,Lion,2365,2365,776,5506,No ,0,4:22:11,0:00:00
+MCT,10/21/2022,Atlantic Cruises,Audi,0,3065,0,3065,No ,0,1:17:10,0:00:00
+MCT,8/9/2022,Atlantic Cruises,Audi,4311,4,4,4319,No ,0,9:21:41,0:00:00
+MCT,5/18/2022,Arctic Cruises,Red Feather,4498,1755,54,6307,No ,0,10:54:17,0:00:00
+MCT,1/5/2022,Atlantic Cruises,Audi,4651,4290,12,8953,No ,0,21:57:54,0:00:00
+BCT,6/12/2022,Arctic Cruises,Kestrel,651,651,2225,3527,Yes,40771,5:33:37,5:33:37
+MCT,11/3/2022,American Cruises,Orca,2754,1176,26,3956,No ,0,14:32:58,0:00:00
+MCT,11/27/2022,American Cruises,Orca,4821,4649,14,9484,No ,0,0:13:08,0:00:00
+MCT,8/14/2022,Arctic Cruises,Peregrine,4399,4801,25,9225,No ,0,13:23:21,0:00:00
+MCT,11/25/2023,American Cruises,Bottlenose,2200,2747,3,4950,No ,0,10:59:24,0:00:00
+BCT,8/22/2023,Pacific Cruises,Lion,4542,4542,1665,10749,Yes,49091,6:30:17,6:30:17
+MCT,10/17/2023,American Cruises,Spinner,3858,4396,30,8284,No ,0,3:08:47,0:00:00
+MCT,1/27/2023,Atlantic Cruises,Mercedes,2787,2176,19,4982,No ,0,23:42:21,0:00:00
+MCT,5/7/2023,Pacific Cruises,Lion,1536,2782,21,4339,No ,0,0:54:23,0:00:00
+MCT,12/2/2023,Atlantic Cruises,Mercedes,341,332,1673,2346,No ,0,7:47:30,0:00:00
+MCT,8/20/2023,Pacific Cruises,Tiger,3919,3863,27,7809,No ,0,0:09:02,0:00:00
+MCT,8/16/2023,Pacific Cruises,Tiger,1542,1813,29,3384,No ,0,9:51:01,0:00:00
+MCT,9/9/2023,Arctic Cruises,Peregrine,4453,3901,26,8380,No ,0,13:29:54,0:00:00
+MCT,8/31/2023,Arctic Cruises,Peregrine,3959,4436,39,8434,No ,0,8:28:00,0:00:00
+MCT,10/4/2023,Atlantic Cruises,Audi,2753,1503,13,4269,No ,0,22:30:56,0:00:00
+MCT,10/5/2023,Arctic Cruises,Peregrine,4800,3977,25,8802,No ,0,15:06:18,0:00:00
+MCT,9/14/2023,American Cruises,Bottlenose,4053,4804,17,8874,No ,0,6:21:42,0:00:00
+MCT,10/18/2023,Pacific Cruises,Lion,2384,2749,12,5145,No ,0,23:51:25,0:00:00
+MCT,8/25/2023,Arctic Cruises,Red Feather,4608,4039,16,8663,No ,0,23:28:59,0:00:00
+MCT,10/23/2023,American Cruises,Orca,2495,2377,5,4877,No ,0,1:48:40,0:00:00
+MCT,7/16/2023,Arctic Cruises,Peregrine,4254,4590,18,8862,No ,0,8:30:19,0:00:00
+MCT,3/15/2023,Pacific Cruises,Jaguar,2389,2479,7,4875,No ,0,19:25:17,0:00:00
+MCT,3/10/2023,Atlantic Cruises,Audi,4277,4247,11,8535,No ,0,6:17:17,0:00:00
+MCT,10/7/2023,Atlantic Cruises,Mercedes,3476,3,10,3489,No ,0,14:59:14,0:00:00
+MCT,8/28/2023,Atlantic Cruises,Mercedes,2145,2388,6,4539,No ,0,17:27:58,0:00:00
+MCT,7/21/2023,Atlantic Cruises,Mercedes,3655,3451,21,7127,No ,0,6:26:17,0:00:00
+MCT,7/16/2023,Atlantic Cruises,Mercedes,4701,4256,14,8971,No ,0,10:11:41,0:00:00
+MCT,12/28/2023,American Cruises,Orca,2783,2130,2,4915,No ,0,7:10:47,0:00:00
+MCT,5/16/2023,Atlantic Cruises,Mercedes,579,23,1664,2266,No ,0,8:20:57,0:00:00
+MCT,2/6/2023,Atlantic Cruises,Audi,0,0,610,610,No ,0,8:20:54,0:00:00
+MCT,8/11/2023,Pacific Cruises,Lion,3685,3652,19,7356,No ,0,21:23:12,0:00:00
+MCT,1/9/2023,Pacific Cruises,Tiger,0,4699,2,4701,No ,0,22:24:29,0:00:00
+MCT,9/22/2023,American Cruises,Bottlenose,2025,2749,13,4787,No ,0,17:06:40,0:00:00
+MCT,4/8/2023,Arctic Cruises,Kestrel,3555,3691,9,7255,No ,0,11:12:00,0:00:00
+MCT,1/28/2023,Pacific Cruises,Jaguar,0,632,1077,1709,No ,0,10:35:28,0:00:00
+MCT,11/4/2023,American Cruises,Orca,0,3,361,364,No ,0,10:25:28,0:00:00
+MCT,9/3/2023,American Cruises,Spinner,3583,0,4,3587,No ,0,18:33:44,0:00:00
+MCT,3/17/2023,Pacific Cruises,Tiger,2083,0,8,2091,No ,0,10:06:22,0:00:00
+MCT,12/16/2023,Arctic Cruises,Red Feather,19,28,1611,1658,No ,0,9:03:02,0:00:00
+BCT,10/15/2023,Atlantic Cruises,BWM,5558,5558,547,11663,No ,0,16:38:27,0:00:00
+MCT,4/21/2023,Pacific Cruises,Lion,3776,4312,52,8140,No ,0,4:29:36,0:00:00
+MCT,10/29/2023,Atlantic Cruises,Mercedes,0,0,122,122,No ,0,13:52:55,0:00:00
+MCT,8/23/2023,Atlantic Cruises,BWM,3339,3553,9,6901,No ,0,12:50:45,0:00:00
+BCT,3/27/2023,Pacific Cruises,Jaguar,3601,3601,1402,8604,No ,0,22:31:31,0:00:00
+MCT,8/1/2023,Pacific Cruises,Jaguar,3302,3331,12,6645,No ,0,2:47:11,0:00:00
+BCT,10/15/2023,Arctic Cruises,Red Feather,2619,2619,802,6040,No ,0,4:42:58,0:00:00
+MCT,6/30/2023,Pacific Cruises,Tiger,3257,3287,22,6566,No ,0,6:57:20,0:00:00
+BCT,4/6/2023,Pacific Cruises,Tiger,3255,3255,1486,7996,No ,0,2:22:49,0:00:00
+MCT,5/20/2023,Atlantic Cruises,Mercedes,4322,4,12,4338,No ,0,21:34:35,0:00:00
+MCT,8/2/2023,Pacific Cruises,Tiger,2944,3252,22,6218,No ,0,0:13:21,0:00:00
+MCT,12/11/2023,Arctic Cruises,Peregrine,280,217,1,498,No ,0,6:50:13,0:00:00
+MCT,3/30/2023,Arctic Cruises,Red Feather,5,9,1763,1777,No ,0,2:34:16,0:00:00
+BCT,4/6/2023,American Cruises,Orca,3031,3031,1293,7355,No ,0,14:41:54,0:00:00
+MCT,1/10/2023,American Cruises,Bottlenose,4374,4318,14,8706,No ,0,7:06:59,0:00:00
+BCT,9/2/2023,American Cruises,Orca,3053,3053,2869,8975,Yes,57404,7:13:41,7:13:41
+BCT,3/17/2023,Atlantic Cruises,Audi,2665,2665,588,5918,No ,0,20:52:51,0:00:00
+MCT,7/24/2023,Atlantic Cruises,BWM,4476,4373,14,8863,No ,0,12:25:24,0:00:00
+MCT,2/12/2023,American Cruises,Bottlenose,465,463,5,933,No ,0,17:21:25,0:00:00
+MCT,5/21/2023,Arctic Cruises,Red Feather,86,6,261,353,No ,0,0:13:03,0:00:00
+MCT,4/20/2023,American Cruises,Orca,,9,1477,1486,No ,0,19:44:01,0:00:00
+BCT,4/15/2023,Pacific Cruises,Tiger,4493,4493,,8986,No ,0,5:03:48,0:00:00
+MCT,9/5/2023,Pacific Cruises,Jaguar,4461,4469,19,8949,No ,0,13:12:32,0:00:00
+MCT,11/11/2023,Atlantic Cruises,Mercedes,889,884,5,1778,No ,0,18:48:20,0:00:00
+BCT,2/11/2023,Pacific Cruises,Lion,3339,3339,,6678,No ,0,10:29:05,0:00:00
+MCT,11/21/2023,Atlantic Cruises,BWM,4566,4456,20,9042,No ,0,11:31:50,0:00:00
+MCT,5/7/2023,Atlantic Cruises,BWM,3616,4715,9,8340,No ,0,13:43:52,0:00:00
+MCT,8/15/2023,Atlantic Cruises,Mercedes,1,2,1720,1723,No ,0,15:37:40,0:00:00
+BCT,5/20/2023,Arctic Cruises,Red Feather,4275,4275,6,8556,No ,0,22:01:05,0:00:00
+MCT,11/26/2023,American Cruises,Orca,4721,4550,29,9300,No ,0,23:27:12,0:00:00
+MCT,9/29/2023,American Cruises,Orca,4879,4754,29,9662,No ,0,14:03:38,0:00:00
+MCT,6/26/2023,Pacific Cruises,Jaguar,416,426,8,850,No ,0,16:07:22,0:00:00
+MCT,8/7/2023,Atlantic Cruises,Mercedes,807,918,5,1730,No ,0,8:34:52,0:00:00
+BCT,10/30/2023,Pacific Cruises,Tiger,5346,5346,6,10698,No ,0,3:40:58,0:00:00
+MCT,1/25/2023,American Cruises,Bottlenose,2696,4736,11,7443,No ,0,16:03:39,0:00:00
+MCT,10/22/2023,Pacific Cruises,Jaguar,4742,4868,23,9633,No ,0,11:26:02,0:00:00
+MCT,2/1/2023,Atlantic Cruises,BWM,1,8,1785,1794,No ,0,13:59:07,0:00:00
+BCT,6/13/2023,Atlantic Cruises,BWM,1641,1641,368,3650,Yes,27594,3:11:53,3:11:53
+MCT,5/12/2023,American Cruises,Orca,4523,2655,10,7188,No ,0,14:44:05,0:00:00
+BCT,3/17/2023,American Cruises,Orca,5604,5604,3,11211,No ,0,12:12:36,0:00:00
+MCT,11/14/2023,American Cruises,Orca,4901,4748,21,9670,No ,0,17:48:48,0:00:00
+BCT,7/9/2023,Pacific Cruises,Jaguar,203,203,411,817,No ,0,7:23:51,0:00:00
+BCT,12/27/2023,American Cruises,Spinner,2335,2335,0,4670,No ,0,7:13:31,0:00:00
+MCT,12/25/2023,American Cruises,Spinner,4570,4516,10,9096,No ,0,13:26:44,0:00:00
+MCT,1/9/2023,Arctic Cruises,Red Feather,858,766,8,1632,No ,0,6:04:12,0:00:00
+MCT,10/3/2023,Pacific Cruises,Jaguar,4896,4890,20,9806,No ,0,8:02:27,0:00:00
+BCT,2/16/2023,Atlantic Cruises,Audi,1256,1256,,2512,No ,0,8:54:39,0:00:00
+MCT,12/16/2023,Pacific Cruises,Tiger,4635,4565,19,9219,No ,0,1:57:47,0:00:00
+MCT,10/1/2023,Arctic Cruises,Kestrel,4949,4891,22,9862,No ,0,20:12:17,0:00:00
+BCT,2/6/2023,Arctic Cruises,Peregrine,2246,2246,407,4899,No ,0,20:32:52,0:00:00
+BCT,10/7/2023,Pacific Cruises,Jaguar,5542,5542,,11084,No ,0,16:02:21,0:00:00
+MCT,11/20/2023,Atlantic Cruises,BWM,4614,4633,15,9262,No ,0,17:27:49,0:00:00
+MCT,10/7/2023,Pacific Cruises,Lion,4850,4946,43,9839,No ,0,0:44:06,0:00:00
+BCT,5/14/2023,Arctic Cruises,Peregrine,498,498,3158,4154,Yes,77117,8:36:56,8:36:56
+MCT,5/30/2023,Arctic Cruises,Red Feather,5,5,1854,1864,No ,0,21:38:19,0:00:00
+BCT,12/26/2023,American Cruises,Orca,1633,1633,,3266,No ,0,15:17:24,0:00:00
+MCT,6/13/2023,American Cruises,Bottlenose,4609,4593,15,9217,No ,0,6:52:40,0:00:00
+MCT,8/24/2023,Pacific Cruises,Tiger,592,566,19,1177,No ,0,9:23:28,0:00:00
+MCT,12/21/2023,Pacific Cruises,Lion,4941,4852,22,9815,No ,0,12:24:06,0:00:00
+BCT,7/25/2023,American Cruises,Spinner,5466,5466,,10932,No ,0,3:11:03,0:00:00
+MCT,3/27/2023,Atlantic Cruises,BWM,4577,4606,14,9197,No ,0,2:32:49,0:00:00
+MCT,2/10/2023,Pacific Cruises,Tiger,894,868,10,1772,No ,0,11:57:13,0:00:00
+MCT,8/1/2023,Atlantic Cruises,Mercedes,1,1,1874,1876,No ,0,3:11:25,0:00:00
+MCT,1/3/2023,American Cruises,Spinner,4947,4939,19,9905,No ,0,23:55:10,0:00:00
+BCT,5/25/2023,Atlantic Cruises,Audi,1483,1483,,2966,No ,0,6:09:56,0:00:00
+MCT,12/11/2023,American Cruises,Bottlenose,4658,4574,14,9246,No ,0,8:43:16,0:00:00
+BCT,6/15/2023,Arctic Cruises,Red Feather,2913,2913,81,5907,No ,0,23:20:50,0:00:00
+MCT,3/8/2023,Pacific Cruises,Tiger,4806,4949,55,9810,No ,0,19:04:58,0:00:00
+MCT,4/24/2023,Arctic Cruises,Peregrine,81,117,1770,1968,No ,0,13:29:08,0:00:00
+MCT,1/29/2023,Pacific Cruises,Lion,358,295,1,654,No ,0,19:02:30,0:00:00
+BCT,10/20/2023,Atlantic Cruises,Audi,807,807,320,1934,Yes,40369,5:24:53,5:24:53
+MCT,10/16/2023,Pacific Cruises,Tiger,4770,4805,8,9583,No ,0,16:48:39,0:00:00
+MCT,8/3/2023,Pacific Cruises,Jaguar,4475,4670,6,9151,No ,0,4:56:17,0:00:00
+BCT,1/31/2023,American Cruises,Orca,1745,1745,353,3843,No ,0,19:13:22,0:00:00
+MCT,11/21/2023,Atlantic Cruises,Mercedes,,5146,9,5155,No ,0,17:50:22,0:00:00
+MCT,8/15/2023,Pacific Cruises,Tiger,4863,4773,20,9656,No ,0,21:21:01,0:00:00
+MCT,3/5/2023,Arctic Cruises,Red Feather,,,1759,1759,No ,0,4:14:12,0:00:00
+BCT,4/23/2023,American Cruises,Orca,5608,5608,51,11267,No ,0,15:51:40,0:00:00
+MCT,4/7/2023,American Cruises,Orca,4840,5129,24,9993,No ,0,1:15:21,0:00:00
+BCT,2/1/2023,American Cruises,Spinner,2005,2005,100,4110,No ,0,20:25:09,0:00:00
+MCT,2/7/2023,Arctic Cruises,Peregrine,4560,4461,10,9031,No ,0,6:30:29,0:00:00
+MCT,9/2/2023,Atlantic Cruises,Audi,626,600,18,1244,No ,0,11:57:32,0:00:00
+MCT,3/31/2023,American Cruises,Orca,912,909,,1821,No ,0,23:01:01,0:00:00
+MCT,4/29/2023,American Cruises,Orca,4611,4863,21,9495,No ,0,6:39:36,0:00:00
+MCT,3/5/2023,Arctic Cruises,Peregrine,4268,4851,10,9129,No ,0,14:29:41,0:00:00
+BCT,11/7/2023,Arctic Cruises,Kestrel,1316,1316,31,2663,No ,0,4:03:21,0:00:00
+MCT,7/22/2023,American Cruises,Spinner,3605,4547,16,8168,No ,0,13:41:47,0:00:00
+MCT,7/27/2023,American Cruises,Orca,812,874,11,1697,No ,0,19:22:04,0:00:00
+MCT,12/23/2023,Atlantic Cruises,Mercedes,,,1783,1783,No ,0,16:22:14,0:00:00
+MCT,7/26/2023,American Cruises,Spinner,637,638,7,1282,No ,0,14:53:17,0:00:00
+MCT,6/30/2023,American Cruises,Orca,321,370,,691,No ,0,20:39:38,0:00:00
+MCT,10/9/2023,Pacific Cruises,Lion,4292,4596,33,8921,No ,0,15:25:43,0:00:00
+BCT,3/8/2023,Arctic Cruises,Peregrine,2255,2255,451,4961,No ,0,21:45:23,0:00:00
+BCT,9/5/2023,Pacific Cruises,Tiger,1681,1681,63,3425,No ,0,23:03:56,0:00:00
+MCT,10/14/2023,American Cruises,Bottlenose,4039,4251,13,8303,No ,0,10:04:29,0:00:00
+BCT,3/26/2023,Pacific Cruises,Jaguar,1567,1567,311,3445,No ,0,8:38:40,0:00:00
+MCT,12/16/2023,American Cruises,Orca,1,1,679,681,No ,0,15:12:46,0:00:00
+MCT,6/27/2023,Pacific Cruises,Lion,586,635,7,1228,No ,0,18:14:38,0:00:00
+MCT,3/4/2023,American Cruises,Orca,303,299,10,612,No ,0,16:54:02,0:00:00
+MCT,1/26/2023,Atlantic Cruises,BWM,2000,2017,48,4065,No ,0,22:46:06,0:00:00
+BCT,3/28/2023,Arctic Cruises,Peregrine,1846,1846,29,3721,No ,0,15:18:40,0:00:00
+MCT,2/25/2023,Atlantic Cruises,Audi,3962,4241,61,8264,No ,0,0:46:02,0:00:00
+BCT,7/19/2023,Atlantic Cruises,Audi,,,313,313,No ,0,6:27:12,0:00:00
+MCT,7/12/2023,American Cruises,Bottlenose,4288,1026,18,5332,No ,0,12:12:21,0:00:00
+MCT,11/2/2023,American Cruises,Spinner,,3000,,3000,No ,0,7:26:10,0:00:00
+MCT,1/18/2023,Arctic Cruises,Peregrine,618,633,21,1272,No ,0,0:11:10,0:00:00
+MCT,3/24/2023,Pacific Cruises,Lion,1988,1932,28,3948,No ,0,5:27:44,0:00:00
+MCT,6/23/2023,Atlantic Cruises,BWM,0,0,0,0,No ,0,11:35:40,0:00:00
+BCT,1/20/2023,Pacific Cruises,Tiger,4286,3966,55,8307,No ,0,8:12:20,0:00:00
+MCT,12/26/2023,Arctic Cruises,Kestrel,3,3,1598,1604,No ,0,6:48:00,0:00:00
+BCT,2/7/2023,American Cruises,Bottlenose,2719,2637,120,5476,Yes,77345,9:43:57,9:43:57
+BCT,11/15/2023,American Cruises,Bottlenose,,2,1762,1764,No ,0,17:42:07,0:00:00
+MCT,5/13/2023,Pacific Cruises,Lion,629,575,12,1216,No ,0,0:46:25,0:00:00
+MCT,7/19/2023,Pacific Cruises,Lion,4206,3387,46,7639,No ,0,21:19:20,0:00:00
+BCT,1/2/2023,Arctic Cruises,Kestrel,2921,2758,12,5691,No ,0,20:09:23,0:00:00
+MCT,10/30/2023,American Cruises,Spinner,4056,3962,66,8084,No ,0,8:17:35,0:00:00
+BCT,5/31/2023,American Cruises,Bottlenose,3385,3966,336,7687,No ,0,5:01:16,0:00:00
+MCT,8/2/2023,American Cruises,Orca,,3,202,205,No ,0,4:44:07,0:00:00
+MCT,5/7/2023,American Cruises,Bottlenose,4289,4256,26,8571,No ,0,2:24:19,0:00:00
+MCT,9/14/2023,Pacific Cruises,Jaguar,18,4,287,309,No ,0,22:47:37,0:00:00
+MCT,10/19/2023,Pacific Cruises,Lion,3476,4214,41,7731,No ,0,2:15:29,0:00:00
+MCT,11/5/2023,Atlantic Cruises,Mercedes,214,409,28,651,No ,0,13:24:49,0:00:00
+MCT,1/23/2023,Arctic Cruises,Kestrel,542,552,88,1182,No ,0,23:14:15,0:00:00
+MCT,6/26/2023,Pacific Cruises,Tiger,884,893,4,1781,No ,0,15:37:06,0:00:00
+MCT,9/26/2023,Arctic Cruises,Red Feather,239,225,21,485,No ,0,16:06:23,0:00:00
+MCT,10/25/2023,Arctic Cruises,Red Feather,3531,2812,17,6360,No ,0,8:36:52,0:00:00
+BCT,10/26/2023,Atlantic Cruises,BWM,1501,1478,883,3862,No ,0,2:27:50,0:00:00
+MCT,10/3/2023,Arctic Cruises,Peregrine,3802,4053,98,7953,No ,0,1:29:16,0:00:00
+BCT,8/12/2023,Pacific Cruises,Lion,2857,2918,15,5790,No ,0,0:29:25,0:00:00
+MCT,10/22/2023,Arctic Cruises,Red Feather,17,45,1732,1794,No ,0,21:18:36,0:00:00
+MCT,6/7/2023,Pacific Cruises,Lion,4341,4295,14,8650,No ,0,5:41:25,0:00:00
+MCT,12/24/2023,Arctic Cruises,Kestrel,3662,3528,8,7198,No ,0,6:25:50,0:00:00
+BCT,8/24/2023,American Cruises,Spinner,3890,3710,0,7600,No ,0,15:43:45,0:00:00
+MCT,6/14/2023,Pacific Cruises,Lion,0,2,1572,1574,No ,0,15:08:19,0:00:00
+MCT,4/2/2023,Pacific Cruises,Tiger,0,5,314,319,No ,0,4:42:07,0:00:00
+MCT,2/14/2023,Atlantic Cruises,BWM,336,329,6,671,No ,0,2:42:54,0:00:00
+BCT,11/6/2023,Pacific Cruises,Tiger,2982,2956,9,5947,Yes,68166,7:41:54,7:41:54
+MCT,6/24/2023,Pacific Cruises,Jaguar,3636,3662,18,7316,No ,0,7:42:49,0:00:00
+MCT,3/12/2023,Arctic Cruises,Peregrine,36,90,0,126,No ,0,17:20:15,0:00:00
+MCT,4/19/2023,Arctic Cruises,Kestrel,4432,4336,17,8785,No ,0,1:47:17,0:00:00
+MCT,12/1/2023,Atlantic Cruises,Mercedes,53,136,93,282,No ,0,8:39:10,0:00:00
+MCT,8/6/2023,American Cruises,Spinner,12,16,875,903,No ,0,4:15:38,0:00:00
+BCT,7/27/2023,Atlantic Cruises,Mercedes,2730,2617,42,5389,Yes,71008,9:16:29,9:16:29
+MCT,12/26/2023,American Cruises,Spinner,641,579,9,1229,No ,0,4:07:25,0:00:00
+MCT,8/6/2023,Pacific Cruises,Tiger,2,11,1143,1156,No ,0,4:17:37,0:00:00
+MCT,11/3/2023,Pacific Cruises,Jaguar,0,11,1440,1451,No ,0,0:06:35,0:00:00
+MCT,10/6/2023,American Cruises,Spinner,3896,3561,39,7496,No ,0,8:24:12,0:00:00
+MCT,6/28/2023,American Cruises,Spinner,391,369,10,770,No ,0,10:11:27,0:00:00
+MCT,1/13/2023,American Cruises,Bottlenose,317,363,10,690,No ,0,14:26:41,0:00:00
+MCT,12/11/2023,American Cruises,Bottlenose,12,14,949,975,No ,0,6:22:35,0:00:00
+BCT,5/13/2023,American Cruises,Spinner,1325,1398,902,3625,Yes,41767,5:20:19,5:20:19
+MCT,2/24/2023,Pacific Cruises,Tiger,3822,3632,16,7470,No ,0,22:13:00,0:00:00
+BCT,8/15/2023,Pacific Cruises,Lion,2919,2971,17,5907,Yes,67382,8:26:54,8:26:54
+MCT,7/21/2023,Pacific Cruises,Jaguar,4021,3888,102,8011,No ,0,15:29:36,0:00:00
+BCT,10/5/2023,American Cruises,Spinner,3741,3877,2,7620,No ,0,16:23:06,0:00:00
+MCT,2/21/2023,Arctic Cruises,Red Feather,4366,4434,4,8804,No ,0,3:00:34,0:00:00
+MCT,12/1/2023,Atlantic Cruises,Mercedes,3887,3895,39,7821,No ,0,11:22:26,0:00:00
+MCT,5/18/2023,Pacific Cruises,Tiger,3421,3821,76,7318,No ,0,17:29:21,0:00:00
+MCT,6/24/2023,American Cruises,Spinner,309,304,81,694,No ,0,5:55:19,0:00:00
+MCT,12/23/2023,Atlantic Cruises,Mercedes,4,1,1610,1615,No ,0,2:50:16,0:00:00
+MCT,5/20/2023,American Cruises,Orca,0,14,275,289,No ,0,0:30:30,0:00:00
+BCT,7/23/2023,Arctic Cruises,Red Feather,2937,2938,11,5886,Yes,66437,8:03:56,8:03:56
+MCT,10/6/2023,American Cruises,Orca,3634,3239,64,6937,No ,0,18:57:26,0:00:00
+MCT,7/27/2023,Arctic Cruises,Peregrine,4450,4327,38,8815,No ,0,17:39:34,0:00:00
+MCT,1/31/2023,Arctic Cruises,Peregrine,4289,4071,35,8395,No ,0,3:26:30,0:00:00
+BCT,5/8/2023,Arctic Cruises,Red Feather,3060,3327,410,6797,No ,0,15:53:37,0:00:00
+MCT,8/18/2023,Arctic Cruises,Kestrel,252,333,9,594,No ,0,5:23:45,0:00:00
+BCT,6/18/2023,American Cruises,Bottlenose,1,33,2394,2428,Yes,93310,0:31:00,0:31:00
+MCT,1/24/2023,Atlantic Cruises,BWM,3237,3627,25,6889,No ,0,23:54:48,0:00:00
+MCT,4/12/2023,Atlantic Cruises,Mercedes,4,0,961,965,No ,0,3:59:37,0:00:00
+BCT,3/4/2023,Arctic Cruises,Peregrine,2707,2921,26,5654,Yes,47420,5:42:14,5:42:14
+MCT,9/2/2023,American Cruises,Bottlenose,3952,4220,74,8246,No ,0,4:40:52,0:00:00
+MCT,11/18/2023,Atlantic Cruises,Audi,4345,4460,25,8830,No ,0,8:40:03,0:00:00
+MCT,7/25/2023,Arctic Cruises,Kestrel,5,21,135,161,No ,0,6:59:24,0:00:00
+MCT,12/3/2023,Pacific Cruises,Jaguar,396,359,34,789,No ,0,20:57:27,0:00:00
+BCT,9/17/2023,American Cruises,Spinner,1,16,198,215,Yes,20,0:11:00,0:11:00
+MCT,6/27/2023,Arctic Cruises,Peregrine,3782,3237,34,7053,No ,0,15:43:26,0:00:00
+MCT,10/15/2023,Arctic Cruises,Kestrel,613,589,38,1240,No ,0,21:41:45,0:00:00
+MCT,6/12/2023,American Cruises,Orca,25,12,321,358,No ,0,3:51:59,0:00:00
+BCT,3/15/2023,American Cruises,Orca,2619,2637,95,5351,Yes,66439,8:18:59,8:18:59
+MCT,10/4/2023,Atlantic Cruises,BWM,3939,3178,42,7159,No ,0,0:09:43,0:00:00
+MCT,5/20/2023,American Cruises,Bottlenose,3762,3781,37,7580,No ,0,7:46:12,0:00:00
+BCT,5/6/2023,American Cruises,Bottlenose,4136,3457,3,7596,No ,0,18:46:43,0:00:00
+MCT,7/13/2023,Pacific Cruises,Tiger,5082,4346,19,9447,No ,0,12:40:22,0:00:00
+MCT,12/28/2023,Atlantic Cruises,BWM,3942,3810,131,7883,No ,0,9:05:25,0:00:00
+MCT,4/30/2023,Pacific Cruises,Jaguar,4640,5070,28,9738,No ,0,8:40:39,0:00:00
+MCT,5/29/2023,Arctic Cruises,Red Feather,11,3,616,630,No ,0,3:38:11,0:00:00
+BCT,9/21/2023,Atlantic Cruises,BWM,3937,3989,148,8074,No ,0,23:26:27,0:00:00
+MCT,11/22/2023,Pacific Cruises,Jaguar,7,8,262,277,No ,0,15:28:37,0:00:00
+MCT,3/3/2023,Atlantic Cruises,Mercedes,0,4663,22,4685,No ,0,21:38:51,0:00:00
+MCT,9/24/2023,Atlantic Cruises,Audi,0,1961,0,1961,No ,0,1:37:55,0:00:00
+MCT,2/21/2023,American Cruises,Orca,615,476,27,1118,No ,0,20:07:31,0:00:00
+BCT,3/3/2023,Atlantic Cruises,BWM,4091,4005,63,8159,No ,0,5:43:58,0:00:00
+MCT,8/20/2023,American Cruises,Bottlenose,4557,3940,19,8516,No ,0,12:32:35,0:00:00
+MCT,9/23/2023,American Cruises,Bottlenose,4195,3950,111,8256,No ,0,2:58:21,0:00:00
+BCT,5/9/2023,Arctic Cruises,Red Feather,1746,1545,645,3936,No ,0,12:30:46,0:00:00
+MCT,10/31/2023,Arctic Cruises,Peregrine,4097,4557,11,8665,No ,0,17:20:04,0:00:00
+BCT,12/10/2023,American Cruises,Bottlenose,4320,4086,57,8463,No ,0,15:58:33,0:00:00
+MCT,11/19/2023,Arctic Cruises,Kestrel,3437,3382,450,7269,No ,0,23:39:10,0:00:00
+MCT,9/2/2023,American Cruises,Bottlenose,4037,4198,82,8317,No ,0,13:36:49,0:00:00
+MCT,12/14/2023,Pacific Cruises,Jaguar,3101,2759,79,5939,No ,0,15:36:31,0:00:00
+BCT,3/1/2023,American Cruises,Bottlenose,4068,4256,120,8444,No ,0,5:41:45,0:00:00
+MCT,12/29/2023,Atlantic Cruises,Audi,4098,4089,20,8207,No ,0,10:38:40,0:00:00
+BCT,2/16/2023,Arctic Cruises,Peregrine,1647,1740,650,4037, Partial ,0,7:27:57,0:00:00
+BCT,5/16/2023,American Cruises,Bottlenose,4215,4187,3,8405,No ,0,23:29:53,0:00:00
+MCT,1/18/2023,Arctic Cruises,Kestrel,4428,4113,94,8635,No ,0,15:19:29,0:00:00
+BCT,8/20/2023,Arctic Cruises,Kestrel,2886,4206,5,7097,No ,0,2:11:04,0:00:00
+MCT,11/12/2023,Pacific Cruises,Lion,4516,4095,8,8619,No ,0,2:53:46,0:00:00
+MCT,5/4/2023,Atlantic Cruises,Audi,4629,4420,73,9122,No ,0,14:47:36,0:00:00
+MCT,8/30/2023,Pacific Cruises,Tiger,0,1722,0,1722,No ,0,22:56:34,0:00:00
+MCT,7/9/2023,Atlantic Cruises,BWM,4582,4511,13,9106,No ,0,12:57:42,0:00:00
+BCT,9/20/2023,Atlantic Cruises,Mercedes,1775,1634,728,4137,No ,0,12:10:31,0:00:00
+BCT,2/10/2023,Atlantic Cruises,BWM,5552,2871,7,8430,No ,0,16:54:31,0:00:00
+MCT,11/5/2023,Arctic Cruises,Kestrel,4854,4611,84,9549,No ,0,8:05:41,0:00:00
+BCT,10/16/2023,Arctic Cruises,Red Feather,5226,5535,11,10772,No ,0,6:59:06,0:00:00
+MCT,5/10/2024,Arctic Cruises,Peregrine,4561,4539,13,9113,No ,0,21:16:43,0:00:00
+BCT,4/14/2024,Pacific Cruises,Tiger,1592,1811,673,4076,No ,0,21:23:42,0:00:00
+BCT,1/20/2024,American Cruises,Orca,2891,5205,26,8122,No ,0,7:12:50,0:00:00
+MCT,3/15/2024,Arctic Cruises,Peregrine,4460,4847,52,9359,No ,0,8:42:39,0:00:00
+MCT,3/29/2024,Arctic Cruises,Peregrine,4381,4526,24,8931,No ,0,2:43:22,0:00:00
+MCT,5/23/2024,Atlantic Cruises,Audi,4155,4457,80,8692,No ,0,23:38:07,0:00:00
+BCT,10/6/2024,American Cruises,Orca,3959,2855,48,6862,No ,0,11:23:29,0:00:00
+MCT,7/14/2024,Pacific Cruises,Tiger,4077,4368,42,8487,No ,0,15:01:25,0:00:00
+MCT,3/26/2024,Arctic Cruises,Kestrel,4125,4152,150,8427,No ,0,21:33:24,0:00:00
+BCT,6/25/2024,Atlantic Cruises,Mercedes,2325,3928,55,6308,No ,0,1:59:40,0:00:00
+MCT,5/30/2024,Pacific Cruises,Tiger,4104,4050,50,8204,No ,0,2:26:22,0:00:00
+MCT,1/29/2024,Atlantic Cruises,Audi,4310,4086,128,8524,No ,0,16:25:39,0:00:00
+BCT,8/26/2024,Arctic Cruises,Peregrine,3148,2349,25,5522,No ,0,5:48:10,0:00:00
+MCT,4/1/2024,Atlantic Cruises,Audi,4054,4096,46,8196,No ,0,14:48:21,0:00:00
+BCT,9/2/2024,American Cruises,Bottlenose,3925,3161,6,7092,No ,0,1:27:32,0:00:00
+MCT,9/18/2024,Arctic Cruises,Peregrine,4107,4314,70,8491,No ,0,14:20:02,0:00:00
+MCT,12/8/2024,Arctic Cruises,Peregrine,4542,4057,27,8626,No ,0,16:01:54,0:00:00
+BCT,9/12/2024,Pacific Cruises,Tiger,5477,3918,6,9401,No ,0,13:20:20,0:00:00
+MCT,12/11/2024,Pacific Cruises,Lion,4211,4091,110,8412,No ,0,18:26:53,0:00:00
+BCT,7/19/2024,Pacific Cruises,Jaguar,4372,5471,2,9845,No ,0,8:06:17,0:00:00
+MCT,10/25/2024,American Cruises,Spinner,4174,4531,25,8730,No ,0,5:11:33,0:00:00
+BCT,3/10/2024,Pacific Cruises,Tiger,5139,4363,2,9504,No ,0,8:46:37,0:00:00
+MCT,5/30/2024,American Cruises,Bottlenose,4054,4190,93,8337,No ,0,6:24:15,0:00:00
+MCT,10/27/2024,Pacific Cruises,Jaguar,4368,4182,14,8564,No ,0,5:40:35,0:00:00
+BCT,2/28/2024,Arctic Cruises,Peregrine,4723,5122,11,9856,No ,0,16:02:50,0:00:00
+MCT,3/28/2024,American Cruises,Orca,4270,4030,63,8363,No ,0,18:44:56,0:00:00
+BCT,7/6/2024,Pacific Cruises,Tiger,4421,4728,13,9162,No ,0,11:28:39,0:00:00
+MCT,6/22/2024,Atlantic Cruises,Audi,4255,4337,32,8624,No ,0,16:35:04,0:00:00
+BCT,10/28/2024,Atlantic Cruises,Mercedes,4900,4415,6,9321,No ,0,14:01:19,0:00:00
+MCT,8/11/2024,American Cruises,Spinner,4740,4250,29,9019,No ,0,4:47:30,0:00:00
+MCT,7/30/2024,Pacific Cruises,Tiger,4639,4261,34,8934,No ,0,22:24:30,0:00:00
+BCT,11/12/2024,Pacific Cruises,Tiger,5322,4902,6,10230,No ,0,6:51:49,0:00:00
+MCT,3/9/2024,American Cruises,Bottlenose,4715,4698,29,9442,No ,0,20:15:53,0:00:00
+MCT,10/21/2024,American Cruises,Orca,306,225,1905,2436,No ,0,13:37:31,0:00:00
+MCT,6/20/2024,Atlantic Cruises,BWM,4382,4633,48,9063,No ,0,0:18:13,0:00:00
+BCT,7/6/2024,Pacific Cruises,Tiger,4211,5295,33,9539,No ,0,6:47:08,0:00:00
+MCT,9/1/2024,Pacific Cruises,Jaguar,4044,4715,25,8784,No ,0,16:30:54,0:00:00
+MCT,2/2/2024,Arctic Cruises,Peregrine,5,3,359,367,No ,0,20:02:39,0:00:00
+MCT,1/13/2024,Pacific Cruises,Jaguar,4081,2,10,4093,No ,0,0:00:51,0:00:00
+MCT,8/1/2024,Pacific Cruises,Jaguar,609,638,44,1291,No ,0,9:02:28,0:00:00
+MCT,1/12/2024,Atlantic Cruises,Mercedes,4270,11,8,4289,No ,0,8:28:30,0:00:00
+MCT,1/15/2024,Arctic Cruises,Peregrine,4619,4259,15,8893,No ,0,13:49:22,0:00:00
+MCT,3/4/2024,American Cruises,Orca,4190,4375,75,8640,No ,0,5:17:21,0:00:00
+MCT,6/14/2024,American Cruises,Spinner,1,3,362,366,No ,0,6:12:49,0:00:00
+BCT,4/15/2024,Arctic Cruises,Peregrine,4760,4179,38,8977,No ,0,17:13:39,0:00:00
+MCT,6/15/2024,American Cruises,Spinner,4330,4009,32,8371,No ,0,8:15:10,0:00:00
+MCT,7/22/2024,Arctic Cruises,Peregrine,4846,4611,15,9472,No ,0,16:25:50,0:00:00
+MCT,11/17/2024,Atlantic Cruises,BWM,366,8,2925,3299,No ,0,2:59:16,0:00:00
+MCT,3/14/2024,Arctic Cruises,Kestrel,2234,0,11,2245,No ,0,13:05:11,0:00:00
+MCT,10/18/2024,Atlantic Cruises,Mercedes,4253,4187,75,8515,No ,0,11:41:24,0:00:00
+MCT,1/27/2024,Arctic Cruises,Peregrine,3025,3151,30,6206,No ,0,21:59:43,0:00:00
+BCT,1/30/2024,Atlantic Cruises,Mercedes,4369,4763,20,9152,No ,0,6:00:09,0:00:00
+MCT,4/26/2024,Arctic Cruises,Kestrel,4258,4841,18,9117,No ,0,9:29:33,0:00:00
+MCT,11/4/2024,Atlantic Cruises,BWM,352,339,4,695,No ,0,16:19:49,0:00:00
+MCT,1/1/2024,Atlantic Cruises,Audi,3549,4322,21,7892,No ,0,12:42:22,0:00:00
+MCT,10/4/2024,American Cruises,Bottlenose,0,0,765,765,No ,0,21:10:52,0:00:00
+BCT,3/12/2024,Pacific Cruises,Tiger,2626,4190,196,7012,No ,0,9:48:56,0:00:00
+BCT,9/17/2024,Pacific Cruises,Tiger,2117,2157,167,4441,No ,0,1:34:02,0:00:00
+MCT,10/10/2024,Atlantic Cruises,Audi,4169,4258,15,8442,No ,0,6:05:50,0:00:00
+MCT,12/10/2024,Pacific Cruises,Tiger,4071,4242,53,8366,No ,0,13:57:58,0:00:00
+BCT,6/3/2024,Atlantic Cruises,Mercedes,3644,2802,3,6449,No ,0,11:02:15,0:00:00
+MCT,8/7/2024,Atlantic Cruises,BWM,4309,4163,14,8486,No ,0,15:43:48,0:00:00
+MCT,4/7/2024,Pacific Cruises,Jaguar,91,0,3,94,No ,0,1:28:44,0:00:00
+MCT,9/6/2024,American Cruises,Spinner,4374,4068,88,8530,No ,0,20:49:54,0:00:00
+BCT,2/3/2024,Pacific Cruises,Tiger,4449,3632,3,8084,No ,0,22:49:49,0:00:00
+MCT,7/11/2024,American Cruises,Bottlenose,4375,4308,18,8701,No ,0,10:49:10,0:00:00
+MCT,12/31/2024,Arctic Cruises,Peregrine,1,0,436,437,No ,0,3:44:47,0:00:00
+BCT,12/11/2024,Atlantic Cruises,BWM,2234,2265,154,4653,No ,0,0:11:09,0:00:00
+BCT,12/4/2024,Atlantic Cruises,Audi,4445,4457,4,8906,No ,0,12:39:38,0:00:00
+MCT,12/6/2024,Atlantic Cruises,Audi,4458,4371,13,8842,No ,0,9:04:07,0:00:00
+MCT,11/23/2024,American Cruises,Bottlenose,4607,4376,49,9032,No ,0,16:55:55,0:00:00
+MCT,9/27/2024,Arctic Cruises,Peregrine,658,421,12,1091,No ,0,22:11:27,0:00:00
+BCT,1/27/2024,Pacific Cruises,Lion,4603,4441,3,9047,No ,0,3:53:51,0:00:00
+MCT,8/24/2024,Pacific Cruises,Jaguar,4556,4460,11,9027,No ,0,16:55:52,0:00:00
+MCT,2/25/2024,Arctic Cruises,Peregrine,63,13,475,551,No ,0,3:54:06,0:00:00
+BCT,12/9/2024,Pacific Cruises,Jaguar,1510,1939,128,3577,No ,0,3:28:30,0:00:00
+MCT,3/15/2024,Atlantic Cruises,Mercedes,4693,4610,41,9344,No ,0,2:31:46,0:00:00
+BCT,7/22/2024,American Cruises,Spinner,4812,4595,4,9411,No ,0,14:51:38,0:00:00
+MCT,6/11/2024,Arctic Cruises,Kestrel,4268,4556,7,8831,No ,0,5:25:09,0:00:00
+MCT,3/15/2024,Atlantic Cruises,BWM,4910,4691,32,9633,No ,0,4:09:55,0:00:00
+BCT,1/29/2024,Atlantic Cruises,BWM,1880,1682,175,3737,No ,0,14:14:27,0:00:00
+BCT,9/25/2024,American Cruises,Orca,2230,2184,257,4671,No ,0,20:40:25,0:00:00
+BCT,2/17/2024,Pacific Cruises,Jaguar,5007,4811,4,9822,No ,0,6:24:41,0:00:00
+MCT,5/4/2024,Arctic Cruises,Kestrel,22,76,1307,1405,No ,0,10:50:58,0:00:00
+MCT,8/16/2024,Arctic Cruises,Peregrine,4457,4249,19,8725,No ,0,5:27:10,0:00:00
+MCT,9/5/2024,American Cruises,Bottlenose,329,297,18,644,No ,0,9:17:55,0:00:00
+MCT,8/20/2024,Pacific Cruises,Lion,4923,4908,29,9860,No ,0,20:21:23,0:00:00
+MCT,9/15/2024,Atlantic Cruises,Mercedes,909,903,5,1817,No ,0,0:53:04,0:00:00
+BCT,12/2/2024,Atlantic Cruises,BWM,5229,5013,3,10245,No ,0,15:38:22,0:00:00
+MCT,4/16/2024,Arctic Cruises,Red Feather,4582,4460,10,9052,No ,0,18:17:12,0:00:00
+MCT,4/30/2024,American Cruises,Spinner,897,875,6,1778,No ,0,22:19:21,0:00:00
+BCT,1/13/2024,American Cruises,Orca,1892,1721,149,3762,No ,0,14:10:06,0:00:00
+MCT,4/16/2024,Arctic Cruises,Red Feather,3,5,3020,3028,No ,0,5:04:15,0:00:00
+MCT,1/21/2024,American Cruises,Spinner,4931,4927,27,9885,No ,0,16:10:04,0:00:00
+BCT,10/23/2024,Pacific Cruises,Jaguar,2245,2150,284,4679,No ,0,3:14:07,0:00:00
+BCT,9/3/2024,American Cruises,Bottlenose,5287,5230,4,10521,No ,0,12:39:10,0:00:00
+MCT,12/30/2024,Arctic Cruises,Peregrine,4687,4575,10,9272,No ,0,11:50:17,0:00:00
+MCT,4/19/2024,Arctic Cruises,Red Feather,4706,4926,47,9679,No ,0,13:02:17,0:00:00
+BCT,12/31/2024,Pacific Cruises,Lion,2095,1992,90,4177,No ,0,3:52:08,0:00:00
+BCT,10/5/2024,American Cruises,Spinner,2169,2234,288,4691,No ,0,5:07:31,0:00:00
+BCT,6/18/2024,American Cruises,Orca,5198,5226,4,10428,No ,0,15:11:15,0:00:00
+MCT,4/27/2024,Arctic Cruises,Kestrel,4528,4687,13,9228,No ,0,1:11:29,0:00:00
+MCT,7/4/2024,Pacific Cruises,Jaguar,4932,4707,54,9693,No ,0,0:29:07,0:00:00
+MCT,12/26/2024,Pacific Cruises,Jaguar,329,276,4,609,No ,0,14:56:51,0:00:00
+MCT,10/4/2024,Arctic Cruises,Kestrel,576,332,12,920,No ,0,5:39:43,0:00:00
+MCT,4/27/2024,Arctic Cruises,Kestrel,131,101,1637,1869,No ,0,16:27:09,0:00:00
+MCT,6/9/2024,Atlantic Cruises,Audi,2483,2415,18,4916,No ,0,8:55:42,0:00:00
+BCT,7/23/2024,Atlantic Cruises,BWM,5352,5200,4,10556,No ,0,1:32:36,0:00:00
+MCT,7/9/2024,Atlantic Cruises,Audi,4479,4509,27,9015,No ,0,8:24:52,0:00:00
+MCT,4/6/2024,American Cruises,Spinner,4922,4932,21,9875,No ,0,16:23:19,0:00:00
+BCT,7/17/2024,Arctic Cruises,Peregrine,5338,5357,5,10700,No ,0,14:52:41,0:00:00
+MCT,10/10/2024,Pacific Cruises,Jaguar,4384,4481,18,8883,No ,0,5:33:16,0:00:00
+MCT,7/18/2024,Pacific Cruises,Tiger,4934,4921,15,9870,No ,0,1:19:26,0:00:00
+BCT,8/17/2024,Atlantic Cruises,BWM,2158,2208,301,4667,No ,0,7:27:45,0:00:00
+BCT,4/2/2024,Atlantic Cruises,BWM,5278,5338,4,10620,No ,0,2:37:07,0:00:00
+MCT,8/17/2024,Arctic Cruises,Peregrine,4549,4382,14,8945,No ,0,22:56:57,0:00:00
+MCT,2/9/2024,American Cruises,Spinner,4719,4936,26,9681,No ,0,7:19:34,0:00:00
+BCT,2/17/2024,Arctic Cruises,Kestrel,5317,5274,9,10600,No ,0,19:07:03,0:00:00
+MCT,2/15/2024,Atlantic Cruises,Mercedes,4402,4554,11,8967,No ,0,11:13:02,0:00:00
+MCT,12/20/2024,Pacific Cruises,Jaguar,4925,4718,19,9662,No ,0,18:25:29,0:00:00
+MCT,5/15/2024,Arctic Cruises,Peregrine,311,225,2,538,No ,0,16:09:49,0:00:00
+MCT,1/12/2024,American Cruises,Spinner,280,284,121,685,No ,0,21:16:48,0:00:00
+MCT,4/24/2024,American Cruises,Bottlenose,2343,2384,2,4729,No ,0,9:18:44,0:00:00
+BCT,7/7/2024,Atlantic Cruises,Mercedes,5313,5320,4,10637,No ,0,7:55:06,0:00:00
+MCT,4/11/2024,American Cruises,Orca,4408,4393,11,8812,No ,0,11:57:28,0:00:00
+MCT,2/5/2024,Arctic Cruises,Peregrine,4898,4923,33,9854,No ,0,12:49:52,0:00:00
+MCT,7/19/2024,Pacific Cruises,Tiger,342,339,1,682,No ,0,2:33:02,0:00:00
+BCT,4/13/2024,American Cruises,Bottlenose,4928,5097,223,10248,No ,0,6:17:12,0:00:00
+MCT,11/10/2024,American Cruises,Spinner,4349,4395,20,8764,No ,0,20:46:10,0:00:00
+MCT,4/17/2024,American Cruises,Spinner,4737,0,0,4737,No ,0,16:31:10,0:00:00
+MCT,7/23/2024,Arctic Cruises,Red Feather,4261,4686,15,8962,No ,0,6:37:12,0:00:00
+BCT,11/23/2024,Pacific Cruises,Tiger,2254,2228,217,4699,No ,0,12:07:33,0:00:00
+BCT,4/29/2024,Arctic Cruises,Peregrine,3866,3849,67,7782,No ,0,0:46:45,0:00:00
+BCT,9/6/2024,American Cruises,Spinner,5285,5149,3,10437,No ,0,17:35:55,0:00:00
+MCT,7/26/2024,Pacific Cruises,Lion,4468,0,30,4498,No ,0,4:00:03,0:00:00
+MCT,12/17/2024,Pacific Cruises,Lion,4687,4712,21,9420,No ,0,13:46:19,0:00:00
+MCT,1/7/2024,Atlantic Cruises,Mercedes,4604,4347,17,8968,No ,0,17:25:23,0:00:00
+MCT,12/20/2024,Arctic Cruises,Peregrine,316,321,3,640,No ,0,5:10:22,0:00:00
+BCT,11/17/2024,Pacific Cruises,Lion,3413,3891,49,7353,No ,0,18:28:04,0:00:00
+MCT,7/2/2024,Atlantic Cruises,BWM,424,398,12,834,No ,0,11:25:52,0:00:00
+MCT,10/24/2024,Arctic Cruises,Red Feather,4261,4686,15,8962,No ,0,0:21:06,0:00:00
+BCT,8/23/2024,Arctic Cruises,Kestrel,4363,5205,84,9652,No ,0,5:32:12,0:00:00
+MCT,12/26/2024,Pacific Cruises,Jaguar,576,528,67,1171,No ,0,9:04:31,0:00:00
+MCT,9/7/2024,Pacific Cruises,Lion,4032,4462,2,8496,No ,0,3:31:08,0:00:00
+BCT,8/8/2024,Pacific Cruises,Lion,2,5,865,872,No ,0,8:44:56,0:00:00
+MCT,3/25/2024,American Cruises,Bottlenose,3476,4606,23,8105,No ,0,0:28:01,0:00:00
+MCT,8/24/2024,Arctic Cruises,Peregrine,2,5,865,872,No ,0,16:05:28,0:00:00
+MCT,1/4/2024,Pacific Cruises,Tiger,13,49,1714,1776,No ,0,1:45:31,0:00:00
+BCT,12/6/2024,Atlantic Cruises,Mercedes,3449,3409,51,6909,No ,0,11:35:10,0:00:00
+MCT,11/1/2024,Arctic Cruises,Kestrel,4030,4259,76,8365,No ,0,6:13:32,0:00:00
+BCT,7/3/2024,Atlantic Cruises,Mercedes,3771,4231,209,8211,No ,0,6:13:49,0:00:00
+MCT,5/19/2024,American Cruises,Spinner,613,601,25,1239,No ,0,21:05:19,0:00:00
+MCT,11/7/2024,Pacific Cruises,Lion,3888,4020,7,7915,No ,0,19:58:49,0:00:00
+MCT,4/2/2024,Pacific Cruises,Lion,673,690,24,1387,No ,0,2:38:13,0:00:00
+BCT,7/9/2024,Arctic Cruises,Kestrel,3454,3452,43,6949,No ,0,23:48:41,0:00:00
+MCT,3/31/2024,Atlantic Cruises,Audi,4081,4034,78,8193,No ,0,15:46:54,0:00:00
+MCT,5/15/2024,American Cruises,Orca,429,339,115,883,No ,0,20:28:15,0:00:00
+BCT,3/10/2024,American Cruises,Orca,4066,3969,3,8038,No ,0,6:33:55,0:00:00
+MCT,3/11/2024,Pacific Cruises,Jaguar,584,585,41,1210,No ,0,6:04:51,0:00:00
+MCT,4/9/2024,Arctic Cruises,Kestrel,3896,3885,2,7783,No ,0,2:52:55,0:00:00
+MCT,2/2/2024,Arctic Cruises,Kestrel,3483,3412,208,7103,No ,0,14:52:50,0:00:00
+MCT,6/25/2024,Atlantic Cruises,Mercedes,324,329,3,656,No ,0,18:05:49,0:00:00
+MCT,2/15/2024,American Cruises,Bottlenose,5,5,1926,1936,No ,0,10:37:05,0:00:00
+BCT,6/4/2024,American Cruises,Bottlenose,3517,3444,45,7006,No ,0,11:06:54,0:00:00
+MCT,9/25/2024,American Cruises,Spinner,4201,4083,40,8324,No ,0,21:32:00,0:00:00
+BCT,1/27/2024,Arctic Cruises,Red Feather,1738,1690,752,4180,Yes,45012,5:21:00,5:21:00
+MCT,12/11/2024,Pacific Cruises,Jaguar,3914,3891,2,7807,No ,0,8:19:22,0:00:00
+BCT,6/17/2024,American Cruises,Bottlenose,4093,4065,2,8160,No ,0,1:53:31,0:00:00
+MCT,1/7/2024,Atlantic Cruises,Audi,871,837,12,1720,No ,0,14:20:57,0:00:00
+MCT,4/1/2024,Pacific Cruises,Lion,4192,4204,46,8442,No ,0,1:02:04,0:00:00
+BCT,11/15/2024,Atlantic Cruises,Audi,3544,3527,30,7101,No ,0,12:14:27,0:00:00
+MCT,3/17/2024,Arctic Cruises,Peregrine,1757,1736,38,3531,No ,0,3:37:56,0:00:00
+BCT,9/1/2024,Arctic Cruises,Peregrine,4112,4093,3,8208,No ,0,11:43:09,0:00:00
+MCT,9/30/2024,Arctic Cruises,Kestrel,3764,3907,4,7675,No ,0,17:15:03,0:00:00
+MCT,11/30/2024,Arctic Cruises,Red Feather,3,193,0,196,No ,0,7:52:59,0:00:00
+BCT,12/12/2024,Pacific Cruises,Lion,399,615,21,1035,No ,0,13:25:42,0:00:00
+MCT,3/16/2024,American Cruises,Bottlenose,24,22,3324,3370,No ,0,3:30:32,0:00:00
+MCT,12/28/2024,Pacific Cruises,Jaguar,4176,3509,39,7724,No ,0,1:35:10,0:00:00
+BCT,12/31/2024,Pacific Cruises,Tiger,1397,1467,1016,3880,Yes,57397,7:07:48,7:07:48
+MCT,2/15/2024,Pacific Cruises,Tiger,0,4,853,857,No ,0,17:41:20,0:00:00
+MCT,6/29/2024,Pacific Cruises,Jaguar,4161,4192,79,8432,No ,0,3:33:24,0:00:00
+BCT,4/20/2024,Atlantic Cruises,BWM,3585,3561,15,7161,No ,0,10:23:36,0:00:00
+MCT,2/14/2024,Atlantic Cruises,Audi,5,197,0,202,No ,0,18:07:41,0:00:00
+BCT,11/13/2024,Pacific Cruises,Lion,4118,4106,0,8224,No ,0,2:53:20,0:00:00
+MCT,12/12/2024,American Cruises,Spinner,3966,3761,4,7731,No ,0,9:25:59,0:00:00
+MCT,7/12/2024,Pacific Cruises,Lion,426,415,11,852,No ,0,19:38:37,0:00:00
+MCT,12/2/2024,American Cruises,Spinner,3921,4204,7,8132,No ,0,4:07:28,0:00:00
+MCT,6/29/2024,Arctic Cruises,Peregrine,360,330,3,693,No ,0,1:23:06,0:00:00
+MCT,2/20/2024,Pacific Cruises,Jaguar,3898,3898,26,7822,No ,0,18:13:28,0:00:00
+MCT,11/18/2024,Pacific Cruises,Lion,146,187,0,333,No ,0,1:12:50,0:00:00
+BCT,6/20/2024,Arctic Cruises,Red Feather,3582,3568,18,7168,No ,0,18:09:49,0:00:00
+BCT,1/3/2024,Atlantic Cruises,Mercedes,4294,3962,150,8406,No ,0,7:21:38,0:00:00
+MCT,4/21/2024,Atlantic Cruises,Mercedes,3991,3968,0,7959,No ,0,13:40:13,0:00:00
+MCT,3/13/2024,Pacific Cruises,Jaguar,3990,4156,159,8305,No ,0,9:59:34,0:00:00
+MCT,4/27/2024,Atlantic Cruises,BWM,3,99,3354,3456,No ,0,5:13:11,0:00:00
+MCT,12/22/2024,Arctic Cruises,Peregrine,0,3906,8,3914,No ,0,4:44:10,0:00:00
+MCT,1/15/2024,Pacific Cruises,Jaguar,0,38,1275,1313,No ,0,19:11:10,0:00:00
+MCT,8/30/2024,Pacific Cruises,Lion,17,94,1483,1594,No ,0,13:21:44,0:00:00
+MCT,11/28/2024,American Cruises,Spinner,595,587,3,1185,No ,0,22:35:44,0:00:00
+MCT,9/14/2024,Atlantic Cruises,Mercedes,421,425,25,871,No ,0,5:28:45,0:00:00
+BCT,2/21/2024,Arctic Cruises,Kestrel,3551,3580,18,7149,No ,0,15:10:21,0:00:00
+MCT,11/14/2024,Atlantic Cruises,Mercedes,2,6,349,357,No ,0,9:30:14,0:00:00
+BCT,2/7/2024,American Cruises,Spinner,4087,4352,92,8531,No ,0,1:49:10,0:00:00
+MCT,12/8/2024,Atlantic Cruises,Audi,3931,3976,3,7910,No ,0,14:35:24,0:00:00
+MCT,9/15/2024,Pacific Cruises,Tiger,1783,7,3,1793,No ,0,14:41:42,0:00:00
+MCT,4/17/2024,Atlantic Cruises,BWM,554,588,56,1198,No ,0,6:33:41,0:00:00
+BCT,3/23/2024,Arctic Cruises,Kestrel,2121,2067,297,4485,Yes,54584,6:36:29,6:36:29
+MCT,3/29/2024,Atlantic Cruises,BWM,4162,3984,83,8229,No ,0,12:56:41,0:00:00
+MCT,9/3/2024,American Cruises,Bottlenose,3,22,2916,2941,No ,0,0:50:06,0:00:00
+BCT,8/27/2024,Atlantic Cruises,Mercedes,3552,3526,38,7116,No ,0,22:45:17,0:00:00
+BCT,5/10/2024,Arctic Cruises,Red Feather,3686,4175,0,7861,No ,0,18:31:03,0:00:00
+MCT,12/26/2024,Pacific Cruises,Jaguar,7,9,422,438,No ,0,12:16:16,0:00:00
+MCT,10/15/2024,Atlantic Cruises,Mercedes,3881,3901,48,7830,No ,0,20:36:33,0:00:00
+MCT,4/29/2024,Atlantic Cruises,BWM,283,323,17,623,No ,0,13:52:54,0:00:00
+MCT,10/6/2024,American Cruises,Bottlenose,9,27,249,285,No ,0,21:45:13,0:00:00
+BCT,10/13/2024,Atlantic Cruises,Mercedes,3370,3463,118,6951,No ,0,17:53:22,0:00:00
+MCT,11/20/2024,Arctic Cruises,Peregrine,1,5,624,630,No ,0,4:24:33,0:00:00
+BCT,3/10/2024,American Cruises,Spinner,4787,3678,9,8474,No ,0,18:36:30,0:00:00
+MCT,2/15/2024,Pacific Cruises,Jaguar,4276,3896,27,8199,No ,0,11:06:45,0:00:00
+MCT,1/15/2024,Arctic Cruises,Red Feather,4086,4148,88,8322,No ,0,1:30:05,0:00:00
+MCT,9/4/2024,Arctic Cruises,Red Feather,0,0,638,638,No ,0,17:43:10,0:00:00
+MCT,1/20/2024,Pacific Cruises,Jaguar,540,585,40,1165,No ,0,4:19:52,0:00:00
+BCT,7/11/2024,Pacific Cruises,Jaguar,4141,4788,7,8936,No ,0,21:41:54,0:00:00
+MCT,8/21/2024,Pacific Cruises,Jaguar,4149,4265,14,8428,No ,0,22:02:12,0:00:00
+MCT,8/25/2024,American Cruises,Bottlenose,4299,4067,90,8456,No ,0,13:49:28,0:00:00
+BCT,6/28/2024,Arctic Cruises,Red Feather,4164,4139,8,8311,No ,0,21:57:51,0:00:00
+MCT,4/20/2024,American Cruises,Bottlenose,0,4161,21,4182,No ,0,1:45:17,0:00:00
+MCT,6/23/2024,American Cruises,Bottlenose,1,1,240,242,No ,0,5:14:27,0:00:00
+MCT,6/15/2024,Pacific Cruises,Lion,531,558,81,1170,No ,0,9:07:10,0:00:00
+BCT,6/4/2024,Arctic Cruises,Kestrel,1772,1690,688,4150,Yes,26218,3:18:30,3:18:30
+MCT,10/4/2024,Arctic Cruises,Peregrine,3398,2891,21,6310,No ,0,12:22:15,0:00:00
+BCT,12/31/2024,Pacific Cruises,Lion,5247,4156,10,9413,No ,0,22:12:17,0:00:00
+MCT,11/4/2024,Pacific Cruises,Lion,4067,4302,76,8445,No ,0,21:55:10,0:00:00
+MCT,10/10/2024,Atlantic Cruises,Mercedes,3032,3388,24,6444,No ,0,0:39:10,0:00:00
+BCT,9/2/2024,Atlantic Cruises,Audi,4215,5248,0,9463,No ,0,16:37:22,0:00:00
+BCT,12/28/2024,Atlantic Cruises,Mercedes,1683,1753,711,4147,Yes,58395,7:15:46,7:15:46
+MCT,1/12/2024,Atlantic Cruises,Audi,3900,4053,165,8118,No ,0,15:57:09,0:00:00
+BCT,12/21/2024,American Cruises,Bottlenose,4233,4220,5,8458,No ,0,15:38:53,0:00:00
+MCT,7/20/2024,American Cruises,Spinner,3242,3014,21,6277,No ,0,4:58:49,0:00:00
+BCT,12/12/2024,American Cruises,Bottlenose,4630,4228,1,8859,No ,0,14:04:36,0:00:00
+BCT,11/9/2024,Arctic Cruises,Red Feather,1549,1433,973,3955,No ,0,16:06:13,0:00:00
+MCT,3/24/2024,Atlantic Cruises,Mercedes,3534,3241,8,6783,No ,0,2:04:42,0:00:00
+BCT,4/26/2024,Atlantic Cruises,Mercedes,5473,4616,1,10090,No ,0,22:31:53,0:00:00
+BCT,2/14/2024,Arctic Cruises,Red Feather,5215,5480,1,10696,No ,0,4:44:20,0:00:00
+MCT,8/13/2025,Arctic Cruises,Kestrel,3105,3513,7,6625,No ,0,17:05:28,0:00:00
+BCT,1/7/2025,Pacific Cruises,Tiger,1501,1623,886,4010,Yes,56905,7:04:36,7:04:36
+BCT,9/8/2025,American Cruises,Orca,4724,5211,1,9936,No ,0,3:55:43,0:00:00
+BCT,7/31/2025,American Cruises,Spinner,4038,4590,127,8755,No ,0,17:53:53,0:00:00
+BCT,11/25/2025,Pacific Cruises,Tiger,1136,1097,1442,3675,No ,0,14:26:17,0:00:00
+BCT,10/28/2025,Arctic Cruises,Kestrel,4194,4079,75,8348,No ,0,23:48:50,0:00:00
+BCT,8/9/2025,Pacific Cruises,Lion,4156,4099,172,8427,No ,0,22:12:56,0:00:00
+BCT,1/3/2025,American Cruises,Orca,4316,4333,0,8649,No ,0,0:14:44,0:00:00
+MCT,10/4/2025,Atlantic Cruises,BWM,5023,0,4,5027,No ,0,4:55:44,0:00:00
+BCT,7/7/2025,Atlantic Cruises,Mercedes,5447,4306,0,9753,No ,0,7:39:52,0:00:00
+BCT,11/7/2025,Arctic Cruises,Kestrel,4430,5448,0,9878,No ,0,15:08:12,0:00:00
+MCT,8/18/2025,Pacific Cruises,Jaguar,4214,5002,28,9244,No ,0,17:06:16,0:00:00
+BCT,10/28/2025,American Cruises,Spinner,5396,4429,0,9825,No ,0,4:57:52,0:00:00
+MCT,3/26/2025,Atlantic Cruises,Mercedes,4629,4182,51,8862,No ,0,10:17:07,0:00:00
+BCT,10/23/2025,American Cruises,Spinner,5330,5379,14,10723,No ,0,5:10:56,0:00:00
+BCT,10/18/2025,Pacific Cruises,Jaguar,1630,1494,896,4020,Yes,47699,6:30:08,6:30:08
+MCT,8/18/2025,Arctic Cruises,Kestrel,4453,4630,43,9126,No ,0,3:44:04,0:00:00
+BCT,12/28/2025,American Cruises,Bottlenose,5326,4705,17,10048,No ,0,22:40:23,0:00:00
+BCT,11/8/2025,American Cruises,Bottlenose,4685,4704,16,9405,No ,0,23:36:06,0:00:00
+MCT,6/28/2025,Arctic Cruises,Kestrel,4594,4444,32,9070,No ,0,19:05:21,0:00:00
+MCT,5/28/2025,American Cruises,Orca,1,4616,7,4624,No ,0,10:08:12,0:00:00
+BCT,8/10/2025,Atlantic Cruises,Audi,1510,1651,849,4010,Yes,51759,6:29:03,6:29:03
+BCT,1/29/2025,American Cruises,Orca,4665,4685,18,9368,No ,0,1:43:45,0:00:00
+MCT,1/6/2025,American Cruises,Spinner,3706,2,6,3714,No ,0,5:22:35,0:00:00
+MCT,5/16/2025,Atlantic Cruises,Audi,3344,56,19,3419,No ,0,17:19:28,0:00:00
+BCT,7/29/2025,Atlantic Cruises,BWM,4776,4645,28,9449,No ,0,20:37:46,0:00:00
+MCT,11/22/2025,American Cruises,Orca,3290,3342,11,6643,No ,0,11:43:05,0:00:00
+MCT,12/19/2025,American Cruises,Bottlenose,49,2631,50,2730,No ,0,7:01:54,0:00:00
+MCT,9/23/2025,American Cruises,Bottlenose,0,0,587,587,No ,0,22:13:13,0:00:00
+BCT,8/10/2025,Arctic Cruises,Kestrel,5449,4798,7,10254,No ,0,18:03:53,0:00:00
+MCT,11/21/2025,Atlantic Cruises,Mercedes,3688,3284,13,6985,No ,0,8:02:09,0:00:00
+BCT,3/28/2025,Arctic Cruises,Kestrel,5400,5439,7,10846,No ,0,20:12:43,0:00:00
+MCT,4/25/2025,American Cruises,Spinner,3481,3687,14,7182,No ,0,4:46:46,0:00:00
+MCT,10/1/2025,American Cruises,Orca,325,353,1,679,No ,0,15:54:09,0:00:00
+MCT,2/17/2025,Atlantic Cruises,BWM,2178,1,9,2188,No ,0,9:41:55,0:00:00
+BCT,3/6/2025,Atlantic Cruises,BWM,4532,5369,35,9936,No ,0,8:10:20,0:00:00
+MCT,1/22/2025,Atlantic Cruises,Audi,2875,3478,16,6369,No ,0,12:05:13,0:00:00
+MCT,11/25/2025,Arctic Cruises,Peregrine,4140,3911,19,8070,No ,0,10:39:40,0:00:00
+BCT,5/24/2025,American Cruises,Orca,4719,4569,2,9290,No ,0,17:10:34,0:00:00
+BCT,3/15/2025,American Cruises,Orca,2166,2245,136,4547,Yes,44323,5:55:40,5:55:40
+MCT,6/17/2025,Arctic Cruises,Red Feather,4256,4146,14,8416,No ,0,19:37:21,0:00:00
+BCT,2/20/2025,Pacific Cruises,Jaguar,24,4720,0,4744,No ,0,2:47:52,0:00:00
+MCT,12/21/2025,Arctic Cruises,Peregrine,4312,4262,7,8581,No ,0,19:22:00,0:00:00
+MCT,7/25/2025,Atlantic Cruises,Audi,867,873,3,1743,No ,0,11:41:14,0:00:00
+BCT,5/28/2025,Atlantic Cruises,Audi,4881,29,2,4912,No ,0,23:44:05,0:00:00
+MCT,9/16/2025,Arctic Cruises,Peregrine,4308,4311,10,8629,No ,0,4:22:33,0:00:00
+MCT,12/25/2025,American Cruises,Spinner,4839,3998,37,8874,No ,0,16:27:29,0:00:00
+BCT,8/8/2025,American Cruises,Spinner,2254,2204,177,4635,No ,0,23:02:34,0:00:00
+BCT,4/19/2025,Atlantic Cruises,Mercedes,4923,4876,0,9799,No ,0,20:27:06,0:00:00
+MCT,6/26/2025,Atlantic Cruises,BWM,4360,4298,15,8673,No ,0,18:29:38,0:00:00
+MCT,6/6/2025,American Cruises,Spinner,4339,4842,29,9210,No ,0,4:58:40,0:00:00
+MCT,9/7/2025,American Cruises,Bottlenose,504,437,17,958,No ,0,10:56:57,0:00:00
+MCT,3/14/2025,Atlantic Cruises,Mercedes,264,271,122,657,No ,0,8:41:09,0:00:00
+BCT,5/31/2025,Atlantic Cruises,Audi,4691,4919,0,9610,No ,0,0:32:33,0:00:00
+MCT,10/25/2025,Atlantic Cruises,BWM,4283,4359,16,8658,No ,0,13:21:33,0:00:00
+MCT,5/17/2025,American Cruises,Bottlenose,42,23,309,374,No ,0,18:57:06,0:00:00
+BCT,1/21/2025,Pacific Cruises,Tiger,2085,1994,83,4162,No ,0,11:11:56,0:00:00
+MCT,2/8/2025,Atlantic Cruises,Mercedes,4753,4334,26,9113,No ,0,7:24:44,0:00:00
+BCT,8/29/2025,Pacific Cruises,Jaguar,4941,4690,1,9632,No ,0,19:02:00,0:00:00
+MCT,4/9/2025,Atlantic Cruises,Audi,4458,4268,25,8751,No ,0,8:54:27,0:00:00
+MCT,3/9/2025,American Cruises,Spinner,4903,4748,15,9666,No ,0,6:51:19,0:00:00
+MCT,9/24/2025,Pacific Cruises,Tiger,316,319,21,656,No ,0,15:20:03,0:00:00
+BCT,7/28/2025,Pacific Cruises,Lion,2279,2175,186,4640,No ,0,19:26:56,0:00:00
+BCT,1/18/2025,Pacific Cruises,Tiger,2172,2126,32,4330,No ,0,20:01:37,0:00:00
+BCT,9/7/2025,Atlantic Cruises,Audi,5047,4941,2,9990,No ,0,9:21:48,0:00:00
+MCT,10/18/2025,Pacific Cruises,Tiger,4474,4464,20,8958,No ,0,4:36:02,0:00:00
+MCT,4/13/2025,American Cruises,Bottlenose,886,857,3,1746,No ,0,7:05:37,0:00:00
+MCT,11/23/2025,Atlantic Cruises,BWM,4901,4893,27,9821,No ,0,0:44:40,0:00:00
+BCT,8/18/2025,Pacific Cruises,Tiger,5271,5040,0,10311,No ,0,21:24:54,0:00:00
+MCT,9/20/2025,Pacific Cruises,Lion,4635,4476,10,9121,No ,0,23:03:52,0:00:00
+BCT,10/27/2025,Pacific Cruises,Lion,2168,2272,20,4460,No ,0,16:29:35,0:00:00
+MCT,9/28/2025,Arctic Cruises,Peregrine,4884,4900,14,9798,No ,0,7:21:35,0:00:00
+BCT,4/11/2025,American Cruises,Orca,5286,5279,0,10565,No ,0,5:19:06,0:00:00
+MCT,11/1/2025,American Cruises,Orca,4689,4637,6,9332,No ,0,7:09:38,0:00:00
+MCT,12/27/2025,Arctic Cruises,Peregrine,51,93,1536,1680,No ,0,15:07:19,0:00:00
+MCT,8/29/2025,Arctic Cruises,Peregrine,4892,4883,30,9805,No ,0,18:46:49,0:00:00
+BCT,6/18/2025,American Cruises,Bottlenose,2072,2080,442,4594,Yes,47097,5:29:52,5:29:52
+BCT,10/30/2025,Atlantic Cruises,BWM,2119,2115,63,4297,No ,0,10:59:16,0:00:00
+BCT,1/29/2025,Arctic Cruises,Peregrine,5310,5227,3,10540,No ,0,12:15:43,0:00:00
+MCT,8/14/2025,Arctic Cruises,Peregrine,4583,4684,9,9276,No ,0,13:40:22,0:00:00
+BCT,2/25/2025,Pacific Cruises,Lion,2053,2049,448,4550,Yes,59297,6:51:26,6:51:26
+MCT,10/31/2025,American Cruises,Spinner,4888,4891,30,9809,No ,0,17:36:32,0:00:00
+MCT,7/20/2025,American Cruises,Orca,547,620,49,1216,No ,0,20:58:00,0:00:00
+MCT,11/11/2025,American Cruises,Bottlenose,2356,2334,12,4702,No ,0,13:32:17,0:00:00
+BCT,3/14/2025,American Cruises,Spinner,5220,5313,3,10536,No ,0,11:04:55,0:00:00
+MCT,10/27/2025,American Cruises,Orca,4586,4573,11,9170,No ,0,20:00:52,0:00:00
+BCT,8/12/2025,Atlantic Cruises,BWM,2038,2130,46,4214,No ,0,4:49:57,0:00:00
+MCT,5/4/2025,Arctic Cruises,Red Feather,4899,4888,10,9797,No ,0,19:12:29,0:00:00
+BCT,12/15/2025,Atlantic Cruises,BWM,5258,5216,4,10478,No ,0,12:16:47,0:00:00
+MCT,7/9/2025,Atlantic Cruises,Mercedes,4509,4583,12,9104,No ,0,17:22:12,0:00:00
+MCT,3/2/2025,Atlantic Cruises,Mercedes,4899,4897,35,9831,No ,0,12:20:37,0:00:00
+MCT,10/21/2025,American Cruises,Spinner,648,511,6,1165,No ,0,16:45:29,0:00:00
+BCT,12/14/2025,Arctic Cruises,Red Feather,5285,5260,4,10549,No ,0,21:30:56,0:00:00
+MCT,4/17/2025,Atlantic Cruises,Audi,4635,4508,9,9152,No ,0,10:30:53,0:00:00
+MCT,4/19/2025,Arctic Cruises,Red Feather,4920,4888,46,9854,No ,0,23:58:53,0:00:00
+MCT,11/4/2025,Atlantic Cruises,Audi,633,635,17,1285,No ,0,7:06:33,0:00:00
+BCT,1/20/2025,Arctic Cruises,Peregrine,1970,2069,30,4069,No ,0,20:00:18,0:00:00
+BCT,8/9/2025,Pacific Cruises,Tiger,5339,5278,14,10631,No ,0,16:09:31,0:00:00
+MCT,4/14/2025,American Cruises,Spinner,4740,4623,6,9369,No ,0,4:22:48,0:00:00
+MCT,2/10/2025,Arctic Cruises,Peregrine,574,640,7,1221,No ,0,9:56:29,0:00:00
+MCT,4/30/2025,Pacific Cruises,Lion,4924,4919,27,9870,No ,0,5:19:22,0:00:00
+MCT,11/7/2025,American Cruises,Bottlenose,2326,2210,5,4541,No ,0,1:01:10,0:00:00
+BCT,11/23/2025,Atlantic Cruises,Audi,1870,1932,724,4526,Yes,32065,4:20:42,4:20:42
+BCT,2/16/2025,Atlantic Cruises,Mercedes,5469,5348,7,10824,No ,0,22:44:56,0:00:00
+MCT,8/2/2025,Atlantic Cruises,Audi,4576,4735,9,9320,No ,0,17:27:27,0:00:00
+MCT,12/25/2025,Pacific Cruises,Jaguar,4920,4927,18,9865,No ,0,15:01:25,0:00:00
+MCT,9/16/2025,Arctic Cruises,Red Feather,400,400,50,850,No ,0,20:15:33,0:00:00
+BCT,6/10/2025,American Cruises,Orca,5428,5461,3,10892,No ,0,12:31:00,0:00:00
+MCT,11/9/2025,American Cruises,Bottlenose,3969,3969,0,7938,No ,0,16:51:12,0:00:00
+MCT,1/10/2025,Atlantic Cruises,Audi,3300,3300,0,6600,No ,0,22:01:02,0:00:00
+BCT,11/18/2025,Atlantic Cruises,Mercedes,1925,1989,85,3999,No ,0,18:58:55,0:00:00
+MCT,7/27/2025,Arctic Cruises,Red Feather,300,300,50,650,No ,0,2:15:14,0:00:00
+MCT,12/15/2025,Arctic Cruises,Red Feather,4500,4500,20,9020,No ,0,4:54:46,0:00:00
+MCT,2/7/2025,Pacific Cruises,Lion,2334,2326,629,5289,No ,0,4:30:15,0:00:00
+MCT,4/8/2025,Arctic Cruises,Kestrel,3300,3300,0,6600,No ,0,21:17:49,0:00:00
+BCT,8/23/2025,Pacific Cruises,Lion,3648,2564,159,6371,No  ,0,22:52:41,0:00:00
+BCT,3/29/2025,Pacific Cruises,Tiger,4994,5424,4,10422,No ,0,20:31:39,0:00:00
+MCT,4/18/2025,Pacific Cruises,Lion,3969,3969,0,7938,No ,0,7:18:25,0:00:00
+MCT,6/20/2025,Arctic Cruises,Red Feather,3300,3300,0,6600,No ,0,6:47:37,0:00:00
+MCT,12/15/2025,Arctic Cruises,Peregrine,4819,4861,24,9704,No ,0,19:58:20,0:00:00
+BCT,11/7/2025,American Cruises,Spinner,2083,2033,34,4150,No ,0,0:16:53,0:00:00
+BCT,2/27/2025,Pacific Cruises,Tiger,3501,3728,74,7303,Yes,55940,7:22:07,7:22:07
+MCT,1/20/2025,American Cruises,Spinner,4500,4500,20,9020,No ,0,10:06:20,0:00:00
+BCT,12/12/2025,Arctic Cruises,Red Feather,4820,4985,5,9810,No ,0,21:48:45,0:00:00
+MCT,5/12/2025,Atlantic Cruises,Audi,3969,3969,0,7938,No ,0,1:36:01,0:00:00
+MCT,9/25/2025,Arctic Cruises,Red Feather,3661,4000,23,7684,No ,0,20:00:37,0:00:00
+MCT,3/5/2025,Atlantic Cruises,Mercedes,2484,1122,17,3623,No ,0,11:28:00,0:00:00
+MCT,6/22/2025,Atlantic Cruises,Audi,4170,4815,28,9013,No ,0,22:50:11,0:00:00
+BCT,6/18/2025,American Cruises,Spinner,2204,2281,197,4682,Yes,0,0:00:00,0:00:00
+MCT,4/29/2025,American Cruises,Spinner,873,886,15,1774,No ,0,1:58:12,0:00:00
+BCT,12/13/2025,Arctic Cruises,Peregrine,3555,3536,32,7123,No ,0,14:31:52,0:00:00
+MCT,8/1/2025,American Cruises,Spinner,3495,3657,25,7177,No ,0,6:51:24,0:00:00
+BCT,10/31/2025,Arctic Cruises,Peregrine,4411,4811,6,9228,No ,0,15:58:49,0:00:00
+MCT,10/21/2025,American Cruises,Bottlenose,3835,3811,16,7662,No ,0,12:14:52,0:00:00
+BCT,8/28/2025,Pacific Cruises,Jaguar,2116,2051,54,4221,No ,0,16:04:04,0:00:00
+MCT,2/15/2025,Pacific Cruises,Lion,4101,4301,83,8485,No ,0,16:10:41,0:00:00
+MCT,2/23/2025,American Cruises,Bottlenose,2517,2472,31,5020,No ,0,9:57:16,0:00:00
+MCT,12/27/2025,American Cruises,Spinner,4047,4169,137,8353,No ,0,9:39:36,0:00:00
+BCT,9/7/2025,American Cruises,Spinner,3507,3543,37,7087,No ,0,8:00:58,0:00:00
+MCT,1/4/2025,Atlantic Cruises,BWM,3449,3487,32,6968,No ,0,11:40:54,0:00:00
+MCT,2/9/2025,Pacific Cruises,Tiger,624,559,2,1185,No ,0,9:05:42,0:00:00
+BCT,6/24/2025,Arctic Cruises,Peregrine,4392,4404,2,8798,No ,0,3:45:00,0:00:00
+MCT,6/5/2025,Arctic Cruises,Red Feather,3863,3833,18,7714,No ,0,9:37:38,0:00:00
+MCT,6/3/2025,American Cruises,Spinner,435,397,18,850,No ,0,11:34:38,0:00:00
+MCT,3/15/2025,Atlantic Cruises,Audi,2490,2517,35,5042,No ,0,15:05:47,0:00:00
+BCT,5/22/2025,Atlantic Cruises,BWM,2017,2125,40,4182,No ,0,1:54:55,0:00:00
+MCT,12/22/2025,Pacific Cruises,Lion,4303,4053,31,8387,No ,0,13:48:05,0:00:00
+MCT,10/3/2025,Atlantic Cruises,Audi,2,0,1784,1786,No ,0,21:05:55,0:00:00
+BCT,1/18/2025,Pacific Cruises,Jaguar,678,681,12,1371,No ,0,9:50:57,0:00:00
+MCT,4/1/2025,Atlantic Cruises,Audi,4584,4117,35,8736,No ,0,6:02:50,0:00:00
+BCT,6/23/2025,Atlantic Cruises,Mercedes,3537,3506,30,7073,Yes,0,0:00:00,0:00:00
+MCT,7/25/2025,Pacific Cruises,Lion,3665,3516,19,7200,No ,0,13:28:06,0:00:00
+BCT,4/22/2025,Arctic Cruises,Red Feather,4622,4387,4,9013,Yes,0,0:00:00,0:00:00
+MCT,9/21/2025,Atlantic Cruises,Audi,3856,3927,14,7797,No ,0,19:48:42,0:00:00
+MCT,1/24/2025,Pacific Cruises,Lion,4520,4302,27,8849,No ,0,19:28:11,0:00:00
+MCT,12/8/2025,American Cruises,Spinner,2480,2490,23,4993,No ,0,4:41:30,0:00:00
+MCT,5/23/2025,American Cruises,Orca,360,349,1,710,No ,0,12:32:20,0:00:00
+MCT,11/26/2025,Arctic Cruises,Kestrel,4430,4581,28,9039,No ,0,4:48:23,0:00:00
+MCT,5/15/2025,Pacific Cruises,Jaguar,912,882,6,1800,No ,0,2:22:24,0:00:00
+MCT,11/10/2025,Atlantic Cruises,Mercedes,0,0,624,624,No ,0,3:50:06,0:00:00
+BCT,6/9/2025,Arctic Cruises,Peregrine,3554,3538,29,7121,Yes,0,0:00:00,0:00:00
+MCT,12/14/2025,Atlantic Cruises,BWM,3475,3663,24,7162,No ,0,12:33:16,0:00:00
+BCT,11/27/2025,Arctic Cruises,Red Feather,4274,4618,5,8897,No ,0,0:59:05,0:00:00
+MCT,11/10/2025,Pacific Cruises,Lion,3657,3925,6,7588,No ,0,17:32:09,0:00:00
+MCT,5/9/2025,Arctic Cruises,Kestrel,634,483,43,1160,No ,0,23:45:58,0:00:00
+MCT,3/14/2025,Pacific Cruises,Jaguar,4203,4410,37,8650,No ,0,10:03:16,0:00:00
+MCT,6/19/2025,American Cruises,Orca,1120,1051,36,2207,No ,0,1:55:21,0:00:00
+MCT,1/5/2025,Arctic Cruises,Red Feather,4036,4195,36,8267,No ,0,3:07:14,0:00:00
+BCT,12/31/2025,Pacific Cruises,Lion,1803,1771,717,4291,Yes,0,0:00:00,0:00:00
+BCT,9/10/2025,American Cruises,Spinner,3595,3550,26,7171,Yes,0,0:00:00,0:00:00
+MCT,9/3/2025,Pacific Cruises,Lion,45,3483,11,3539,No ,0,21:00:14,0:00:00
+MCT,5/31/2025,Arctic Cruises,Kestrel,1100,1100,0,2200,No ,0,22:34:07,0:00:00
+BCT,7/6/2025,Atlantic Cruises,Mercedes,4546,4263,5,8814,No ,0,8:02:20,0:00:00
+MCT,9/10/2025,American Cruises,Spinner,3943,3852,6,7801,No ,0,0:33:17,0:00:00
+MCT,3/20/2025,American Cruises,Bottlenose,656,646,13,1315,No ,0,12:48:28,0:00:00
+MCT,6/19/2025,Arctic Cruises,Red Feather,3840,4001,69,7910,No ,0,5:42:26,0:00:00
+MCT,9/9/2025,Pacific Cruises,Jaguar,649,577,563,1789,No ,0,6:32:18,0:00:00
+MCT,9/16/2025,Pacific Cruises,Lion,10,10,1300,1320,No ,0,19:40:27,0:00:00
+MCT,9/18/2025,Atlantic Cruises,BWM,0,0,200,200,No ,0,21:26:13,0:00:00
+BCT,5/27/2025,American Cruises,Spinner,3431,3460,34,6924,No ,0,15:28:35,0:00:00
+MCT,5/30/2025,American Cruises,Spinner,4500,4500,20,9020,No ,0,4:56:41,0:00:00
+MCT,10/14/2025,Atlantic Cruises,Mercedes,283,259,53,595,No ,0,10:59:42,0:00:00
+BCT,7/27/2025,American Cruises,Spinner,4100,4100,0,8200,No ,0,2:17:06,0:00:00
+MCT,11/14/2025,American Cruises,Bottlenose,3969,3969,0,7938,No ,0,0:55:46,0:00:00
+MCT,2/7/2025,Pacific Cruises,Lion,649,577,563,1789,No ,0,14:16:58,0:00:00
+MCT,3/6/2025,Pacific Cruises,Lion,322,335,8,665,No ,0,19:47:44,0:00:00
+MCT,7/29/2025,Atlantic Cruises,Audi,0,0,2000,2000,No ,0,1:14:14,0:00:00
+BCT,7/3/2025,Atlantic Cruises,BWM,2000,2000,200,4200,No ,0,12:33:31,0:00:00
+BCT,10/4/2025,Pacific Cruises,Jaguar,3431,3460,34,6924,No ,0,20:02:08,0:00:00
+MCT,2/8/2025,American Cruises,Bottlenose,3960,3960,0,7920,No ,0,0:33:05,0:00:00
+MCT,8/3/2025,Pacific Cruises,Jaguar,2,5,1199,1206,No ,0,3:52:34,0:00:00
+MCT,7/22/2025,Atlantic Cruises,BWM,177,184,6,367,No ,0,11:40:22,0:00:00
+BCT,3/13/2025,Arctic Cruises,Peregrine,4100,4100,0,8200,No ,0,19:33:32,0:00:00
+MCT,7/6/2025,Atlantic Cruises,BWM,3969,3969,0,7938,No ,0,23:14:45,0:00:00
+MCT,6/13/2025,Atlantic Cruises,BWM,0,0,500,500,No ,0,0:35:17,0:00:00
+MCT,10/11/2025,American Cruises,Spinner,0,0,200,200,No ,0,13:03:32,0:00:00
+BCT,9/22/2025,Atlantic Cruises,Mercedes,3431,3460,34,6924,No ,0,14:43:27,0:00:00
+MCT,6/6/2025,Pacific Cruises,Tiger,0,0,694,694,No ,0,11:49:27,0:00:00
+BCT,7/7/2025,Pacific Cruises,Lion,4100,4100,0,8200,No ,0,14:02:21,0:00:00
+MCT,4/12/2025,American Cruises,Orca,3969,3969,0,7938,No ,0,8:37:00,0:00:00
+MCT,11/22/2025,Pacific Cruises,Jaguar,2334,2326,629,5289,No ,0,4:44:23,0:00:00
+MCT,5/21/2025,Pacific Cruises,Lion,150,150,0,300,No ,0,13:51:26,0:00:00
+MCT,11/26/2025,Atlantic Cruises,Mercedes,3960,3960,0,7920,No ,0,18:17:56,0:00:00
+BCT,8/8/2025,American Cruises,Spinner,2000,2000,200,4200,No ,0,13:36:19,0:00:00
+MCT,3/8/2025,American Cruises,Spinner,3300,3300,0,6600,No ,0,20:40:57,0:00:00
+BCT,9/26/2025,Arctic Cruises,Red Feather,3431,3460,34,6924,No ,0,16:06:08,0:00:00
+BCT,12/23/2025,Atlantic Cruises,Audi,4100,4100,0,8200,No ,0,18:08:05,0:00:00
+MCT,4/16/2025,Arctic Cruises,Red Feather,400,400,0,800,No ,0,2:28:21,0:00:00
+MCT,2/10/2025,American Cruises,Orca,0,0,350,350,No ,0,21:28:35,0:00:00
+MCT,5/5/2025,American Cruises,Bottlenose,2,5,1199,1206,No ,0,14:26:29,0:00:00
+MCT,6/7/2025,Pacific Cruises,Jaguar,3960,3960,0,7920,No ,0,18:15:14,0:00:00
+BCT,11/15/2025,Atlantic Cruises,Mercedes,4100,4100,0,8200,No ,0,4:33:33,0:00:00
+BCT,6/8/2025,American Cruises,Orca,4100,4100,0,8200,No ,0,10:03:20,0:00:00
+MCT,1/3/2025,Atlantic Cruises,BWM,66,343,857,1266,No ,0,20:09:50,0:00:00
+MCT,7/15/2025,Pacific Cruises,Jaguar,4399,4468,27,8894,No ,0,17:06:32,0:00:00
+BCT,1/17/2025,American Cruises,Orca,4100,4100,0,8200,No ,0,8:34:10,0:00:00
+MCT,3/11/2025,Arctic Cruises,Red Feather,500,500,50,1050,No ,0,3:47:20,0:00:00
+BCT,8/29/2025,Arctic Cruises,Red Feather,2000,2000,200,4200,No ,0,20:18:21,0:00:00
+BCT,7/14/2025,Arctic Cruises,Peregrine,4100,4100,0,8200,No ,0,5:31:47,0:00:00
+MCT,12/4/2025,Pacific Cruises,Tiger,4399,4468,27,8894,No ,0,23:00:19,0:00:00
+BCT,11/1/2025,Pacific Cruises,Tiger,4100,4100,0,8200,No ,0,13:18:40,0:00:00
+BCT,3/1/2025,Pacific Cruises,Lion,2000,2000,200,4200,No ,0,17:21:55,0:00:00
+MCT,4/9/2025,Arctic Cruises,Red Feather,283,259,53,595,No ,0,15:31:31,0:00:00
+MCT,2/22/2025,Arctic Cruises,Peregrine,4399,4468,27,8894,No ,0,6:09:48,0:00:00
+BCT,8/9/2025,Atlantic Cruises,Mercedes,4100,4100,0,8200,No ,0,3:14:17,0:00:00
+MCT,1/27/2025,Atlantic Cruises,BWM,283,259,53,595,No ,0,1:41:49,0:00:00
+BCT,11/11/2025,American Cruises,Spinner,4100,4100,0,8200,No ,0,23:54:24,0:00:00
+BCT,6/23/2025,Pacific Cruises,Tiger,2000,2000,200,4200,No ,0,17:47:48,0:00:00
+MCT,3/19/2025,American Cruises,Bottlenose,4399,4468,27,8894,No ,0,17:47:43,0:00:00
+BCT,2/9/2025,Arctic Cruises,Kestrel,4100,4100,0,8200,No ,0,16:52:09,0:00:00

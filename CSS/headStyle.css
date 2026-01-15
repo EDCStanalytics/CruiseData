@@ -1,0 +1,188 @@
+:root {
+   --cp1: #d4ac63;
+   --cp2: #cd2435;
+   --cp3: #e56335;
+   --cp4: #2b4d7d;
+   --cp5: #f4f5f7;   
+}
+
+* {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+i {
+    font-size: xx-large;
+    color: var(--cp5);
+    line-height: 1.5rem;
+}
+
+body {
+    background-color: var(--cp5);
+}
+
+header h1 {
+    background-color: var(--cp5);
+    color: var(--cp4);
+    padding: 20px 0px 0px 20px;
+    font-variant: small-caps;
+    font-weight: 500;
+    margin: 0;
+    border-bottom: 2px solid var(--cp4);
+}
+
+header h1 i {
+    justify-self: right;
+}
+
+#asOfDate {
+    justify-self: right;
+    margin: 0px 20px 10px 0px;
+    color: var(--cp4);
+    font-weight: 300;
+}
+
+header nav {
+    margin: 0%;
+}
+
+#navBarItems {
+    display: flex;
+    border-width: 5px;
+    background-color: var(--cp4);
+    justify-content: space-around;
+    height: 40px;
+    align-items: center;
+    margin: 0px;
+}
+
+#navBarItems li {
+    color: var(--cp5);
+    list-style-type: none;
+    transition: all 500ms ease-in-out 100ms; 
+}
+
+.selectedNavItem {
+    font-size: 1.5rem;
+}
+
+/* this is the formatting for all the data cards */
+
+#report_space {
+    box-sizing: border-box;
+    height: 75vh;
+    background-color: var(--cp5);
+    width: 100%;
+    position: relative;
+    text-align: center;
+    top: 0px;
+    overflow-x: hidden;
+    }
+
+.report_card {
+    box-sizing: border-box;
+    top: 10%;
+    height: 85%;
+    width: 28%;
+    background-color: var(--cp5);
+    border: 5px solid var(--cp4);
+    border-radius: 10px;
+    box-shadow: 15px 15px 20px -5px rgb(from var(--cp4) r g b / .5);
+    display: inline-block;
+    transition: left 1500ms ease-in-out 50ms, width 1500ms ease-in-out 50ms, opacity 1500ms ease-in-out 50ms;
+    justify-content: center;
+}
+
+#card_A {
+    left: calc(100%/6 * 1 - 14%);
+    position: absolute;
+}
+
+#card_B {
+    left: calc(100%/6 * 3 - 14%);
+    position: absolute;
+}
+
+#card_C {
+    left: calc(100%/6 * 5 - 14%);
+    position: absolute;
+}
+
+.tb_Card {
+    background-image: linear-gradient(to right, var(--cp4), rgb(from var(--cp4) r g b / .6));
+    height: 10%;
+    align-content: center;
+}
+
+.deets {
+    opacity: 0;
+    transform: translateY(-10%);
+    animation: dropIn 1000ms ease-out forwards;
+}
+
+@keyframes dropIn {
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.card_data {
+    display: flex;
+    width: 95%;
+    height: 90%;
+    font-size: larger;
+    font-weight: 600;
+    justify-self: center;
+    justify-content: space-around;
+    overflow: hidden;
+}
+
+.block {
+    overflow: hidden;
+    height: 100%;
+    border: 1px dotted grey;
+    width: 10px;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 1500ms ease 50ms;
+}
+
+.block.summary {
+    width: 90%;
+    opacity: 1;
+}
+
+
+
+.quant_data {
+    height: 10%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    transition: opacity 500ms ease-in-out;
+}
+
+.right-side {
+    display: flex;
+    gap: 2px;
+}
+
+
+.dataViz {
+    height: 90%;
+    width: 100%;
+    padding-bottom: 25px;    
+    transition: width 1500ms ease 50ms;
+}
+
+.dataViz.original {
+    width: 5%;
+}
+
+.fa-database:hover {
+  color: #007bff;
+  transform: scale(1.1);
+}
