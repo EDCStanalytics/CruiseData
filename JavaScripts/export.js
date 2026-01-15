@@ -1,4 +1,3 @@
-
 /**
  * combineCruise.js
  * Fetches three CSVs from GitHub (Vessel, Calls, Shore Power),
@@ -221,7 +220,18 @@
     XLSX.utils.book_append_sheet(wb, createWorksheet(calls.headers,  calls.rows),  "Calls");
     XLSX.utils.book_append_sheet(wb, createWorksheet(power.headers,  power.rows),  "ShorePower");
 
-    XLSX.writeFile(wb, filename);
+  
+const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+const blob = new Blob([wbout], { type: 'application/octet-stream' });
+const url = URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = filename;
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+URL.revokeObjectURL(url);
+
   }
 
   // --- 8) Public API ---
@@ -234,7 +244,18 @@
       const ws = createWorksheet(res.combinedHeaders, res.combined);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Combined");
-      XLSX.writeFile(wb, filename);
+     
+const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+const blob = new Blob([wbout], { type: 'application/octet-stream' });
+const url = URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = filename;
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+URL.revokeObjectURL(url);
+
       return res.combined.length;
     },
     /** NEW: Multi-sheet download with separate tabs for each CSV + Combined */
@@ -254,4 +275,3 @@
   global.CruiseExporter = CruiseExporter;
 
 })(typeof window !== "undefined" ? window : this);
-
