@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-
 /* my code recommendation: INSERTION — focus.js */
 /* PURPOSE: Step 2 — add orchestration skeletons (no behavior change) and wire them from existing handlers. */
 /* Place this first block once (global scope, near the top of focus.js, e.g., after DOMContentLoaded begins). */
@@ -15,6 +14,18 @@ window.AppState = window.AppState || {
   powerCanvas: { hasTrend: false, chartCount: 0, hasTable: false },
   activeTrendRole: null
 };
+
+
+/* my code recommendation: */
+// INSERT HERE 👉 descriptor layout helpers
+function getLayout(bucket) {
+  return (bucket?.dataset?.layout || '').trim(); // '', 'right', 'right-usage', 'right-impact', 'right-connections'
+}
+function setLayout(bucket, name) {
+  if (!bucket) return;
+  if (!name) { bucket.removeAttribute('data-layout'); return; }
+  bucket.dataset.layout = String(name);
+}
 
 
 (function () {
@@ -140,6 +151,11 @@ function computeNextSelectionSlots(state, picked) {
     // click related to Alpha → remove Alpha; Bravo becomes new Alpha; Bravo cleared
     return { alpha: B ? { ...B } : null, bravo: null };
   }
+
+if (pickedIsBravoVessel) {
+  // click related to Bravo → remove Bravo; keep Alpha as the single selection
+  return { alpha: A ? { ...A } : null, bravo: null };
+}
 
   // pickedIsBravoVessel: this call becomes the new Bravo
   return { alpha: A, bravo: { callId: picked.callId, vessel: picked.vessel } };
@@ -942,6 +958,7 @@ window.onFocusBucket(bucket.id === 'rightChartContainer' ? 'right' : 'left', { i
 
     // Reset all buckets and shipCards if clicked again
     if (isAlreadyFocused) {
+      setLayout(bucket, null);
       bucket.classList.remove('focused');
       const kpi = bucket.querySelector('.baseStats');
       void setRotorToProbe(bucket, 0);
@@ -982,6 +999,7 @@ window.onFocusBucket(bucket.id === 'rightChartContainer' ? 'right' : 'left', { i
 
     if (bucket.id === "rightChartContainer") {
       // --- RIGHT branch ---
+      setLayout(bucket, 'right');
       removeRadial("leftRadialChart");
       await waitForTransitionEndOnce(bucket);
       updateFocusOffsetFor(bucket);
@@ -990,14 +1008,11 @@ window.onFocusBucket(bucket.id === 'rightChartContainer' ? 'right' : 'left', { i
       await dR_kWh();
       await dR_usage();
       // window.drawPerformCentral('rightCentralChart');
-      await window.radialCalendar('rightRadialChart');
-      const { avg, n } = await window.getAvgConnQualityT12();
-      await window.drawConnQualityGauge('rightRadialChart', avg, n);
-      await window.drawPowerArcs('rightRadialChart');
-
-
-
-
+      
+await window.radialCalendar('rightRadialChart');
+// INSERT HERE 👉 usage gauge moved to 'right-usage' scene; do not draw it in plain 'right'
+await window.drawPowerArcs('rightRadialChart');
+window.Scene.set('right');
 /* Schedule a 5s delayed reveal of PowerCanvas with its Table (anchored left) */
 window.scheduleDelayedReveal({
   delayMs: 1000,
@@ -1005,12 +1020,13 @@ window.scheduleDelayedReveal({
   reveal: window.revealPowerCanvasTableLeftAnchored,
   cancelRef: window.PCReveal
 });
+
   
 
 
     } else {
       // --- LEFT branch ---
-      
+      setLayout(bucket, 'left');
   /* Switching to left focus? cancel any pending right-side delayed reveal */
   if (window.PCReveal && window.PCReveal.timer) { clearTimeout(window.PCReveal.timer); window.PCReveal.timer = null; }
 
@@ -2020,9 +2036,9 @@ svg.append('g')
 
 // === CONFIG for KPI probe points ===
 window.KPIProbeConfig = {
-  innerRatio: 0.55,    // (2) inner circle diameter vs. bucket diameter; tweakable
+  innerRatio: 0.60,    // (2) inner circle diameter vs. bucket diameter; tweakable
   deltaDeg: 45,       // (3-4) +/- degrees around 6 o’clock; default 4 & 8 positions
-  betweenFraction: -0.35, // (5) fraction from center toward the 6-point; tweakable
+  betweenFraction: 0.50, // (5) fraction from center toward the 6-point; tweakable
   sixDeg: 90          // 6 o’clock angle (0° = 3 o’clock, +CW with screen coords)
 };
 
@@ -2238,17 +2254,6 @@ async function getKwhT12Value() {
 }
 
 
-
-
-
-/* my code recommendation: */
-// === Generic Rotor Setup (create/adopt + populate + show/hide + move) ===
-// Human points: 1..5 (center, 4 o'clock, 6 o'clock, 8 o'clock, midpoint to 6)
-// Depends on: RotorFactory, computeProbePositions(bucket), waitForTransitionEndOnce(el), window.Helpers.*
-
-/* my code recommendation: */
-
-/* my code recommendation: */
 function setupRotor({
   // identity / placement
   role,                      // e.g., 'kwh'
@@ -2260,21 +2265,12 @@ function setupRotor({
   labelText,                 // e.g., 'kWh Provided'
   valueGetter,               // async () => number; supplies odometer value
 
-  
  // STANDARD OPTIONS (no role-specific logic inside setup):
   pillText,                         // string or (value) => string
   digitsRenderer,                   // (speedEl, value) => void
   digitsRoller,                     // (speedEl, value) => void
 
 
-  // visibility & movement policy (human numbering)
-  /*
-  appearWhen = 'focus',      // 'focus' | 'always' | ((bucket) => boolean)
-  appearAt = 3,              // human point (default: 3 = inner-6)
-  moveAfterAppearTo = null,  // optional secondary human point
-  hideWhen = 'blur',         // 'blur' | 'never'
-  hideTo = 1,                // human point for hiding (default: 1 = center)
-  */
   appearWhen,
   appearAt,
   moveAfterAppearTo,
@@ -2349,12 +2345,12 @@ function buildContent(el, value) {
 
 
 /* my code recommendation: */
-function getFocusLevel(bucket) {
-  // 0 = load (default), 1 = bucket focused, 2 = detail view
-  const lvAttr = bucket.dataset.focus;
-  if (lvAttr === '2') return 2;
-  return bucket.classList.contains('focused') ? 1 : 0;
-}
+
+  function getFocusLevel(bucket) {
+    // INSERT HERE 👉 use the descriptor stored on the bucket
+    return (bucket?.dataset?.layout || '').trim();
+  }
+
 
   /* my code recommendation: */
   function applyScaleForProbe(humanPoint) {
@@ -2363,23 +2359,27 @@ function getFocusLevel(bucket) {
   }
 
 
-  function resolveProbeForLevel(level) {
-    if (!positions) return null;
-    if (Array.isArray(positions)) return positions[level] ?? null;
-    return positions[level] ?? null;
+
+  /* my code recommendation: */
+  // REPLACEMENT — resolve probe by *layout name* (no numeric scenes)
+  function resolveProbeForLevel(layoutName) {
+    // INSERT HERE 👉 positions is now an object keyed by descriptors: { 'right': 4, 'right-usage': 2, ... }
+    if (!positions || Array.isArray(positions)) return null; // numeric maps no longer supported
+    return positions[layoutName] ?? null;
   }
 
-
-  async function setToLevelPositionAsync(level) {
-    const human = resolveProbeForLevel(level);
+  /* my code recommendation: */
+  // REPLACEMENT — position rotor using descriptor layout, then scale
+  async function setToLevelPositionAsync(layoutName) {
+    const human = resolveProbeForLevel(layoutName);
     if (human == null) return;
-    await afterGeometrySettles();                      // wait for final geometry
+    await afterGeometrySettles();
     RotorFactory.toProbe(bucket, rotorEl, Math.max(0, Math.min(4, (human - 1) || 0)));
-    /* my code recommendation: */
-    applyScaleForProbe(human);                         // scale by position
-    rotorEl.dataset.probe = String(human); 
+    applyScaleForProbe(human);
+    rotorEl.dataset.probe = String(human);
     positionProbeDots(bucket);
   }
+
 
 
 
@@ -2461,7 +2461,7 @@ async function revealAndMove() {
   positionProbeDots(bucket);
   // (no movement on reveal; we already spawn at appearAt)
 }
-``
+
 
 
 
@@ -2477,29 +2477,25 @@ function hideAndReset() {
 
 
 /* my code recommendation: */
-const obs = new MutationObserver((muts) => {
-  for (const m of muts) {
-    if (m.type !== 'attributes') continue;
-    if (m.attributeName !== 'class' && m.attributeName !== 'data-focus') continue;
 
-    const level = getFocusLevel(bucket);
-
-    // Always reposition to the declared position for this level,
-    // but do it after the bucket's transition + one paint so geometry is current.
-    void setToLevelPositionAsync(level);
-
-    if (appearPredicate(bucket)) {
-      // Reveal and re-roll digits after reposition
-      void revealAndMove();
-    } else if (shouldHide(bucket)) {
-      // Hide and reset to "000" so next reveal rolls again
-      hideAndReset();
+  /* my code recommendation: */
+  // REPLACEMENT — observe class + data-layout (no data-focus)
+  const obs = new MutationObserver((muts) => {
+    for (const m of muts) {
+      if (m.type !== 'attributes') continue;
+      if (m.attributeName !== 'class' && m.attributeName !== 'data-layout') continue;
+      const layout = getFocusLevel(bucket); // descriptor string
+      // INSERT HERE 👉 move rotor for this layout after geometry settles
+      void setToLevelPositionAsync(layout);
+      if (appearPredicate(bucket)) {
+        void revealAndMove();
+      } else if (shouldHide(bucket)) {
+        hideAndReset();
+      }
     }
-  }
-});
+  });
+  obs.observe(bucket, { attributes: true, attributeFilter: ['class','data-layout'] });
 
-
-obs.observe(bucket, { attributes: true, attributeFilter: ['class','data-focus'] });
 
 
 /* my code recommendation: */
@@ -2772,47 +2768,6 @@ function attachRotorPill(speedEl, pillText) {
 }
 
 
-//replacing old method
-
-/* my code recommendation: */
-/*
-async function dR_kWh() {
-  const bucketId = 'rightChartContainer';
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
-  const existing = bucket.querySelector('.baseStats[data-role="kwh"]');
-  if (existing) return existing;
-
-  const kwhT12 = await getKwhT12Value();
-
-  return setupRotor({
-    role: 'kwh',
-    bucketId,
-    labelText: 'kWh Provided',
-    valueGetter: () => kwhT12,
-
-    pillText: (val) => {
-      const fmt = formatKwhCompact(val ?? 0);
-      return fmt?.unit ? (unitFull(fmt.unit) + ' kWh') : '';
-    },
-    digitsRenderer: (speedEl, val) => {
-      const fmt = formatKwhCompact(val ?? 0);         // returns {digitsOnly, dotIndex}
-      buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
-    },
-    digitsRoller: (speedEl, val) => {
-      const fmt = formatKwhCompact(val ?? 0);
-      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
-    },
-
-    appearWhen: 'focus',
-    hideWhen: 'blur',
-    startHidden: true, syncReveal: 'transitionEnd',
-    positions: { 1: 2, 2: 5 }
-  });
-}
-*/
-
-
 /* my code recommendation: REPLACEMENT — focus.js */
 /* kWh rotor: use T12 trend + SVG arrow */
 async function dR_kWh() {
@@ -2876,7 +2831,7 @@ digitsRenderer: (speedEl, val) => {
     hideWhen: 'blur',
     startHidden: true,
     syncReveal: 'transitionEnd',
-    positions: { 1: 2, 2: 5 }
+    positions: { 'right': 2, 'right-impact': 5 }
   });
 }
 
@@ -2940,7 +2895,7 @@ digitsRenderer: (speedEl, val) => {
     hideWhen: 'blur',
     startHidden: true,
     syncReveal: 'transitionEnd',
-    positions: { 1: 5, 2: 2 }
+    positions: { 'right': 4, 'right-usage': 2 }
   });
 }
 
@@ -2959,33 +2914,7 @@ async function dR_connections() {
   /* my code recommendation: */
   const { t12ConnectionsCount } = await window.fillBuckets();
   const connCount = t12ConnectionsCount;
-/*
-  return setupRotor({
-    role: 'connections',
-    bucketId,
-    labelText: 'Connections',
-    pillText: 'Connections',
-    valueGetter: () => connCount,
 
-    digitsRenderer: (speedEl, val) => {
-      const n = Math.max(0, Math.floor(Number(val) || 0));
-      const s = String(n).padStart(3, '0');
-      buildFixed3Odometer(speedEl, s, -1);
-    },
-    digitsRoller: (speedEl, val) => {
-      const n = Math.max(0, Math.floor(Number(val) || 0));
-      const s = String(n).padStart(3, '0');
-      window.setRotorValue(speedEl, s);
-    },
-
-    appearWhen: 'always',
-    hideWhen: 'never',
-    startHidden: false, syncReveal: 'transitionEnd',
-    
-  positions: { 0: 1, 1: 4, 2: 4 } 
-
-  });
-  */
 
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Replace ONLY the setupRotor(...) block inside dR_connections(...) */
@@ -3015,8 +2944,7 @@ digitsRenderer: (speedEl, val) => {
   const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
 
 
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Only allow Connections trend arrow clicks when RIGHT KPI bucket is focused */
+
 const onArrow = (e) => {
   e.preventDefault();
   e.stopImmediatePropagation();
@@ -3047,7 +2975,7 @@ const onArrow = (e) => {
   appearWhen: 'always',
   hideWhen: 'never',
   startHidden: false, syncReveal: 'transitionEnd',
-  positions: { 0: 1, 1: 4, 2: 4 }
+  positions: { '': 1, 'right': 5, 'right-connections': 3 }
 });
 
 
@@ -3608,6 +3536,104 @@ window.updateRadialHighlightsForSelections = function ({ alpha, bravo }) {
 };
 
 
+/* my code recommendation: */
+// INSERTION — Scene coordinator (descriptor-only: '', 'right', 'right-usage', 'right-impact', 'right-connections')
+window.Scene = (function () {
+  const registry = new Map();   // key -> { scenes: { [scene]: { mount() } }, unmount() }
+  let current = '';
+
+  function get() { return current; }
+
+  
+function set(scene) {
+  const next = (scene || '').trim();
+  if (next === current) return api;
+
+  current = next;
+
+  const left  = document.getElementById('leftChartContainer');
+  const right = document.getElementById('rightChartContainer');
+
+  // 1) Keep bucket layouts in sync with the scene (regardless of focus)
+  //    right* → write on RIGHT, clear LEFT
+  //    'left' → write on LEFT,  clear RIGHT
+  //    ''     → clear both
+  if (next.startsWith('right')) {
+    if (right) right.dataset.layout = next;
+    if (left)  left.removeAttribute('data-layout');
+  } else if (next === 'left') {
+    if (left)  left.dataset.layout = 'left';
+    if (right) right.removeAttribute('data-layout');
+  } else {
+    if (left)  left.removeAttribute('data-layout');
+    if (right) right.removeAttribute('data-layout');
+  }
+
+  // 2) Leaving any right* scene → tear down PowerCanvas and cancel delayed reveal
+  if (!next.startsWith('right')) {
+    if (window.PCReveal && window.PCReveal.timer) {
+      clearTimeout(window.PCReveal.timer);
+      window.PCReveal.timer = null;
+    }
+    const canvas = document.getElementById('powerCanvas');
+    if (canvas) {
+      canvas.classList.remove('is-visible');                     // start fade-out
+      setTimeout(() => { if (canvas.parentNode) canvas.remove(); }, 400); // remove after fade
+    }
+  }
+
+  // 3) Scene participants: unmount stale → mount current
+  registry.forEach((spec) => {
+    const isMounted = spec._mounted === true;
+    if (isMounted && typeof spec.unmount === 'function') {
+      try { spec.unmount(); } catch(e) {}
+      spec._mounted = false;
+    }
+  });
+  registry.forEach((spec) => {
+    const mount = spec?.scenes?.[next]?.mount;
+    if (typeof mount === 'function') {
+      try { mount(); spec._mounted = true; } catch(e) { spec._mounted = false; }
+    }
+  });
+
+  return api;
+}
+
+
+  function register(key, spec) {
+    if (!key) return api;
+    registry.set(key, Object.assign({ scenes: {}, unmount: null, _mounted: false }, spec || {}));
+    return api;
+  }
+
+  const api = { get, set, register };
+  return api;
+})();
+
+
+
+// INSERT HERE 👉 sync Usage gauge on right radial with current descriptor layout
+function updateRightUsageGauge() {
+  const rightBucket = document.getElementById('rightChartContainer');
+  const layout = (rightBucket?.dataset?.layout || '').trim();
+  const chartSel = '#rightRadialChart';
+  const svg = document.querySelector(chartSel + ' svg') || document.querySelector(chartSel);
+
+  // Always remove existing gauge first
+  const oldGauge = document.querySelector('#rightRadialChart .conn-gauge');
+  if (oldGauge) oldGauge.remove();
+
+  // Only draw for 'right-usage'
+  if (layout === 'right-usage') {
+    // defer: ensure radial is present before drawing
+    Promise.resolve().then(async () => {
+      const { avg, n } = await window.getAvgConnQualityT12();
+      await window.drawConnQualityGauge('rightRadialChart', avg, n);
+    });
+  }
+}
+
 /* my code recommendation: INSERTION — focus.js */
 /*
  * buildPowerCanvasTable()
@@ -3828,14 +3854,21 @@ function pcEnsureCanvas(hostBucket) {
 /* PowerCanvas: size to fit children (chart/table) — no excess height */
 
 
-/* my code recommendation: REPLACEMENT — focus.js */
 /* PowerCanvas: size to fit children (trend + chart + table) + top/bottom margins */
 function pcSizeFor(canvas, spec, hostBucket) {
-  // Width anchored to left bucket
+  // Width anchored to RIGHT bucket so canvas is just a bit wider than the right KPI bucket
   const leftBucket = document.getElementById('leftChartContainer') || hostBucket;
-  const hostW = leftBucket?.clientWidth ?? window.innerWidth;
-  const wK = (spec?.wK ?? 1.20);
-  canvas.style.width = `${Math.round(hostW * wK)}px`;
+  const rightBucket = document.getElementById('rightChartContainer') || hostBucket;
+
+  // Use right-bucket width as reference; aim ~+5%, but clamp so it never crosses center line
+  const refW = rightBucket?.clientWidth || leftBucket?.clientWidth || Math.round(window.innerWidth / 2);
+  const desiredW = Math.round(refW * 1.05);
+  const maxW = Math.min(
+    Math.round(refW * 1.10),            // hard cap ~+10% of right bucket
+    Math.max(320, leftBucket?.clientWidth || refW) // never wider than the left half area
+  );
+  const finalW = Math.min(desiredW, maxW, window.innerWidth - 32); // guard against narrow tabs
+  canvas.style.width = `${finalW}px`;
 
   // Current rendered child heights
   const trendH = (() => {
@@ -3851,38 +3884,42 @@ function pcSizeFor(canvas, spec, hostBucket) {
     return el ? el.clientHeight : 0;
   })();
 
-  // If no children yet, fallback to 1/3 of RIGHT bucket (unless explicit empty)
+  // Strictly sum what exists; no large “1/3 of right bucket” fallback that creates white space
   let contentH = trendH + chartH + tableH;
-  if (contentH === 0) {
-    const rightBucket = document.getElementById('rightChartContainer') || hostBucket;
-    const base = Math.round((rightBucket?.clientHeight ?? leftBucket?.clientHeight ?? window.innerHeight) / 3);
-    contentH = (spec?.type === 'empty') ? 0 : base;
+
+  // If absolutely nothing is mounted yet AND spec didn’t say “empty”, use a small, neutral stub height
+  if (contentH === 0 && spec?.type !== 'empty') {
+    const base = Math.round((rightBucket?.clientHeight || leftBucket?.clientHeight || 600) * 0.25);
+    contentH = Math.max(180, Math.min(360, base)); // modest placeholder: 180–360px
   }
 
-  const marginTopBottom = spec?.marginY ?? 8; // px, per side
+  const marginTopBottom = spec?.marginY ?? 8; // px per side
   const totalH = contentH + (marginTopBottom * 2);
-
   canvas.style.height = `${totalH}px`;
   canvas.style.paddingTop = `${marginTopBottom}px`;
   canvas.style.paddingBottom = `${marginTopBottom}px`;
 }
+// INSERT HERE 👉
 
 
 
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Place the PowerCanvas relative to the LEFT KPI bucket (fallback: hostBucket) */
+/* Place the PowerCanvas relative to the LEFT KPI bucket (never cross center line) */
 function pcPlace(canvas, hostBucket) {
   const leftHost = document.getElementById('leftChartContainer') || hostBucket;
-  const left = leftHost?.offsetLeft ?? 0;
+  // Align the canvas’ RIGHT edge to the leftHost’s RIGHT edge (i.e., the screen center line)
+  // so it won’t overlap the right radial chart.
+  const leftEdge = leftHost.offsetLeft + (leftHost.clientWidth - canvas.clientWidth);
+
   const top = leftHost
     ? leftHost.offsetTop + Math.round((leftHost.clientHeight - canvas.clientHeight) / 2)
     : 0;
 
   canvas.style.position = 'absolute';
-  canvas.style.left = `${left}px`;
-  canvas.style.top = `${top}px`;
+  canvas.style.left = `${Math.max(0, leftEdge)}px`;
+  canvas.style.top = `${Math.max(0, top)}px`;
 }
+// INSERT HERE 👉
+
 
 
 /* 4) Apply/prepare content container; returns the host for external drawers */
@@ -4013,6 +4050,176 @@ function pcRender(spec, hostBucket) {
   return { canvas, contentHost };
 }
 
+
+/* my code recommendation: */
+// INSERTION — Scene participant: Usage gauge (right radial), only in 'right-usage'
+window.Scene.register('right-usage-gauge', {
+  scenes: {
+    'right-usage': {
+      mount: () => {
+        // remove any old gauge first, then draw for this scene
+        const old = document.querySelector('#rightRadialChart .conn-gauge');
+        if (old) old.remove();
+        Promise.resolve().then(async () => {
+          const { avg, n } = await window.getAvgConnQualityT12();
+          await window.drawConnQualityGauge('rightRadialChart', avg, n);
+        });
+      }
+    }
+  },
+  unmount: () => {
+    const old = document.querySelector('#rightRadialChart .conn-gauge');
+    if (old) old.remove();
+  }
+});
+
+/* my code recommendation: */
+// INSERTION — Scene participant: T12 trend (PowerCanvas top)
+
+// INSERTION — Scene participant: T12 trend (PowerCanvas top)
+ // INSERT HERE 👉
+/* my code recommendation: register a right-scene chart anchored to probe 5 */
+window.Scene.register('right-cruise-connections-chart', {
+  scenes: {
+    'right': {
+      mount: async () => {
+        const bucket = document.getElementById('rightChartContainer');
+        if (!bucket) return;
+
+        // Ensure/position host so its *bottom center* sits on probe point 5
+        let host = document.getElementById('rightConnectionsByCruiseChart');
+        if (!host) {
+          host = document.createElement('div');
+          host.id = 'rightConnectionsByCruiseChart';
+          host.className = 'kpi-inline-chart';
+          bucket.appendChild(host);
+        }
+
+        // Size: 70% width × 45% height of the bucket
+        const w = Math.round(bucket.clientWidth  * 0.65);
+        const h = Math.round(bucket.clientHeight * 0.35);
+
+        // Probe 5 (index 4) within bucket coordinates
+        const pts = computeProbePositions(bucket);
+        const p5  = pts[0]; // {x, y}
+        const left = Math.round(p5.x - w / 2);
+        const top  = Math.round(p5.y - h);
+
+        Object.assign(host.style, {
+          position: 'absolute',
+          left: left + 'px',
+          top:  top  + 'px',
+          width:  w  + 'px',
+          height: h  + 'px',
+          pointerEvents: 'auto'
+        });
+
+
+/* my code recommendation: REPLACEMENT */
+const guard = (e) => {
+  // Let interactive chart elements handle their own clicks, but don't let events escape the host
+  if (e.target.closest('.chart-interactive')) {
+    e.stopPropagation();           // prevent bubbling to KPI bucket
+    return;                        // allow target/bubble handlers on the chart elements
+  }
+  // Non-interactive area ⇒ fully block
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  e.stopPropagation();
+};
+['click','pointerdown','mousedown','touchstart'].forEach(type => {
+  host.addEventListener(type, guard, { capture: true, passive: false });
+});
+
+
+        // Draw chart (charts.js must be loaded; guard just in case)
+        if (window.drawConnectionsByCruiseChart) {
+          host.innerHTML = '';
+          await window.drawConnectionsByCruiseChart(host);
+        }
+      }
+    }
+  },
+  unmount: () => {
+    const host = document.getElementById('rightConnectionsByCruiseChart');
+    if (host) host.remove();
+  }
+});
+
+//  - right-usage       → usageRate
+//  - right-impact      → kWh
+//  - right-connections → connections
+window.Scene.register('pc-trend', {
+  scenes: {
+    'right-usage': {
+      mount: async () => {
+        const hostBucket = document.getElementById('leftChartContainer') || document.getElementById('rightChartContainer');
+        const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
+        const rightBucket = document.getElementById('rightChartContainer');
+        const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
+        canvas.style.setProperty('--pc-child-h', `${childH}px`);
+        // ensure trend host at TOP
+        let trendHost = contentHost.querySelector('.pc-trend');
+        if (!trendHost) {
+          trendHost = document.createElement('div');
+          trendHost.className = 'pc-trend';
+          contentHost.insertBefore(trendHost, contentHost.firstChild);
+        }
+        trendHost.dataset.role = 'usageRate';
+        trendHost.dataset.vessel = window.activeVesselName ?? '';
+        await drawT12TrendChart(trendHost, 'usageRate', 'Usage Rate', window.activeVesselName ?? null);
+        pcSizeFor(canvas, { type: 'chart' }, hostBucket);
+        pcPlace(canvas, hostBucket);
+      }
+    },
+    'right-impact': {
+      mount: async () => {
+        const hostBucket = document.getElementById('leftChartContainer') || document.getElementById('rightChartContainer');
+        const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
+        const rightBucket = document.getElementById('rightChartContainer');
+        const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
+        canvas.style.setProperty('--pc-child-h', `${childH}px`);
+        let trendHost = contentHost.querySelector('.pc-trend');
+        if (!trendHost) {
+          trendHost = document.createElement('div');
+          trendHost.className = 'pc-trend';
+          contentHost.insertBefore(trendHost, contentHost.firstChild);
+        }
+        trendHost.dataset.role = 'kwh';
+        trendHost.dataset.vessel = window.activeVesselName ?? '';
+        await drawT12TrendChart(trendHost, 'kwh', 'kWh Provided', window.activeVesselName ?? null);
+        pcSizeFor(canvas, { type: 'chart' }, hostBucket);
+        pcPlace(canvas, hostBucket);
+      }
+    },
+    'right-connections': {
+      mount: async () => {
+        const hostBucket = document.getElementById('leftChartContainer') || document.getElementById('rightChartContainer');
+        const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
+        const rightBucket = document.getElementById('rightChartContainer');
+        const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
+        canvas.style.setProperty('--pc-child-h', `${childH}px`);
+        let trendHost = contentHost.querySelector('.pc-trend');
+        if (!trendHost) {
+          trendHost = document.createElement('div');
+          trendHost.className = 'pc-trend';
+          contentHost.insertBefore(trendHost, contentHost.firstChild);
+        }
+        trendHost.dataset.role = 'connections';
+        trendHost.dataset.vessel = window.activeVesselName ?? '';
+        await drawT12TrendChart(trendHost, 'connections', 'Connections', window.activeVesselName ?? null);
+        pcSizeFor(canvas, { type: 'chart' }, hostBucket);
+        pcPlace(canvas, hostBucket);
+      }
+    }
+  },
+  unmount: () => {
+    const canvas = document.getElementById('powerCanvas');
+    const trend = canvas?.querySelector('.pc-trend');
+    if (trend) trend.remove();
+    if (canvas) pcMaybeDestroy(canvas);
+  }
+});
 
 
 
@@ -4278,6 +4485,20 @@ window.onToggleTrend({ role, vessel: window.activeVesselName ?? null });
 
   // Determine the desired state (role + vessel)
   const vessel = window.activeVesselName ?? null;
+
+// INSERT HERE 👉 set layout by role (no numeric scenes)
+const rightBucketEl = document.getElementById('rightChartContainer');
+
+
+if (rightBucketEl && rightBucketEl.classList.contains('focused')) {
+  if (role === 'usage')      window.Scene.set('right-usage');
+  else if (role === 'kwh')   window.Scene.set('right-impact');
+  else if (role === 'connections') window.Scene.set('right-connections');
+  else                        window.Scene.set('right');
+}
+
+
+
   const desiredRole   = role;
   const desiredVessel = vessel ?? '';
 

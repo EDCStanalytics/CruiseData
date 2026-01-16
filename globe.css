@@ -95,6 +95,55 @@ header nav {
     list-style-type: none;
     transition: all 500ms ease-in-out 100ms;
 }
+
+
+report_card {
+  position: relative;               /* preserves existing left offsets */
+  transition: left 400ms ease, width 400ms ease, opacity 300ms ease;
+  will-change: left, width, opacity;
+}
+
+/* Focused center card (matches focused_style in header.js) */
+.report_card--focused {
+  left: calc(100% / 6 * 1 - 14%);
+  opacity: 1;
+  width: calc(100% - (calc(100% / 6 * 1 - 14%) * 2));
+}
+
+/* Offstage left (matches exitLeft_style) */
+.report_card--exit-left {
+  left: -200%;
+  opacity: 0;
+  /* width inherits; optional: unset if prior state set width */
+  width: auto;
+}
+
+/* Offstage right (matches exitRight_style) */
+.report_card--exit-right {
+  left: 200%;
+  opacity: 0;
+  width: auto;
+}
+
+/* When a card is focused, open its inner .block items (matches style_card_open) */
+.report_card__block--open {
+  width: 30%;
+  opacity: 1;
+  transition: width 300ms ease, opacity 250ms ease;
+}
+
+/* (Optional) If blocks start collapsed, give them a default closed state */
+.report_card .block {
+  opacity: 0;
+  width: 0;
+  transition: width 300ms ease, opacity 250ms ease;
+}
+
+/* (Optional) Improve pointer affordance for selected nav item */
+#navBarItems li.selectedNavItem {
+  cursor: default;
+}
+
  
 #navBarItems li::before {
     content: '';
@@ -646,10 +695,87 @@ font-variant-numeric: tabular-nums;
 #rightRadialChart .conn-gauge .gauge-tick.minor { stroke: var(--gauge-minor); }
 #rightRadialChart .conn-gauge .gauge-rail { fill: var(--gauge-minor); }
 
+/* INSERT HERE 👉 lightweight grid styling for charts */
+/* my code recommendation: */
+.y-grid .tick line {
+  stroke: var(--ink-300, #9aa0a6); /* light grey */
+  stroke-opacity: 0.35;
+}
+
+.x-axis text {
+  font-size: 1rem; /* adjust as needed: 13px/14px if you want bigger */
+  line-height: 1;  /* keep tight for small hosts */
+}
+
+
+/* INSERT HERE 👉 inline chart interactivity for #rightConnectionsByCruiseChart */
+/* my code recommendation: */
+
+#rightConnectionsByCruiseChart .x-axis text.chart-interactive {
+  cursor: default;          /* fixes I‑beam caret */
+  user-select: none;        /* prevents text selection */
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+#rightConnectionsByCruiseChart svg {
+  cursor: default;
+  border: 1px red dashed;
+}
+
+/* Light gridlines (optional) */
+#rightConnectionsByCruiseChart .y-grid .tick line,
+#rightConnectionsByCruiseChart .x-grid .boundary {
+  stroke: var(--ink-300, rgba(154,160,166,0.9));
+  stroke-opacity: .35;
+}
+
+/* Vessel labels above split bars */
+#rightConnectionsByCruiseChart .vessel-label {
+  font-size: 0.75rem;
+  pointer-events: none;
+  opacity: .9;
+  fill: currentColor;
+}
+
+
+#rightConnectionsByCruiseChart .bars .bar {
+  pointer-events: all;         /* ensure rects receive clicks */
+  cursor: pointer;             /* visual affordance */
+}
+#rightConnectionsByCruiseChart .x-axis text.chart-interactive {
+  pointer-events: all;         /* labels are truly clickable */
+  cursor: pointer;             /* show pointer on hover */
+}
+
+
+#rightConnectionsByCruiseChart {
+  position: relative;   /* create stacking context */
+  z-index: 20;          /* sit above nearby overlays */
+  pointer-events: auto; /* host accepts events */
+}
+
+#rightConnectionsByCruiseChart svg {
+  pointer-events: all;  /* allow SVG to receive clicks */
+}
+
+#rightConnectionsByCruiseChart .y-grid,
+#rightConnectionsByCruiseChart .y-axis,
+#rightConnectionsByCruiseChart .x-grid {
+  pointer-events: none;            /* grids/axes won't steal clicks */
+}
+
+#rightConnectionsByCruiseChart .bars .bar,
+#rightConnectionsByCruiseChart .x-axis text.chart-interactive {
+  pointer-events: all;             /* interactive elements are hot */
+  cursor: pointer;
+}
+
+
 
 /* Probe dots inside each bucket */
 .kpiBucket .probe-dot {
-  display: none;
+  display: true;
   position: absolute;
   width: 8px;
   height: 8px;
@@ -663,7 +789,7 @@ font-variant-numeric: tabular-nums;
 
 /* Publishing toggle: add .hide-probes on the bucket to hide all dots */
 .kpiBucket.hide-probes .probe-dot {
-  display: none;
+  display: none; 
 }
 
 
@@ -770,6 +896,8 @@ font-variant-numeric: tabular-nums;
 
 /* Solid needle-color circle with metallic rim — behind the digits at probe 2 or 4 */
 .kpiBucket .baseStats[data-probe="2"] .speedRead::before,
+.kpiBucket .baseStats[data-probe="3"] .speedRead::before,
+.kpiBucket .baseStats[data-probe="5"] .speedRead::before,
 .kpiBucket .baseStats[data-probe="4"] .speedRead::before {
   content: "";
   position: absolute;

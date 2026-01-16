@@ -2,7 +2,7 @@
 /* my code recommendation: INSERTION into new file vesselData.js */
 console.log('The vessel data is loading');
 
-const vesselDataURL = 'https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Actuals/VesselData_Cruise.csv'; // adjust if hosted remotely
+const vesselDataURL = 'https://raw.githubusercontent.com/EDCStanalytics/CruiseData/refs/heads/main/Data/VesselData_Cruise.csv'; // adjust if hosted remotely
 
 function splitCSVLine(line) {
   return line.split(',').map(s => s.trim());
