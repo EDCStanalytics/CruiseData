@@ -1,0 +1,1969 @@
+﻿CallID,ItineraryID,VesselName,Date,Port,Include?
+9760512-251228,4672453,MSC Meraviglia,12/28/2025,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-251230,4672453,MSC Meraviglia,12/30/2025,"Port Canaveral, Orlando, Florida",No
+9760512-251231,4672453,MSC Meraviglia,12/31/2025,"MSC Ocean Cay, Bahamas private island",No
+9760512-260101,4672453,MSC Meraviglia,1/1/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260104,4672453,MSC Meraviglia,1/4/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260104,4672454,MSC Meraviglia,1/4/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260106,4672454,MSC Meraviglia,1/6/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260107,4672454,MSC Meraviglia,1/7/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260108,4672454,MSC Meraviglia,1/8/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260111,4672454,MSC Meraviglia,1/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260111,4672455,MSC Meraviglia,1/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260113,4672455,MSC Meraviglia,1/13/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260114,4672455,MSC Meraviglia,1/14/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260115,4672455,MSC Meraviglia,1/15/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260118,4672455,MSC Meraviglia,1/18/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260118,4728990,MSC Meraviglia,1/18/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260120,4728990,MSC Meraviglia,1/20/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260121,4728990,MSC Meraviglia,1/21/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260122,4728990,MSC Meraviglia,1/22/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260125,4728990,MSC Meraviglia,1/25/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260125,4728991,MSC Meraviglia,1/25/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260127,4728991,MSC Meraviglia,1/27/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260128,4728991,MSC Meraviglia,1/28/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260129,4728991,MSC Meraviglia,1/29/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260201,4728991,MSC Meraviglia,2/1/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260201,4728992,MSC Meraviglia,2/1/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260203,4728992,MSC Meraviglia,2/3/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260204,4728992,MSC Meraviglia,2/4/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260205,4728992,MSC Meraviglia,2/5/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260208,4728992,MSC Meraviglia,2/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260208,4728993,MSC Meraviglia,2/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260210,4728993,MSC Meraviglia,2/10/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260211,4728993,MSC Meraviglia,2/11/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260212,4728993,MSC Meraviglia,2/12/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260215,4728993,MSC Meraviglia,2/15/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260215,4728994,MSC Meraviglia,2/15/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260217,4728994,MSC Meraviglia,2/17/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260218,4728994,MSC Meraviglia,2/18/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260219,4728994,MSC Meraviglia,2/19/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260222,4728994,MSC Meraviglia,2/22/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260222,4728995,MSC Meraviglia,2/22/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260224,4728995,MSC Meraviglia,2/24/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260225,4728995,MSC Meraviglia,2/25/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260226,4728995,MSC Meraviglia,2/26/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260301,4728995,MSC Meraviglia,3/1/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260301,4728996,MSC Meraviglia,3/1/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260303,4728996,MSC Meraviglia,3/3/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260304,4728996,MSC Meraviglia,3/4/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260305,4728996,MSC Meraviglia,3/5/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260308,4728996,MSC Meraviglia,3/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260308,4728997,MSC Meraviglia,3/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260310,4728997,MSC Meraviglia,3/10/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260311,4728997,MSC Meraviglia,3/11/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260312,4728997,MSC Meraviglia,3/12/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260315,4728997,MSC Meraviglia,3/15/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260315,4728998,MSC Meraviglia,3/15/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260317,4728998,MSC Meraviglia,3/17/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260318,4728998,MSC Meraviglia,3/18/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260319,4728998,MSC Meraviglia,3/19/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260322,4728998,MSC Meraviglia,3/22/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260322,4728999,MSC Meraviglia,3/22/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260324,4728999,MSC Meraviglia,3/24/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260325,4728999,MSC Meraviglia,3/25/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260326,4728999,MSC Meraviglia,3/26/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260329,4728999,MSC Meraviglia,3/29/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260329,4729000,MSC Meraviglia,3/29/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260331,4729000,MSC Meraviglia,3/31/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260401,4729000,MSC Meraviglia,4/1/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260402,4729000,MSC Meraviglia,4/2/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260405,4729000,MSC Meraviglia,4/5/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260405,4729001,MSC Meraviglia,4/5/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260407,4729001,MSC Meraviglia,4/7/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260408,4729001,MSC Meraviglia,4/8/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260409,4729001,MSC Meraviglia,4/9/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260412,4729001,MSC Meraviglia,4/12/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260412,4729003,MSC Meraviglia,4/12/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260414,4729003,MSC Meraviglia,4/14/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260415,4729003,MSC Meraviglia,4/15/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260416,4729003,MSC Meraviglia,4/16/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260419,4729003,MSC Meraviglia,4/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260412,4729002,MSC Meraviglia,4/12/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260414,4729002,MSC Meraviglia,4/14/2026,"Port Canaveral, Orlando, Florida",No
+9760512-260415,4729002,MSC Meraviglia,4/15/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-260416,4729002,MSC Meraviglia,4/16/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-260419,4729002,MSC Meraviglia,4/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260421,4729002,MSC Meraviglia,4/21/2026,"Halifax, Nova Scotia Canada",No
+9760512-260419,4729008,MSC Meraviglia,4/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260421,4729008,MSC Meraviglia,4/21/2026,"Halifax, Nova Scotia Canada",No
+9760512-260426,4729008,MSC Meraviglia,4/26/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260427,4729008,MSC Meraviglia,4/27/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260429,4729008,MSC Meraviglia,4/29/2026,"Lisbon, Portugal",No
+9760512-260419,4729007,MSC Meraviglia,4/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260421,4729007,MSC Meraviglia,4/21/2026,"Halifax, Nova Scotia Canada",No
+9760512-260426,4729007,MSC Meraviglia,4/26/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260427,4729007,MSC Meraviglia,4/27/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260429,4729007,MSC Meraviglia,4/29/2026,"Lisbon, Portugal",No
+9760512-260501,4729007,MSC Meraviglia,5/1/2026,"Cadiz, Spain, Sevilla",No
+9760512-260502,4729007,MSC Meraviglia,5/2/2026,"Malaga, Spain Granada",No
+9760512-260504,4729007,MSC Meraviglia,5/4/2026,"Marseille, France Riviera",No
+9760512-260419,4729006,MSC Meraviglia,4/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260421,4729006,MSC Meraviglia,4/21/2026,"Halifax, Nova Scotia Canada",No
+9760512-260426,4729006,MSC Meraviglia,4/26/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260427,4729006,MSC Meraviglia,4/27/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260429,4729006,MSC Meraviglia,4/29/2026,"Lisbon, Portugal",No
+9760512-260501,4729006,MSC Meraviglia,5/1/2026,"Cadiz, Spain, Sevilla",No
+9760512-260502,4729006,MSC Meraviglia,5/2/2026,"Malaga, Spain Granada",No
+9760512-260504,4729006,MSC Meraviglia,5/4/2026,"Marseille, France Riviera",No
+9760512-260505,4729006,MSC Meraviglia,5/5/2026,"Barcelona, Spain",No
+9760512-260419,4729005,MSC Meraviglia,4/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260421,4729005,MSC Meraviglia,4/21/2026,"Halifax, Nova Scotia Canada",No
+9760512-260426,4729005,MSC Meraviglia,4/26/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260427,4729005,MSC Meraviglia,4/27/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260429,4729005,MSC Meraviglia,4/29/2026,"Lisbon, Portugal",No
+9760512-260501,4729005,MSC Meraviglia,5/1/2026,"Cadiz, Spain, Sevilla",No
+9760512-260502,4729005,MSC Meraviglia,5/2/2026,"Malaga, Spain Granada",No
+9760512-260504,4729005,MSC Meraviglia,5/4/2026,"Marseille, France Riviera",No
+9760512-260505,4729005,MSC Meraviglia,5/5/2026,"Barcelona, Spain",No
+9760512-260507,4729005,MSC Meraviglia,5/7/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260508,4729005,MSC Meraviglia,5/8/2026,"Palermo, Sicily Italy",No
+9760512-260419,4729004,MSC Meraviglia,4/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-260421,4729004,MSC Meraviglia,4/21/2026,"Halifax, Nova Scotia Canada",No
+9760512-260426,4729004,MSC Meraviglia,4/26/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260427,4729004,MSC Meraviglia,4/27/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260429,4729004,MSC Meraviglia,4/29/2026,"Lisbon, Portugal",No
+9760512-260501,4729004,MSC Meraviglia,5/1/2026,"Cadiz, Spain, Sevilla",No
+9760512-260502,4729004,MSC Meraviglia,5/2/2026,"Malaga, Spain Granada",No
+9760512-260504,4729004,MSC Meraviglia,5/4/2026,"Marseille, France Riviera",No
+9760512-260505,4729004,MSC Meraviglia,5/5/2026,"Barcelona, Spain",No
+9760512-260507,4729004,MSC Meraviglia,5/7/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260508,4729004,MSC Meraviglia,5/8/2026,"Palermo, Sicily Italy",No
+9760512-260509,4729004,MSC Meraviglia,5/9/2026,"Naples, Italy",No
+9760512-260421,4729009,MSC Meraviglia,4/21/2026,"Halifax, Nova Scotia Canada",No
+9760512-260426,4729009,MSC Meraviglia,4/26/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260427,4729009,MSC Meraviglia,4/27/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-260429,4729009,MSC Meraviglia,4/29/2026,"Lisbon, Portugal",No
+9760512-260501,4729009,MSC Meraviglia,5/1/2026,"Cadiz, Spain, Sevilla",No
+9760512-260502,4729009,MSC Meraviglia,5/2/2026,"Malaga, Spain Granada",No
+9760512-260504,4729009,MSC Meraviglia,5/4/2026,"Marseille, France Riviera",No
+9760512-260505,4729009,MSC Meraviglia,5/5/2026,"Barcelona, Spain",No
+9760512-260429,4729012,MSC Meraviglia,4/29/2026,"Lisbon, Portugal",No
+9760512-260501,4729012,MSC Meraviglia,5/1/2026,"Cadiz, Spain, Sevilla",No
+9760512-260502,4729012,MSC Meraviglia,5/2/2026,"Malaga, Spain Granada",No
+9760512-260504,4729012,MSC Meraviglia,5/4/2026,"Marseille, France Riviera",No
+9760512-260505,4729012,MSC Meraviglia,5/5/2026,"Barcelona, Spain",No
+9760512-260429,4729011,MSC Meraviglia,4/29/2026,"Lisbon, Portugal",No
+9760512-260501,4729011,MSC Meraviglia,5/1/2026,"Cadiz, Spain, Sevilla",No
+9760512-260502,4729011,MSC Meraviglia,5/2/2026,"Malaga, Spain Granada",No
+9760512-260504,4729011,MSC Meraviglia,5/4/2026,"Marseille, France Riviera",No
+9760512-260505,4729011,MSC Meraviglia,5/5/2026,"Barcelona, Spain",No
+9760512-260507,4729011,MSC Meraviglia,5/7/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260508,4729011,MSC Meraviglia,5/8/2026,"Palermo, Sicily Italy",No
+9760512-260429,4729010,MSC Meraviglia,4/29/2026,"Lisbon, Portugal",No
+9760512-260501,4729010,MSC Meraviglia,5/1/2026,"Cadiz, Spain, Sevilla",No
+9760512-260502,4729010,MSC Meraviglia,5/2/2026,"Malaga, Spain Granada",No
+9760512-260504,4729010,MSC Meraviglia,5/4/2026,"Marseille, France Riviera",No
+9760512-260505,4729010,MSC Meraviglia,5/5/2026,"Barcelona, Spain",No
+9760512-260507,4729010,MSC Meraviglia,5/7/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260508,4729010,MSC Meraviglia,5/8/2026,"Palermo, Sicily Italy",No
+9760512-260509,4729010,MSC Meraviglia,5/9/2026,"Naples, Italy",No
+9760512-260504,4729013,MSC Meraviglia,5/4/2026,"Marseille, France Riviera",No
+9760512-260505,4729013,MSC Meraviglia,5/5/2026,"Barcelona, Spain",No
+9760512-260507,4729013,MSC Meraviglia,5/7/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260508,4729013,MSC Meraviglia,5/8/2026,"Palermo, Sicily Italy",No
+9760512-260509,4729013,MSC Meraviglia,5/9/2026,"Naples, Italy",No
+9760512-260510,4729013,MSC Meraviglia,5/10/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260511,4729013,MSC Meraviglia,5/11/2026,"Marseille, France Riviera",No
+9760512-260505,4729014,MSC Meraviglia,5/5/2026,"Barcelona, Spain",No
+9760512-260507,4729014,MSC Meraviglia,5/7/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260508,4729014,MSC Meraviglia,5/8/2026,"Palermo, Sicily Italy",No
+9760512-260509,4729014,MSC Meraviglia,5/9/2026,"Naples, Italy",No
+9760512-260510,4729014,MSC Meraviglia,5/10/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260511,4729014,MSC Meraviglia,5/11/2026,"Marseille, France Riviera",No
+9760512-260512,4729014,MSC Meraviglia,5/12/2026,"Barcelona, Spain",No
+9760512-260508,4729015,MSC Meraviglia,5/8/2026,"Palermo, Sicily Italy",No
+9760512-260509,4729015,MSC Meraviglia,5/9/2026,"Naples, Italy",No
+9760512-260510,4729015,MSC Meraviglia,5/10/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260511,4729015,MSC Meraviglia,5/11/2026,"Marseille, France Riviera",No
+9760512-260512,4729015,MSC Meraviglia,5/12/2026,"Barcelona, Spain",No
+9760512-260514,4729015,MSC Meraviglia,5/14/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260515,4729015,MSC Meraviglia,5/15/2026,"Palermo, Sicily Italy",No
+9760512-260509,4729016,MSC Meraviglia,5/9/2026,"Naples, Italy",No
+9760512-260510,4729016,MSC Meraviglia,5/10/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260511,4729016,MSC Meraviglia,5/11/2026,"Marseille, France Riviera",No
+9760512-260512,4729016,MSC Meraviglia,5/12/2026,"Barcelona, Spain",No
+9760512-260514,4729016,MSC Meraviglia,5/14/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260515,4729016,MSC Meraviglia,5/15/2026,"Palermo, Sicily Italy",No
+9760512-260516,4729016,MSC Meraviglia,5/16/2026,"Naples, Italy",No
+9760512-260510,4729017,MSC Meraviglia,5/10/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260511,4729017,MSC Meraviglia,5/11/2026,"Marseille, France Riviera",No
+9760512-260512,4729017,MSC Meraviglia,5/12/2026,"Barcelona, Spain",No
+9760512-260514,4729017,MSC Meraviglia,5/14/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260515,4729017,MSC Meraviglia,5/15/2026,"Palermo, Sicily Italy",No
+9760512-260516,4729017,MSC Meraviglia,5/16/2026,"Naples, Italy",No
+9760512-260517,4729017,MSC Meraviglia,5/17/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260510,4729018,MSC Meraviglia,5/10/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260511,4729018,MSC Meraviglia,5/11/2026,"Marseille, France Riviera",No
+9760512-260512,4729018,MSC Meraviglia,5/12/2026,"Barcelona, Spain",No
+9760512-260514,4729018,MSC Meraviglia,5/14/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260515,4729018,MSC Meraviglia,5/15/2026,"Palermo, Sicily Italy",No
+9760512-260516,4729018,MSC Meraviglia,5/16/2026,"Naples, Italy",No
+9760512-260517,4729018,MSC Meraviglia,5/17/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260511,4729019,MSC Meraviglia,5/11/2026,"Marseille, France Riviera",No
+9760512-260512,4729019,MSC Meraviglia,5/12/2026,"Barcelona, Spain",No
+9760512-260514,4729019,MSC Meraviglia,5/14/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260515,4729019,MSC Meraviglia,5/15/2026,"Palermo, Sicily Italy",No
+9760512-260516,4729019,MSC Meraviglia,5/16/2026,"Naples, Italy",No
+9760512-260517,4729019,MSC Meraviglia,5/17/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260518,4729019,MSC Meraviglia,5/18/2026,"Marseille, France Riviera",No
+9760512-260512,4729020,MSC Meraviglia,5/12/2026,"Barcelona, Spain",No
+9760512-260514,4729020,MSC Meraviglia,5/14/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260515,4729020,MSC Meraviglia,5/15/2026,"Palermo, Sicily Italy",No
+9760512-260516,4729020,MSC Meraviglia,5/16/2026,"Naples, Italy",No
+9760512-260517,4729020,MSC Meraviglia,5/17/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260518,4729020,MSC Meraviglia,5/18/2026,"Marseille, France Riviera",No
+9760512-260519,4729020,MSC Meraviglia,5/19/2026,"Barcelona, Spain",No
+9760512-260515,4729021,MSC Meraviglia,5/15/2026,"Palermo, Sicily Italy",No
+9760512-260516,4729021,MSC Meraviglia,5/16/2026,"Naples, Italy",No
+9760512-260517,4729021,MSC Meraviglia,5/17/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260518,4729021,MSC Meraviglia,5/18/2026,"Marseille, France Riviera",No
+9760512-260519,4729021,MSC Meraviglia,5/19/2026,"Barcelona, Spain",No
+9760512-260521,4729021,MSC Meraviglia,5/21/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260522,4729021,MSC Meraviglia,5/22/2026,"Palermo, Sicily Italy",No
+9760512-260516,4729022,MSC Meraviglia,5/16/2026,"Naples, Italy",No
+9760512-260517,4729022,MSC Meraviglia,5/17/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260518,4729022,MSC Meraviglia,5/18/2026,"Marseille, France Riviera",No
+9760512-260519,4729022,MSC Meraviglia,5/19/2026,"Barcelona, Spain",No
+9760512-260521,4729022,MSC Meraviglia,5/21/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260522,4729022,MSC Meraviglia,5/22/2026,"Palermo, Sicily Italy",No
+9760512-260523,4729022,MSC Meraviglia,5/23/2026,"Naples, Italy",No
+9760512-260517,4729023,MSC Meraviglia,5/17/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260518,4729023,MSC Meraviglia,5/18/2026,"Marseille, France Riviera",No
+9760512-260519,4729023,MSC Meraviglia,5/19/2026,"Barcelona, Spain",No
+9760512-260521,4729023,MSC Meraviglia,5/21/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260522,4729023,MSC Meraviglia,5/22/2026,"Palermo, Sicily Italy",No
+9760512-260523,4729023,MSC Meraviglia,5/23/2026,"Naples, Italy",No
+9760512-260524,4729023,MSC Meraviglia,5/24/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260518,4729024,MSC Meraviglia,5/18/2026,"Marseille, France Riviera",No
+9760512-260519,4729024,MSC Meraviglia,5/19/2026,"Barcelona, Spain",No
+9760512-260521,4729024,MSC Meraviglia,5/21/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260522,4729024,MSC Meraviglia,5/22/2026,"Palermo, Sicily Italy",No
+9760512-260523,4729024,MSC Meraviglia,5/23/2026,"Naples, Italy",No
+9760512-260524,4729024,MSC Meraviglia,5/24/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260525,4729024,MSC Meraviglia,5/25/2026,"Marseille, France Riviera",No
+9760512-260519,4729025,MSC Meraviglia,5/19/2026,"Barcelona, Spain",No
+9760512-260521,4729025,MSC Meraviglia,5/21/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260522,4729025,MSC Meraviglia,5/22/2026,"Palermo, Sicily Italy",No
+9760512-260523,4729025,MSC Meraviglia,5/23/2026,"Naples, Italy",No
+9760512-260524,4729025,MSC Meraviglia,5/24/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260525,4729025,MSC Meraviglia,5/25/2026,"Marseille, France Riviera",No
+9760512-260526,4729025,MSC Meraviglia,5/26/2026,"Barcelona, Spain",No
+9760512-260522,4729026,MSC Meraviglia,5/22/2026,"Palermo, Sicily Italy",No
+9760512-260523,4729026,MSC Meraviglia,5/23/2026,"Naples, Italy",No
+9760512-260524,4729026,MSC Meraviglia,5/24/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260525,4729026,MSC Meraviglia,5/25/2026,"Marseille, France Riviera",No
+9760512-260526,4729026,MSC Meraviglia,5/26/2026,"Barcelona, Spain",No
+9760512-260528,4729026,MSC Meraviglia,5/28/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260529,4729026,MSC Meraviglia,5/29/2026,"Palermo, Sicily Italy",No
+9760512-260523,4729027,MSC Meraviglia,5/23/2026,"Naples, Italy",No
+9760512-260524,4729027,MSC Meraviglia,5/24/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260525,4729027,MSC Meraviglia,5/25/2026,"Marseille, France Riviera",No
+9760512-260526,4729027,MSC Meraviglia,5/26/2026,"Barcelona, Spain",No
+9760512-260528,4729027,MSC Meraviglia,5/28/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260529,4729027,MSC Meraviglia,5/29/2026,"Palermo, Sicily Italy",No
+9760512-260530,4729027,MSC Meraviglia,5/30/2026,"Naples, Italy",No
+9760512-260524,4729028,MSC Meraviglia,5/24/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260525,4729028,MSC Meraviglia,5/25/2026,"Marseille, France Riviera",No
+9760512-260526,4729028,MSC Meraviglia,5/26/2026,"Barcelona, Spain",No
+9760512-260528,4729028,MSC Meraviglia,5/28/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260529,4729028,MSC Meraviglia,5/29/2026,"Palermo, Sicily Italy",No
+9760512-260530,4729028,MSC Meraviglia,5/30/2026,"Naples, Italy",No
+9760512-260531,4729028,MSC Meraviglia,5/31/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260525,4729029,MSC Meraviglia,5/25/2026,"Marseille, France Riviera",No
+9760512-260526,4729029,MSC Meraviglia,5/26/2026,"Barcelona, Spain",No
+9760512-260528,4729029,MSC Meraviglia,5/28/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260529,4729029,MSC Meraviglia,5/29/2026,"Palermo, Sicily Italy",No
+9760512-260530,4729029,MSC Meraviglia,5/30/2026,"Naples, Italy",No
+9760512-260531,4729029,MSC Meraviglia,5/31/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260601,4729029,MSC Meraviglia,6/1/2026,"Marseille, France Riviera",No
+9760512-260526,4729030,MSC Meraviglia,5/26/2026,"Barcelona, Spain",No
+9760512-260528,4729030,MSC Meraviglia,5/28/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260529,4729030,MSC Meraviglia,5/29/2026,"Palermo, Sicily Italy",No
+9760512-260530,4729030,MSC Meraviglia,5/30/2026,"Naples, Italy",No
+9760512-260531,4729030,MSC Meraviglia,5/31/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260601,4729030,MSC Meraviglia,6/1/2026,"Marseille, France Riviera",No
+9760512-260602,4729030,MSC Meraviglia,6/2/2026,"Barcelona, Spain",No
+9760512-260529,4729031,MSC Meraviglia,5/29/2026,"Palermo, Sicily Italy",No
+9760512-260530,4729031,MSC Meraviglia,5/30/2026,"Naples, Italy",No
+9760512-260531,4729031,MSC Meraviglia,5/31/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260601,4729031,MSC Meraviglia,6/1/2026,"Marseille, France Riviera",No
+9760512-260602,4729031,MSC Meraviglia,6/2/2026,"Barcelona, Spain",No
+9760512-260604,4729031,MSC Meraviglia,6/4/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260605,4729031,MSC Meraviglia,6/5/2026,"Palermo, Sicily Italy",No
+9760512-260530,4729032,MSC Meraviglia,5/30/2026,"Naples, Italy",No
+9760512-260531,4729032,MSC Meraviglia,5/31/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260601,4729032,MSC Meraviglia,6/1/2026,"Marseille, France Riviera",No
+9760512-260602,4729032,MSC Meraviglia,6/2/2026,"Barcelona, Spain",No
+9760512-260604,4729032,MSC Meraviglia,6/4/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260605,4729032,MSC Meraviglia,6/5/2026,"Palermo, Sicily Italy",No
+9760512-260606,4729032,MSC Meraviglia,6/6/2026,"Naples, Italy",No
+9760512-260531,4729033,MSC Meraviglia,5/31/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260601,4729033,MSC Meraviglia,6/1/2026,"Marseille, France Riviera",No
+9760512-260602,4729033,MSC Meraviglia,6/2/2026,"Barcelona, Spain",No
+9760512-260604,4729033,MSC Meraviglia,6/4/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260605,4729033,MSC Meraviglia,6/5/2026,"Palermo, Sicily Italy",No
+9760512-260606,4729033,MSC Meraviglia,6/6/2026,"Naples, Italy",No
+9760512-260607,4729033,MSC Meraviglia,6/7/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260601,4729035,MSC Meraviglia,6/1/2026,"Marseille, France Riviera",No
+9760512-260602,4729035,MSC Meraviglia,6/2/2026,"Barcelona, Spain",No
+9760512-260604,4729035,MSC Meraviglia,6/4/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260601,4729034,MSC Meraviglia,6/1/2026,"Marseille, France Riviera",No
+9760512-260602,4729034,MSC Meraviglia,6/2/2026,"Barcelona, Spain",No
+9760512-260604,4729034,MSC Meraviglia,6/4/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260605,4729034,MSC Meraviglia,6/5/2026,"Palermo, Sicily Italy",No
+9760512-260606,4729034,MSC Meraviglia,6/6/2026,"Naples, Italy",No
+9760512-260607,4729034,MSC Meraviglia,6/7/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260608,4729034,MSC Meraviglia,6/8/2026,"Marseille, France Riviera",No
+9760512-260602,4729036,MSC Meraviglia,6/2/2026,"Barcelona, Spain",No
+9760512-260604,4729036,MSC Meraviglia,6/4/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260605,4729036,MSC Meraviglia,6/5/2026,"Palermo, Sicily Italy",No
+9760512-260606,4729036,MSC Meraviglia,6/6/2026,"Naples, Italy",No
+9760512-260607,4729036,MSC Meraviglia,6/7/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260608,4729036,MSC Meraviglia,6/8/2026,"Marseille, France Riviera",No
+9760512-260609,4729036,MSC Meraviglia,6/9/2026,"Barcelona, Spain",No
+9760512-260605,4729037,MSC Meraviglia,6/5/2026,"Palermo, Sicily Italy",No
+9760512-260606,4729037,MSC Meraviglia,6/6/2026,"Naples, Italy",No
+9760512-260607,4729037,MSC Meraviglia,6/7/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260608,4729037,MSC Meraviglia,6/8/2026,"Marseille, France Riviera",No
+9760512-260609,4729037,MSC Meraviglia,6/9/2026,"Barcelona, Spain",No
+9760512-260611,4729037,MSC Meraviglia,6/11/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260612,4729037,MSC Meraviglia,6/12/2026,"Palermo, Sicily Italy",No
+9760512-260606,4729038,MSC Meraviglia,6/6/2026,"Naples, Italy",No
+9760512-260607,4729038,MSC Meraviglia,6/7/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260608,4729038,MSC Meraviglia,6/8/2026,"Marseille, France Riviera",No
+9760512-260609,4729038,MSC Meraviglia,6/9/2026,"Barcelona, Spain",No
+9760512-260611,4729038,MSC Meraviglia,6/11/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260612,4729038,MSC Meraviglia,6/12/2026,"Palermo, Sicily Italy",No
+9760512-260613,4729038,MSC Meraviglia,6/13/2026,"Naples, Italy",No
+9760512-260607,4729039,MSC Meraviglia,6/7/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260608,4729039,MSC Meraviglia,6/8/2026,"Marseille, France Riviera",No
+9760512-260609,4729039,MSC Meraviglia,6/9/2026,"Barcelona, Spain",No
+9760512-260611,4729039,MSC Meraviglia,6/11/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260612,4729039,MSC Meraviglia,6/12/2026,"Palermo, Sicily Italy",No
+9760512-260613,4729039,MSC Meraviglia,6/13/2026,"Naples, Italy",No
+9760512-260614,4729039,MSC Meraviglia,6/14/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260608,4729040,MSC Meraviglia,6/8/2026,"Marseille, France Riviera",No
+9760512-260609,4729040,MSC Meraviglia,6/9/2026,"Barcelona, Spain",No
+9760512-260611,4729040,MSC Meraviglia,6/11/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260612,4729040,MSC Meraviglia,6/12/2026,"Palermo, Sicily Italy",No
+9760512-260613,4729040,MSC Meraviglia,6/13/2026,"Naples, Italy",No
+9760512-260614,4729040,MSC Meraviglia,6/14/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260615,4729040,MSC Meraviglia,6/15/2026,"Marseille, France Riviera",No
+9760512-260609,4729041,MSC Meraviglia,6/9/2026,"Barcelona, Spain",No
+9760512-260611,4729041,MSC Meraviglia,6/11/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260612,4729041,MSC Meraviglia,6/12/2026,"Palermo, Sicily Italy",No
+9760512-260613,4729041,MSC Meraviglia,6/13/2026,"Naples, Italy",No
+9760512-260614,4729041,MSC Meraviglia,6/14/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260615,4729041,MSC Meraviglia,6/15/2026,"Marseille, France Riviera",No
+9760512-260616,4729041,MSC Meraviglia,6/16/2026,"Barcelona, Spain",No
+9760512-260612,4729042,MSC Meraviglia,6/12/2026,"Palermo, Sicily Italy",No
+9760512-260613,4729042,MSC Meraviglia,6/13/2026,"Naples, Italy",No
+9760512-260614,4729042,MSC Meraviglia,6/14/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260615,4729042,MSC Meraviglia,6/15/2026,"Marseille, France Riviera",No
+9760512-260616,4729042,MSC Meraviglia,6/16/2026,"Barcelona, Spain",No
+9760512-260618,4729042,MSC Meraviglia,6/18/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260619,4729042,MSC Meraviglia,6/19/2026,"Palermo, Sicily Italy",No
+9760512-260613,4729043,MSC Meraviglia,6/13/2026,"Naples, Italy",No
+9760512-260614,4729043,MSC Meraviglia,6/14/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260615,4729043,MSC Meraviglia,6/15/2026,"Marseille, France Riviera",No
+9760512-260616,4729043,MSC Meraviglia,6/16/2026,"Barcelona, Spain",No
+9760512-260618,4729043,MSC Meraviglia,6/18/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260619,4729043,MSC Meraviglia,6/19/2026,"Palermo, Sicily Italy",No
+9760512-260620,4729043,MSC Meraviglia,6/20/2026,"Naples, Italy",No
+9760512-260614,4729044,MSC Meraviglia,6/14/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260615,4729044,MSC Meraviglia,6/15/2026,"Marseille, France Riviera",No
+9760512-260616,4729044,MSC Meraviglia,6/16/2026,"Barcelona, Spain",No
+9760512-260618,4729044,MSC Meraviglia,6/18/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260619,4729044,MSC Meraviglia,6/19/2026,"Palermo, Sicily Italy",No
+9760512-260620,4729044,MSC Meraviglia,6/20/2026,"Naples, Italy",No
+9760512-260621,4729044,MSC Meraviglia,6/21/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260615,4729045,MSC Meraviglia,6/15/2026,"Marseille, France Riviera",No
+9760512-260616,4729045,MSC Meraviglia,6/16/2026,"Barcelona, Spain",No
+9760512-260618,4729045,MSC Meraviglia,6/18/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260619,4729045,MSC Meraviglia,6/19/2026,"Palermo, Sicily Italy",No
+9760512-260620,4729045,MSC Meraviglia,6/20/2026,"Naples, Italy",No
+9760512-260621,4729045,MSC Meraviglia,6/21/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260622,4729045,MSC Meraviglia,6/22/2026,"Marseille, France Riviera",No
+9760512-260616,4729046,MSC Meraviglia,6/16/2026,"Barcelona, Spain",No
+9760512-260618,4729046,MSC Meraviglia,6/18/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260619,4729046,MSC Meraviglia,6/19/2026,"Palermo, Sicily Italy",No
+9760512-260620,4729046,MSC Meraviglia,6/20/2026,"Naples, Italy",No
+9760512-260621,4729046,MSC Meraviglia,6/21/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260622,4729046,MSC Meraviglia,6/22/2026,"Marseille, France Riviera",No
+9760512-260623,4729046,MSC Meraviglia,6/23/2026,"Barcelona, Spain",No
+9760512-260619,4729047,MSC Meraviglia,6/19/2026,"Palermo, Sicily Italy",No
+9760512-260620,4729047,MSC Meraviglia,6/20/2026,"Naples, Italy",No
+9760512-260621,4729047,MSC Meraviglia,6/21/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260622,4729047,MSC Meraviglia,6/22/2026,"Marseille, France Riviera",No
+9760512-260623,4729047,MSC Meraviglia,6/23/2026,"Barcelona, Spain",No
+9760512-260625,4729047,MSC Meraviglia,6/25/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260626,4729047,MSC Meraviglia,6/26/2026,"Palermo, Sicily Italy",No
+9760512-260620,4729048,MSC Meraviglia,6/20/2026,"Naples, Italy",No
+9760512-260621,4729048,MSC Meraviglia,6/21/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260622,4729048,MSC Meraviglia,6/22/2026,"Marseille, France Riviera",No
+9760512-260623,4729048,MSC Meraviglia,6/23/2026,"Barcelona, Spain",No
+9760512-260625,4729048,MSC Meraviglia,6/25/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260626,4729048,MSC Meraviglia,6/26/2026,"Palermo, Sicily Italy",No
+9760512-260627,4729048,MSC Meraviglia,6/27/2026,"Naples, Italy",No
+9760512-260621,4729049,MSC Meraviglia,6/21/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260622,4729049,MSC Meraviglia,6/22/2026,"Marseille, France Riviera",No
+9760512-260623,4729049,MSC Meraviglia,6/23/2026,"Barcelona, Spain",No
+9760512-260625,4729049,MSC Meraviglia,6/25/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260626,4729049,MSC Meraviglia,6/26/2026,"Palermo, Sicily Italy",No
+9760512-260627,4729049,MSC Meraviglia,6/27/2026,"Naples, Italy",No
+9760512-260628,4729049,MSC Meraviglia,6/28/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260622,4729050,MSC Meraviglia,6/22/2026,"Marseille, France Riviera",No
+9760512-260623,4729050,MSC Meraviglia,6/23/2026,"Barcelona, Spain",No
+9760512-260625,4729050,MSC Meraviglia,6/25/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260626,4729050,MSC Meraviglia,6/26/2026,"Palermo, Sicily Italy",No
+9760512-260627,4729050,MSC Meraviglia,6/27/2026,"Naples, Italy",No
+9760512-260628,4729050,MSC Meraviglia,6/28/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260629,4729050,MSC Meraviglia,6/29/2026,"Marseille, France Riviera",No
+9760512-260623,4729051,MSC Meraviglia,6/23/2026,"Barcelona, Spain",No
+9760512-260625,4729051,MSC Meraviglia,6/25/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260626,4729051,MSC Meraviglia,6/26/2026,"Palermo, Sicily Italy",No
+9760512-260627,4729051,MSC Meraviglia,6/27/2026,"Naples, Italy",No
+9760512-260628,4729051,MSC Meraviglia,6/28/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260629,4729051,MSC Meraviglia,6/29/2026,"Marseille, France Riviera",No
+9760512-260630,4729051,MSC Meraviglia,6/30/2026,"Barcelona, Spain",No
+9760512-260626,4729052,MSC Meraviglia,6/26/2026,"Palermo, Sicily Italy",No
+9760512-260627,4729052,MSC Meraviglia,6/27/2026,"Naples, Italy",No
+9760512-260628,4729052,MSC Meraviglia,6/28/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260629,4729052,MSC Meraviglia,6/29/2026,"Marseille, France Riviera",No
+9760512-260630,4729052,MSC Meraviglia,6/30/2026,"Barcelona, Spain",No
+9760512-260702,4729052,MSC Meraviglia,7/2/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260703,4729052,MSC Meraviglia,7/3/2026,"Palermo, Sicily Italy",No
+9760512-260627,4729053,MSC Meraviglia,6/27/2026,"Naples, Italy",No
+9760512-260628,4729053,MSC Meraviglia,6/28/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260629,4729053,MSC Meraviglia,6/29/2026,"Marseille, France Riviera",No
+9760512-260630,4729053,MSC Meraviglia,6/30/2026,"Barcelona, Spain",No
+9760512-260702,4729053,MSC Meraviglia,7/2/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260703,4729053,MSC Meraviglia,7/3/2026,"Palermo, Sicily Italy",No
+9760512-260704,4729053,MSC Meraviglia,7/4/2026,"Naples, Italy",No
+9760512-260628,4729054,MSC Meraviglia,6/28/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260629,4729054,MSC Meraviglia,6/29/2026,"Marseille, France Riviera",No
+9760512-260630,4729054,MSC Meraviglia,6/30/2026,"Barcelona, Spain",No
+9760512-260702,4729054,MSC Meraviglia,7/2/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260703,4729054,MSC Meraviglia,7/3/2026,"Palermo, Sicily Italy",No
+9760512-260704,4729054,MSC Meraviglia,7/4/2026,"Naples, Italy",No
+9760512-260705,4729054,MSC Meraviglia,7/5/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260629,4729055,MSC Meraviglia,6/29/2026,"Marseille, France Riviera",No
+9760512-260630,4729055,MSC Meraviglia,6/30/2026,"Barcelona, Spain",No
+9760512-260702,4729055,MSC Meraviglia,7/2/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260703,4729055,MSC Meraviglia,7/3/2026,"Palermo, Sicily Italy",No
+9760512-260704,4729055,MSC Meraviglia,7/4/2026,"Naples, Italy",No
+9760512-260705,4729055,MSC Meraviglia,7/5/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260706,4729055,MSC Meraviglia,7/6/2026,"Marseille, France Riviera",No
+9760512-260630,4729056,MSC Meraviglia,6/30/2026,"Barcelona, Spain",No
+9760512-260702,4729056,MSC Meraviglia,7/2/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260703,4729056,MSC Meraviglia,7/3/2026,"Palermo, Sicily Italy",No
+9760512-260704,4729056,MSC Meraviglia,7/4/2026,"Naples, Italy",No
+9760512-260705,4729056,MSC Meraviglia,7/5/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260706,4729056,MSC Meraviglia,7/6/2026,"Marseille, France Riviera",No
+9760512-260707,4729056,MSC Meraviglia,7/7/2026,"Barcelona, Spain",No
+9760512-260703,4729057,MSC Meraviglia,7/3/2026,"Palermo, Sicily Italy",No
+9760512-260704,4729057,MSC Meraviglia,7/4/2026,"Naples, Italy",No
+9760512-260705,4729057,MSC Meraviglia,7/5/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260706,4729057,MSC Meraviglia,7/6/2026,"Marseille, France Riviera",No
+9760512-260707,4729057,MSC Meraviglia,7/7/2026,"Barcelona, Spain",No
+9760512-260709,4729057,MSC Meraviglia,7/9/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260710,4729057,MSC Meraviglia,7/10/2026,"Palermo, Sicily Italy",No
+9760512-260704,4729058,MSC Meraviglia,7/4/2026,"Naples, Italy",No
+9760512-260705,4729058,MSC Meraviglia,7/5/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260706,4729058,MSC Meraviglia,7/6/2026,"Marseille, France Riviera",No
+9760512-260707,4729058,MSC Meraviglia,7/7/2026,"Barcelona, Spain",No
+9760512-260709,4729058,MSC Meraviglia,7/9/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260710,4729058,MSC Meraviglia,7/10/2026,"Palermo, Sicily Italy",No
+9760512-260711,4729058,MSC Meraviglia,7/11/2026,"Naples, Italy",No
+9760512-260705,4729059,MSC Meraviglia,7/5/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260706,4729059,MSC Meraviglia,7/6/2026,"Marseille, France Riviera",No
+9760512-260707,4729059,MSC Meraviglia,7/7/2026,"Barcelona, Spain",No
+9760512-260709,4729059,MSC Meraviglia,7/9/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260710,4729059,MSC Meraviglia,7/10/2026,"Palermo, Sicily Italy",No
+9760512-260711,4729059,MSC Meraviglia,7/11/2026,"Naples, Italy",No
+9760512-260712,4729059,MSC Meraviglia,7/12/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260706,4729060,MSC Meraviglia,7/6/2026,"Marseille, France Riviera",No
+9760512-260707,4729060,MSC Meraviglia,7/7/2026,"Barcelona, Spain",No
+9760512-260709,4729060,MSC Meraviglia,7/9/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260710,4729060,MSC Meraviglia,7/10/2026,"Palermo, Sicily Italy",No
+9760512-260711,4729060,MSC Meraviglia,7/11/2026,"Naples, Italy",No
+9760512-260712,4729060,MSC Meraviglia,7/12/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260713,4729060,MSC Meraviglia,7/13/2026,"Marseille, France Riviera",No
+9760512-260707,4729061,MSC Meraviglia,7/7/2026,"Barcelona, Spain",No
+9760512-260709,4729061,MSC Meraviglia,7/9/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260710,4729061,MSC Meraviglia,7/10/2026,"Palermo, Sicily Italy",No
+9760512-260711,4729061,MSC Meraviglia,7/11/2026,"Naples, Italy",No
+9760512-260712,4729061,MSC Meraviglia,7/12/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260713,4729061,MSC Meraviglia,7/13/2026,"Marseille, France Riviera",No
+9760512-260714,4729061,MSC Meraviglia,7/14/2026,"Barcelona, Spain",No
+9760512-260710,4729062,MSC Meraviglia,7/10/2026,"Palermo, Sicily Italy",No
+9760512-260711,4729062,MSC Meraviglia,7/11/2026,"Naples, Italy",No
+9760512-260712,4729062,MSC Meraviglia,7/12/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260713,4729062,MSC Meraviglia,7/13/2026,"Marseille, France Riviera",No
+9760512-260714,4729062,MSC Meraviglia,7/14/2026,"Barcelona, Spain",No
+9760512-260716,4729062,MSC Meraviglia,7/16/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260717,4729062,MSC Meraviglia,7/17/2026,"Palermo, Sicily Italy",No
+9760512-260711,4729063,MSC Meraviglia,7/11/2026,"Naples, Italy",No
+9760512-260712,4729063,MSC Meraviglia,7/12/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260713,4729063,MSC Meraviglia,7/13/2026,"Marseille, France Riviera",No
+9760512-260714,4729063,MSC Meraviglia,7/14/2026,"Barcelona, Spain",No
+9760512-260716,4729063,MSC Meraviglia,7/16/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260717,4729063,MSC Meraviglia,7/17/2026,"Palermo, Sicily Italy",No
+9760512-260718,4729063,MSC Meraviglia,7/18/2026,"Naples, Italy",No
+9760512-260712,4729064,MSC Meraviglia,7/12/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260713,4729064,MSC Meraviglia,7/13/2026,"Marseille, France Riviera",No
+9760512-260714,4729064,MSC Meraviglia,7/14/2026,"Barcelona, Spain",No
+9760512-260716,4729064,MSC Meraviglia,7/16/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260717,4729064,MSC Meraviglia,7/17/2026,"Palermo, Sicily Italy",No
+9760512-260718,4729064,MSC Meraviglia,7/18/2026,"Naples, Italy",No
+9760512-260719,4729064,MSC Meraviglia,7/19/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260713,4729065,MSC Meraviglia,7/13/2026,"Marseille, France Riviera",No
+9760512-260714,4729065,MSC Meraviglia,7/14/2026,"Barcelona, Spain",No
+9760512-260716,4729065,MSC Meraviglia,7/16/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260717,4729065,MSC Meraviglia,7/17/2026,"Palermo, Sicily Italy",No
+9760512-260718,4729065,MSC Meraviglia,7/18/2026,"Naples, Italy",No
+9760512-260719,4729065,MSC Meraviglia,7/19/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260720,4729065,MSC Meraviglia,7/20/2026,"Marseille, France Riviera",No
+9760512-260714,4729066,MSC Meraviglia,7/14/2026,"Barcelona, Spain",No
+9760512-260716,4729066,MSC Meraviglia,7/16/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260717,4729066,MSC Meraviglia,7/17/2026,"Palermo, Sicily Italy",No
+9760512-260718,4729066,MSC Meraviglia,7/18/2026,"Naples, Italy",No
+9760512-260719,4729066,MSC Meraviglia,7/19/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260720,4729066,MSC Meraviglia,7/20/2026,"Marseille, France Riviera",No
+9760512-260721,4729066,MSC Meraviglia,7/21/2026,"Barcelona, Spain",No
+9760512-260717,4729067,MSC Meraviglia,7/17/2026,"Palermo, Sicily Italy",No
+9760512-260718,4729067,MSC Meraviglia,7/18/2026,"Naples, Italy",No
+9760512-260719,4729067,MSC Meraviglia,7/19/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260720,4729067,MSC Meraviglia,7/20/2026,"Marseille, France Riviera",No
+9760512-260721,4729067,MSC Meraviglia,7/21/2026,"Barcelona, Spain",No
+9760512-260723,4729067,MSC Meraviglia,7/23/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260724,4729067,MSC Meraviglia,7/24/2026,"Palermo, Sicily Italy",No
+9760512-260718,4729068,MSC Meraviglia,7/18/2026,"Naples, Italy",No
+9760512-260719,4729068,MSC Meraviglia,7/19/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260720,4729068,MSC Meraviglia,7/20/2026,"Marseille, France Riviera",No
+9760512-260721,4729068,MSC Meraviglia,7/21/2026,"Barcelona, Spain",No
+9760512-260723,4729068,MSC Meraviglia,7/23/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260724,4729068,MSC Meraviglia,7/24/2026,"Palermo, Sicily Italy",No
+9760512-260725,4729068,MSC Meraviglia,7/25/2026,"Naples, Italy",No
+9760512-260719,4729069,MSC Meraviglia,7/19/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260720,4729069,MSC Meraviglia,7/20/2026,"Marseille, France Riviera",No
+9760512-260721,4729069,MSC Meraviglia,7/21/2026,"Barcelona, Spain",No
+9760512-260723,4729069,MSC Meraviglia,7/23/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260724,4729069,MSC Meraviglia,7/24/2026,"Palermo, Sicily Italy",No
+9760512-260725,4729069,MSC Meraviglia,7/25/2026,"Naples, Italy",No
+9760512-260726,4729069,MSC Meraviglia,7/26/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260720,4729070,MSC Meraviglia,7/20/2026,"Marseille, France Riviera",No
+9760512-260721,4729070,MSC Meraviglia,7/21/2026,"Barcelona, Spain",No
+9760512-260723,4729070,MSC Meraviglia,7/23/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260724,4729070,MSC Meraviglia,7/24/2026,"Palermo, Sicily Italy",No
+9760512-260725,4729070,MSC Meraviglia,7/25/2026,"Naples, Italy",No
+9760512-260726,4729070,MSC Meraviglia,7/26/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260727,4729070,MSC Meraviglia,7/27/2026,"Marseille, France Riviera",No
+9760512-260721,4729071,MSC Meraviglia,7/21/2026,"Barcelona, Spain",No
+9760512-260723,4729071,MSC Meraviglia,7/23/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260724,4729071,MSC Meraviglia,7/24/2026,"Palermo, Sicily Italy",No
+9760512-260725,4729071,MSC Meraviglia,7/25/2026,"Naples, Italy",No
+9760512-260726,4729071,MSC Meraviglia,7/26/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260727,4729071,MSC Meraviglia,7/27/2026,"Marseille, France Riviera",No
+9760512-260728,4729071,MSC Meraviglia,7/28/2026,"Barcelona, Spain",No
+9760512-260724,4729072,MSC Meraviglia,7/24/2026,"Palermo, Sicily Italy",No
+9760512-260725,4729072,MSC Meraviglia,7/25/2026,"Naples, Italy",No
+9760512-260726,4729072,MSC Meraviglia,7/26/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260727,4729072,MSC Meraviglia,7/27/2026,"Marseille, France Riviera",No
+9760512-260728,4729072,MSC Meraviglia,7/28/2026,"Barcelona, Spain",No
+9760512-260730,4729072,MSC Meraviglia,7/30/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260731,4729072,MSC Meraviglia,7/31/2026,"Palermo, Sicily Italy",No
+9760512-260725,4729073,MSC Meraviglia,7/25/2026,"Naples, Italy",No
+9760512-260726,4729073,MSC Meraviglia,7/26/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260727,4729073,MSC Meraviglia,7/27/2026,"Marseille, France Riviera",No
+9760512-260728,4729073,MSC Meraviglia,7/28/2026,"Barcelona, Spain",No
+9760512-260730,4729073,MSC Meraviglia,7/30/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260731,4729073,MSC Meraviglia,7/31/2026,"Palermo, Sicily Italy",No
+9760512-260801,4729073,MSC Meraviglia,8/1/2026,"Naples, Italy",No
+9760512-260726,4729074,MSC Meraviglia,7/26/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260727,4729074,MSC Meraviglia,7/27/2026,"Marseille, France Riviera",No
+9760512-260728,4729074,MSC Meraviglia,7/28/2026,"Barcelona, Spain",No
+9760512-260730,4729074,MSC Meraviglia,7/30/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260731,4729074,MSC Meraviglia,7/31/2026,"Palermo, Sicily Italy",No
+9760512-260801,4729074,MSC Meraviglia,8/1/2026,"Naples, Italy",No
+9760512-260802,4729074,MSC Meraviglia,8/2/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260727,4729075,MSC Meraviglia,7/27/2026,"Marseille, France Riviera",No
+9760512-260728,4729075,MSC Meraviglia,7/28/2026,"Barcelona, Spain",No
+9760512-260730,4729075,MSC Meraviglia,7/30/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260731,4729075,MSC Meraviglia,7/31/2026,"Palermo, Sicily Italy",No
+9760512-260801,4729075,MSC Meraviglia,8/1/2026,"Naples, Italy",No
+9760512-260802,4729075,MSC Meraviglia,8/2/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260803,4729075,MSC Meraviglia,8/3/2026,"Marseille, France Riviera",No
+9760512-260728,4729076,MSC Meraviglia,7/28/2026,"Barcelona, Spain",No
+9760512-260730,4729076,MSC Meraviglia,7/30/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260731,4729076,MSC Meraviglia,7/31/2026,"Palermo, Sicily Italy",No
+9760512-260801,4729076,MSC Meraviglia,8/1/2026,"Naples, Italy",No
+9760512-260802,4729076,MSC Meraviglia,8/2/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260803,4729076,MSC Meraviglia,8/3/2026,"Marseille, France Riviera",No
+9760512-260804,4729076,MSC Meraviglia,8/4/2026,"Barcelona, Spain",No
+9760512-260731,4729077,MSC Meraviglia,7/31/2026,"Palermo, Sicily Italy",No
+9760512-260801,4729077,MSC Meraviglia,8/1/2026,"Naples, Italy",No
+9760512-260802,4729077,MSC Meraviglia,8/2/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260803,4729077,MSC Meraviglia,8/3/2026,"Marseille, France Riviera",No
+9760512-260804,4729077,MSC Meraviglia,8/4/2026,"Barcelona, Spain",No
+9760512-260806,4729077,MSC Meraviglia,8/6/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260807,4729077,MSC Meraviglia,8/7/2026,"Palermo, Sicily Italy",No
+9760512-260801,4729078,MSC Meraviglia,8/1/2026,"Naples, Italy",No
+9760512-260802,4729078,MSC Meraviglia,8/2/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260803,4729078,MSC Meraviglia,8/3/2026,"Marseille, France Riviera",No
+9760512-260804,4729078,MSC Meraviglia,8/4/2026,"Barcelona, Spain",No
+9760512-260806,4729078,MSC Meraviglia,8/6/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260807,4729078,MSC Meraviglia,8/7/2026,"Palermo, Sicily Italy",No
+9760512-260808,4729078,MSC Meraviglia,8/8/2026,"Naples, Italy",No
+9760512-260802,4729079,MSC Meraviglia,8/2/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260803,4729079,MSC Meraviglia,8/3/2026,"Marseille, France Riviera",No
+9760512-260804,4729079,MSC Meraviglia,8/4/2026,"Barcelona, Spain",No
+9760512-260806,4729079,MSC Meraviglia,8/6/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260807,4729079,MSC Meraviglia,8/7/2026,"Palermo, Sicily Italy",No
+9760512-260808,4729079,MSC Meraviglia,8/8/2026,"Naples, Italy",No
+9760512-260809,4729079,MSC Meraviglia,8/9/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260803,4729080,MSC Meraviglia,8/3/2026,"Marseille, France Riviera",No
+9760512-260804,4729080,MSC Meraviglia,8/4/2026,"Barcelona, Spain",No
+9760512-260806,4729080,MSC Meraviglia,8/6/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260807,4729080,MSC Meraviglia,8/7/2026,"Palermo, Sicily Italy",No
+9760512-260808,4729080,MSC Meraviglia,8/8/2026,"Naples, Italy",No
+9760512-260809,4729080,MSC Meraviglia,8/9/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260810,4729080,MSC Meraviglia,8/10/2026,"Marseille, France Riviera",No
+9760512-260804,4729081,MSC Meraviglia,8/4/2026,"Barcelona, Spain",No
+9760512-260806,4729081,MSC Meraviglia,8/6/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260807,4729081,MSC Meraviglia,8/7/2026,"Palermo, Sicily Italy",No
+9760512-260808,4729081,MSC Meraviglia,8/8/2026,"Naples, Italy",No
+9760512-260809,4729081,MSC Meraviglia,8/9/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260810,4729081,MSC Meraviglia,8/10/2026,"Marseille, France Riviera",No
+9760512-260811,4729081,MSC Meraviglia,8/11/2026,"Barcelona, Spain",No
+9760512-260807,4729082,MSC Meraviglia,8/7/2026,"Palermo, Sicily Italy",No
+9760512-260808,4729082,MSC Meraviglia,8/8/2026,"Naples, Italy",No
+9760512-260809,4729082,MSC Meraviglia,8/9/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260810,4729082,MSC Meraviglia,8/10/2026,"Marseille, France Riviera",No
+9760512-260811,4729082,MSC Meraviglia,8/11/2026,"Barcelona, Spain",No
+9760512-260813,4729082,MSC Meraviglia,8/13/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260814,4729082,MSC Meraviglia,8/14/2026,"Palermo, Sicily Italy",No
+9760512-260808,4729083,MSC Meraviglia,8/8/2026,"Naples, Italy",No
+9760512-260809,4729083,MSC Meraviglia,8/9/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260810,4729083,MSC Meraviglia,8/10/2026,"Marseille, France Riviera",No
+9760512-260811,4729083,MSC Meraviglia,8/11/2026,"Barcelona, Spain",No
+9760512-260813,4729083,MSC Meraviglia,8/13/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260814,4729083,MSC Meraviglia,8/14/2026,"Palermo, Sicily Italy",No
+9760512-260815,4729083,MSC Meraviglia,8/15/2026,"Naples, Italy",No
+9760512-260809,4729084,MSC Meraviglia,8/9/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260810,4729084,MSC Meraviglia,8/10/2026,"Marseille, France Riviera",No
+9760512-260811,4729084,MSC Meraviglia,8/11/2026,"Barcelona, Spain",No
+9760512-260813,4729084,MSC Meraviglia,8/13/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260814,4729084,MSC Meraviglia,8/14/2026,"Palermo, Sicily Italy",No
+9760512-260815,4729084,MSC Meraviglia,8/15/2026,"Naples, Italy",No
+9760512-260816,4729084,MSC Meraviglia,8/16/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260810,4729085,MSC Meraviglia,8/10/2026,"Marseille, France Riviera",No
+9760512-260811,4729085,MSC Meraviglia,8/11/2026,"Barcelona, Spain",No
+9760512-260813,4729085,MSC Meraviglia,8/13/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260814,4729085,MSC Meraviglia,8/14/2026,"Palermo, Sicily Italy",No
+9760512-260815,4729085,MSC Meraviglia,8/15/2026,"Naples, Italy",No
+9760512-260816,4729085,MSC Meraviglia,8/16/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260817,4729085,MSC Meraviglia,8/17/2026,"Marseille, France Riviera",No
+9760512-260811,4729086,MSC Meraviglia,8/11/2026,"Barcelona, Spain",No
+9760512-260813,4729086,MSC Meraviglia,8/13/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260814,4729086,MSC Meraviglia,8/14/2026,"Palermo, Sicily Italy",No
+9760512-260815,4729086,MSC Meraviglia,8/15/2026,"Naples, Italy",No
+9760512-260816,4729086,MSC Meraviglia,8/16/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260817,4729086,MSC Meraviglia,8/17/2026,"Marseille, France Riviera",No
+9760512-260818,4729086,MSC Meraviglia,8/18/2026,"Barcelona, Spain",No
+9760512-260814,4729087,MSC Meraviglia,8/14/2026,"Palermo, Sicily Italy",No
+9760512-260815,4729087,MSC Meraviglia,8/15/2026,"Naples, Italy",No
+9760512-260816,4729087,MSC Meraviglia,8/16/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260817,4729087,MSC Meraviglia,8/17/2026,"Marseille, France Riviera",No
+9760512-260818,4729087,MSC Meraviglia,8/18/2026,"Barcelona, Spain",No
+9760512-260820,4729087,MSC Meraviglia,8/20/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260821,4729087,MSC Meraviglia,8/21/2026,"Palermo, Sicily Italy",No
+9760512-260815,4729088,MSC Meraviglia,8/15/2026,"Naples, Italy",No
+9760512-260816,4729088,MSC Meraviglia,8/16/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260817,4729088,MSC Meraviglia,8/17/2026,"Marseille, France Riviera",No
+9760512-260818,4729088,MSC Meraviglia,8/18/2026,"Barcelona, Spain",No
+9760512-260820,4729088,MSC Meraviglia,8/20/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260821,4729088,MSC Meraviglia,8/21/2026,"Palermo, Sicily Italy",No
+9760512-260822,4729088,MSC Meraviglia,8/22/2026,"Naples, Italy",No
+9760512-260816,4729089,MSC Meraviglia,8/16/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260817,4729089,MSC Meraviglia,8/17/2026,"Marseille, France Riviera",No
+9760512-260818,4729089,MSC Meraviglia,8/18/2026,"Barcelona, Spain",No
+9760512-260820,4729089,MSC Meraviglia,8/20/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260821,4729089,MSC Meraviglia,8/21/2026,"Palermo, Sicily Italy",No
+9760512-260822,4729089,MSC Meraviglia,8/22/2026,"Naples, Italy",No
+9760512-260823,4729089,MSC Meraviglia,8/23/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260817,4729090,MSC Meraviglia,8/17/2026,"Marseille, France Riviera",No
+9760512-260818,4729090,MSC Meraviglia,8/18/2026,"Barcelona, Spain",No
+9760512-260820,4729090,MSC Meraviglia,8/20/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260821,4729090,MSC Meraviglia,8/21/2026,"Palermo, Sicily Italy",No
+9760512-260822,4729090,MSC Meraviglia,8/22/2026,"Naples, Italy",No
+9760512-260823,4729090,MSC Meraviglia,8/23/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260824,4729090,MSC Meraviglia,8/24/2026,"Marseille, France Riviera",No
+9760512-260818,4729091,MSC Meraviglia,8/18/2026,"Barcelona, Spain",No
+9760512-260820,4729091,MSC Meraviglia,8/20/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260821,4729091,MSC Meraviglia,8/21/2026,"Palermo, Sicily Italy",No
+9760512-260822,4729091,MSC Meraviglia,8/22/2026,"Naples, Italy",No
+9760512-260823,4729091,MSC Meraviglia,8/23/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260824,4729091,MSC Meraviglia,8/24/2026,"Marseille, France Riviera",No
+9760512-260825,4729091,MSC Meraviglia,8/25/2026,"Barcelona, Spain",No
+9760512-260821,4729092,MSC Meraviglia,8/21/2026,"Palermo, Sicily Italy",No
+9760512-260822,4729092,MSC Meraviglia,8/22/2026,"Naples, Italy",No
+9760512-260823,4729092,MSC Meraviglia,8/23/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260824,4729092,MSC Meraviglia,8/24/2026,"Marseille, France Riviera",No
+9760512-260825,4729092,MSC Meraviglia,8/25/2026,"Barcelona, Spain",No
+9760512-260827,4729092,MSC Meraviglia,8/27/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260828,4729092,MSC Meraviglia,8/28/2026,"Palermo, Sicily Italy",No
+9760512-260822,4729093,MSC Meraviglia,8/22/2026,"Naples, Italy",No
+9760512-260823,4729093,MSC Meraviglia,8/23/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260824,4729093,MSC Meraviglia,8/24/2026,"Marseille, France Riviera",No
+9760512-260825,4729093,MSC Meraviglia,8/25/2026,"Barcelona, Spain",No
+9760512-260827,4729093,MSC Meraviglia,8/27/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260828,4729093,MSC Meraviglia,8/28/2026,"Palermo, Sicily Italy",No
+9760512-260829,4729093,MSC Meraviglia,8/29/2026,"Naples, Italy",No
+9760512-260823,4729094,MSC Meraviglia,8/23/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260824,4729094,MSC Meraviglia,8/24/2026,"Marseille, France Riviera",No
+9760512-260825,4729094,MSC Meraviglia,8/25/2026,"Barcelona, Spain",No
+9760512-260827,4729094,MSC Meraviglia,8/27/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260828,4729094,MSC Meraviglia,8/28/2026,"Palermo, Sicily Italy",No
+9760512-260829,4729094,MSC Meraviglia,8/29/2026,"Naples, Italy",No
+9760512-260830,4729094,MSC Meraviglia,8/30/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260824,4729095,MSC Meraviglia,8/24/2026,"Marseille, France Riviera",No
+9760512-260825,4729095,MSC Meraviglia,8/25/2026,"Barcelona, Spain",No
+9760512-260827,4729095,MSC Meraviglia,8/27/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260828,4729095,MSC Meraviglia,8/28/2026,"Palermo, Sicily Italy",No
+9760512-260829,4729095,MSC Meraviglia,8/29/2026,"Naples, Italy",No
+9760512-260830,4729095,MSC Meraviglia,8/30/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260831,4729095,MSC Meraviglia,8/31/2026,"Marseille, France Riviera",No
+9760512-260825,4729096,MSC Meraviglia,8/25/2026,"Barcelona, Spain",No
+9760512-260827,4729096,MSC Meraviglia,8/27/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260828,4729096,MSC Meraviglia,8/28/2026,"Palermo, Sicily Italy",No
+9760512-260829,4729096,MSC Meraviglia,8/29/2026,"Naples, Italy",No
+9760512-260830,4729096,MSC Meraviglia,8/30/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260831,4729096,MSC Meraviglia,8/31/2026,"Marseille, France Riviera",No
+9760512-260901,4729096,MSC Meraviglia,9/1/2026,"Barcelona, Spain",No
+9760512-260828,4729097,MSC Meraviglia,8/28/2026,"Palermo, Sicily Italy",No
+9760512-260829,4729097,MSC Meraviglia,8/29/2026,"Naples, Italy",No
+9760512-260830,4729097,MSC Meraviglia,8/30/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260831,4729097,MSC Meraviglia,8/31/2026,"Marseille, France Riviera",No
+9760512-260901,4729097,MSC Meraviglia,9/1/2026,"Barcelona, Spain",No
+9760512-260903,4729097,MSC Meraviglia,9/3/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260904,4729097,MSC Meraviglia,9/4/2026,"Palermo, Sicily Italy",No
+9760512-260829,4729098,MSC Meraviglia,8/29/2026,"Naples, Italy",No
+9760512-260830,4729098,MSC Meraviglia,8/30/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260831,4729098,MSC Meraviglia,8/31/2026,"Marseille, France Riviera",No
+9760512-260901,4729098,MSC Meraviglia,9/1/2026,"Barcelona, Spain",No
+9760512-260903,4729098,MSC Meraviglia,9/3/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260904,4729098,MSC Meraviglia,9/4/2026,"Palermo, Sicily Italy",No
+9760512-260905,4729098,MSC Meraviglia,9/5/2026,"Naples, Italy",No
+9760512-260830,4729099,MSC Meraviglia,8/30/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260831,4729099,MSC Meraviglia,8/31/2026,"Marseille, France Riviera",No
+9760512-260901,4729099,MSC Meraviglia,9/1/2026,"Barcelona, Spain",No
+9760512-260903,4729099,MSC Meraviglia,9/3/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260904,4729099,MSC Meraviglia,9/4/2026,"Palermo, Sicily Italy",No
+9760512-260905,4729099,MSC Meraviglia,9/5/2026,"Naples, Italy",No
+9760512-260906,4729099,MSC Meraviglia,9/6/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260831,4729100,MSC Meraviglia,8/31/2026,"Marseille, France Riviera",No
+9760512-260901,4729100,MSC Meraviglia,9/1/2026,"Barcelona, Spain",No
+9760512-260903,4729100,MSC Meraviglia,9/3/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260904,4729100,MSC Meraviglia,9/4/2026,"Palermo, Sicily Italy",No
+9760512-260905,4729100,MSC Meraviglia,9/5/2026,"Naples, Italy",No
+9760512-260906,4729100,MSC Meraviglia,9/6/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260907,4729100,MSC Meraviglia,9/7/2026,"Marseille, France Riviera",No
+9760512-260901,4729101,MSC Meraviglia,9/1/2026,"Barcelona, Spain",No
+9760512-260903,4729101,MSC Meraviglia,9/3/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260904,4729101,MSC Meraviglia,9/4/2026,"Palermo, Sicily Italy",No
+9760512-260905,4729101,MSC Meraviglia,9/5/2026,"Naples, Italy",No
+9760512-260906,4729101,MSC Meraviglia,9/6/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260907,4729101,MSC Meraviglia,9/7/2026,"Marseille, France Riviera",No
+9760512-260908,4729101,MSC Meraviglia,9/8/2026,"Barcelona, Spain",No
+9760512-260904,4729102,MSC Meraviglia,9/4/2026,"Palermo, Sicily Italy",No
+9760512-260905,4729102,MSC Meraviglia,9/5/2026,"Naples, Italy",No
+9760512-260906,4729102,MSC Meraviglia,9/6/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260907,4729102,MSC Meraviglia,9/7/2026,"Marseille, France Riviera",No
+9760512-260908,4729102,MSC Meraviglia,9/8/2026,"Barcelona, Spain",No
+9760512-260910,4729102,MSC Meraviglia,9/10/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260911,4729102,MSC Meraviglia,9/11/2026,"Palermo, Sicily Italy",No
+9760512-260905,4729103,MSC Meraviglia,9/5/2026,"Naples, Italy",No
+9760512-260906,4729103,MSC Meraviglia,9/6/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260907,4729103,MSC Meraviglia,9/7/2026,"Marseille, France Riviera",No
+9760512-260908,4729103,MSC Meraviglia,9/8/2026,"Barcelona, Spain",No
+9760512-260910,4729103,MSC Meraviglia,9/10/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260911,4729103,MSC Meraviglia,9/11/2026,"Palermo, Sicily Italy",No
+9760512-260912,4729103,MSC Meraviglia,9/12/2026,"Naples, Italy",No
+9760512-260906,4729104,MSC Meraviglia,9/6/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260907,4729104,MSC Meraviglia,9/7/2026,"Marseille, France Riviera",No
+9760512-260908,4729104,MSC Meraviglia,9/8/2026,"Barcelona, Spain",No
+9760512-260910,4729104,MSC Meraviglia,9/10/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260911,4729104,MSC Meraviglia,9/11/2026,"Palermo, Sicily Italy",No
+9760512-260912,4729104,MSC Meraviglia,9/12/2026,"Naples, Italy",No
+9760512-260913,4729104,MSC Meraviglia,9/13/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260907,4729105,MSC Meraviglia,9/7/2026,"Marseille, France Riviera",No
+9760512-260908,4729105,MSC Meraviglia,9/8/2026,"Barcelona, Spain",No
+9760512-260910,4729105,MSC Meraviglia,9/10/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260911,4729105,MSC Meraviglia,9/11/2026,"Palermo, Sicily Italy",No
+9760512-260912,4729105,MSC Meraviglia,9/12/2026,"Naples, Italy",No
+9760512-260913,4729105,MSC Meraviglia,9/13/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260914,4729105,MSC Meraviglia,9/14/2026,"Marseille, France Riviera",No
+9760512-260908,4729106,MSC Meraviglia,9/8/2026,"Barcelona, Spain",No
+9760512-260910,4729106,MSC Meraviglia,9/10/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260911,4729106,MSC Meraviglia,9/11/2026,"Palermo, Sicily Italy",No
+9760512-260912,4729106,MSC Meraviglia,9/12/2026,"Naples, Italy",No
+9760512-260913,4729106,MSC Meraviglia,9/13/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260914,4729106,MSC Meraviglia,9/14/2026,"Marseille, France Riviera",No
+9760512-260915,4729106,MSC Meraviglia,9/15/2026,"Barcelona, Spain",No
+9760512-260911,4729107,MSC Meraviglia,9/11/2026,"Palermo, Sicily Italy",No
+9760512-260912,4729107,MSC Meraviglia,9/12/2026,"Naples, Italy",No
+9760512-260913,4729107,MSC Meraviglia,9/13/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260914,4729107,MSC Meraviglia,9/14/2026,"Marseille, France Riviera",No
+9760512-260915,4729107,MSC Meraviglia,9/15/2026,"Barcelona, Spain",No
+9760512-260917,4729107,MSC Meraviglia,9/17/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260918,4729107,MSC Meraviglia,9/18/2026,"Palermo, Sicily Italy",No
+9760512-260912,4729108,MSC Meraviglia,9/12/2026,"Naples, Italy",No
+9760512-260913,4729108,MSC Meraviglia,9/13/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260914,4729108,MSC Meraviglia,9/14/2026,"Marseille, France Riviera",No
+9760512-260915,4729108,MSC Meraviglia,9/15/2026,"Barcelona, Spain",No
+9760512-260917,4729108,MSC Meraviglia,9/17/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260918,4729108,MSC Meraviglia,9/18/2026,"Palermo, Sicily Italy",No
+9760512-260919,4729108,MSC Meraviglia,9/19/2026,"Naples, Italy",No
+9760512-260913,4729109,MSC Meraviglia,9/13/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260914,4729109,MSC Meraviglia,9/14/2026,"Marseille, France Riviera",No
+9760512-260915,4729109,MSC Meraviglia,9/15/2026,"Barcelona, Spain",No
+9760512-260917,4729109,MSC Meraviglia,9/17/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260918,4729109,MSC Meraviglia,9/18/2026,"Palermo, Sicily Italy",No
+9760512-260919,4729109,MSC Meraviglia,9/19/2026,"Naples, Italy",No
+9760512-260920,4729109,MSC Meraviglia,9/20/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260914,4729110,MSC Meraviglia,9/14/2026,"Marseille, France Riviera",No
+9760512-260915,4729110,MSC Meraviglia,9/15/2026,"Barcelona, Spain",No
+9760512-260917,4729110,MSC Meraviglia,9/17/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260918,4729110,MSC Meraviglia,9/18/2026,"Palermo, Sicily Italy",No
+9760512-260919,4729110,MSC Meraviglia,9/19/2026,"Naples, Italy",No
+9760512-260920,4729110,MSC Meraviglia,9/20/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260921,4729110,MSC Meraviglia,9/21/2026,"Marseille, France Riviera",No
+9760512-260915,4729111,MSC Meraviglia,9/15/2026,"Barcelona, Spain",No
+9760512-260917,4729111,MSC Meraviglia,9/17/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260918,4729111,MSC Meraviglia,9/18/2026,"Palermo, Sicily Italy",No
+9760512-260919,4729111,MSC Meraviglia,9/19/2026,"Naples, Italy",No
+9760512-260920,4729111,MSC Meraviglia,9/20/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260921,4729111,MSC Meraviglia,9/21/2026,"Marseille, France Riviera",No
+9760512-260922,4729111,MSC Meraviglia,9/22/2026,"Barcelona, Spain",No
+9760512-260918,4729112,MSC Meraviglia,9/18/2026,"Palermo, Sicily Italy",No
+9760512-260919,4729112,MSC Meraviglia,9/19/2026,"Naples, Italy",No
+9760512-260920,4729112,MSC Meraviglia,9/20/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260921,4729112,MSC Meraviglia,9/21/2026,"Marseille, France Riviera",No
+9760512-260922,4729112,MSC Meraviglia,9/22/2026,"Barcelona, Spain",No
+9760512-260924,4729112,MSC Meraviglia,9/24/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260925,4729112,MSC Meraviglia,9/25/2026,"Palermo, Sicily Italy",No
+9760512-260919,4729113,MSC Meraviglia,9/19/2026,"Naples, Italy",No
+9760512-260920,4729113,MSC Meraviglia,9/20/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260921,4729113,MSC Meraviglia,9/21/2026,"Marseille, France Riviera",No
+9760512-260922,4729113,MSC Meraviglia,9/22/2026,"Barcelona, Spain",No
+9760512-260924,4729113,MSC Meraviglia,9/24/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260925,4729113,MSC Meraviglia,9/25/2026,"Palermo, Sicily Italy",No
+9760512-260926,4729113,MSC Meraviglia,9/26/2026,"Naples, Italy",No
+9760512-260920,4729114,MSC Meraviglia,9/20/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260921,4729114,MSC Meraviglia,9/21/2026,"Marseille, France Riviera",No
+9760512-260922,4729114,MSC Meraviglia,9/22/2026,"Barcelona, Spain",No
+9760512-260924,4729114,MSC Meraviglia,9/24/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260925,4729114,MSC Meraviglia,9/25/2026,"Palermo, Sicily Italy",No
+9760512-260926,4729114,MSC Meraviglia,9/26/2026,"Naples, Italy",No
+9760512-260927,4729114,MSC Meraviglia,9/27/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260921,4729115,MSC Meraviglia,9/21/2026,"Marseille, France Riviera",No
+9760512-260922,4729115,MSC Meraviglia,9/22/2026,"Barcelona, Spain",No
+9760512-260924,4729115,MSC Meraviglia,9/24/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260925,4729115,MSC Meraviglia,9/25/2026,"Palermo, Sicily Italy",No
+9760512-260926,4729115,MSC Meraviglia,9/26/2026,"Naples, Italy",No
+9760512-260927,4729115,MSC Meraviglia,9/27/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260928,4729115,MSC Meraviglia,9/28/2026,"Marseille, France Riviera",No
+9760512-260922,4729116,MSC Meraviglia,9/22/2026,"Barcelona, Spain",No
+9760512-260924,4729116,MSC Meraviglia,9/24/2026,"La Goulette-Tunis, Tunisia",No
+9760512-260925,4729116,MSC Meraviglia,9/25/2026,"Palermo, Sicily Italy",No
+9760512-260926,4729116,MSC Meraviglia,9/26/2026,"Naples, Italy",No
+9760512-260927,4729116,MSC Meraviglia,9/27/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260928,4729116,MSC Meraviglia,9/28/2026,"Marseille, France Riviera",No
+9760512-260929,4729116,MSC Meraviglia,9/29/2026,"Barcelona, Spain",No
+9760512-260925,4729117,MSC Meraviglia,9/25/2026,"Palermo, Sicily Italy",No
+9760512-260926,4729117,MSC Meraviglia,9/26/2026,"Naples, Italy",No
+9760512-260927,4729117,MSC Meraviglia,9/27/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260928,4729117,MSC Meraviglia,9/28/2026,"Marseille, France Riviera",No
+9760512-260929,4729117,MSC Meraviglia,9/29/2026,"Barcelona, Spain",No
+9760512-261001,4729117,MSC Meraviglia,10/1/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261002,4729117,MSC Meraviglia,10/2/2026,"Palermo, Sicily Italy",No
+9760512-260926,4729118,MSC Meraviglia,9/26/2026,"Naples, Italy",No
+9760512-260927,4729118,MSC Meraviglia,9/27/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260928,4729118,MSC Meraviglia,9/28/2026,"Marseille, France Riviera",No
+9760512-260929,4729118,MSC Meraviglia,9/29/2026,"Barcelona, Spain",No
+9760512-261001,4729118,MSC Meraviglia,10/1/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261002,4729118,MSC Meraviglia,10/2/2026,"Palermo, Sicily Italy",No
+9760512-261003,4729118,MSC Meraviglia,10/3/2026,"Naples, Italy",No
+9760512-260927,4729119,MSC Meraviglia,9/27/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260928,4729119,MSC Meraviglia,9/28/2026,"Marseille, France Riviera",No
+9760512-260929,4729119,MSC Meraviglia,9/29/2026,"Barcelona, Spain",No
+9760512-261001,4729119,MSC Meraviglia,10/1/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261002,4729119,MSC Meraviglia,10/2/2026,"Palermo, Sicily Italy",No
+9760512-261003,4729119,MSC Meraviglia,10/3/2026,"Naples, Italy",No
+9760512-261004,4729119,MSC Meraviglia,10/4/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-260928,4729120,MSC Meraviglia,9/28/2026,"Marseille, France Riviera",No
+9760512-260929,4729120,MSC Meraviglia,9/29/2026,"Barcelona, Spain",No
+9760512-261001,4729120,MSC Meraviglia,10/1/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261002,4729120,MSC Meraviglia,10/2/2026,"Palermo, Sicily Italy",No
+9760512-261003,4729120,MSC Meraviglia,10/3/2026,"Naples, Italy",No
+9760512-261004,4729120,MSC Meraviglia,10/4/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261005,4729120,MSC Meraviglia,10/5/2026,"Marseille, France Riviera",No
+9760512-260929,4729121,MSC Meraviglia,9/29/2026,"Barcelona, Spain",No
+9760512-261001,4729121,MSC Meraviglia,10/1/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261002,4729121,MSC Meraviglia,10/2/2026,"Palermo, Sicily Italy",No
+9760512-261003,4729121,MSC Meraviglia,10/3/2026,"Naples, Italy",No
+9760512-261004,4729121,MSC Meraviglia,10/4/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261005,4729121,MSC Meraviglia,10/5/2026,"Marseille, France Riviera",No
+9760512-261006,4729121,MSC Meraviglia,10/6/2026,"Barcelona, Spain",No
+9760512-261002,4729122,MSC Meraviglia,10/2/2026,"Palermo, Sicily Italy",No
+9760512-261003,4729122,MSC Meraviglia,10/3/2026,"Naples, Italy",No
+9760512-261004,4729122,MSC Meraviglia,10/4/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261005,4729122,MSC Meraviglia,10/5/2026,"Marseille, France Riviera",No
+9760512-261006,4729122,MSC Meraviglia,10/6/2026,"Barcelona, Spain",No
+9760512-261008,4729122,MSC Meraviglia,10/8/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261009,4729122,MSC Meraviglia,10/9/2026,"Palermo, Sicily Italy",No
+9760512-261003,4729123,MSC Meraviglia,10/3/2026,"Naples, Italy",No
+9760512-261004,4729123,MSC Meraviglia,10/4/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261005,4729123,MSC Meraviglia,10/5/2026,"Marseille, France Riviera",No
+9760512-261006,4729123,MSC Meraviglia,10/6/2026,"Barcelona, Spain",No
+9760512-261008,4729123,MSC Meraviglia,10/8/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261009,4729123,MSC Meraviglia,10/9/2026,"Palermo, Sicily Italy",No
+9760512-261010,4729123,MSC Meraviglia,10/10/2026,"Naples, Italy",No
+9760512-261004,4729124,MSC Meraviglia,10/4/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261005,4729124,MSC Meraviglia,10/5/2026,"Marseille, France Riviera",No
+9760512-261006,4729124,MSC Meraviglia,10/6/2026,"Barcelona, Spain",No
+9760512-261008,4729124,MSC Meraviglia,10/8/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261009,4729124,MSC Meraviglia,10/9/2026,"Palermo, Sicily Italy",No
+9760512-261010,4729124,MSC Meraviglia,10/10/2026,"Naples, Italy",No
+9760512-261011,4729124,MSC Meraviglia,10/11/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261005,4729125,MSC Meraviglia,10/5/2026,"Marseille, France Riviera",No
+9760512-261006,4729125,MSC Meraviglia,10/6/2026,"Barcelona, Spain",No
+9760512-261008,4729125,MSC Meraviglia,10/8/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261009,4729125,MSC Meraviglia,10/9/2026,"Palermo, Sicily Italy",No
+9760512-261010,4729125,MSC Meraviglia,10/10/2026,"Naples, Italy",No
+9760512-261011,4729125,MSC Meraviglia,10/11/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261012,4729125,MSC Meraviglia,10/12/2026,"Marseille, France Riviera",No
+9760512-261006,4729126,MSC Meraviglia,10/6/2026,"Barcelona, Spain",No
+9760512-261008,4729126,MSC Meraviglia,10/8/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261009,4729126,MSC Meraviglia,10/9/2026,"Palermo, Sicily Italy",No
+9760512-261010,4729126,MSC Meraviglia,10/10/2026,"Naples, Italy",No
+9760512-261011,4729126,MSC Meraviglia,10/11/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261012,4729126,MSC Meraviglia,10/12/2026,"Marseille, France Riviera",No
+9760512-261013,4729126,MSC Meraviglia,10/13/2026,"Barcelona, Spain",No
+9760512-261009,4729127,MSC Meraviglia,10/9/2026,"Palermo, Sicily Italy",No
+9760512-261010,4729127,MSC Meraviglia,10/10/2026,"Naples, Italy",No
+9760512-261011,4729127,MSC Meraviglia,10/11/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261012,4729127,MSC Meraviglia,10/12/2026,"Marseille, France Riviera",No
+9760512-261013,4729127,MSC Meraviglia,10/13/2026,"Barcelona, Spain",No
+9760512-261015,4729127,MSC Meraviglia,10/15/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261016,4729127,MSC Meraviglia,10/16/2026,"Palermo, Sicily Italy",No
+9760512-261010,4729128,MSC Meraviglia,10/10/2026,"Naples, Italy",No
+9760512-261011,4729128,MSC Meraviglia,10/11/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261012,4729128,MSC Meraviglia,10/12/2026,"Marseille, France Riviera",No
+9760512-261013,4729128,MSC Meraviglia,10/13/2026,"Barcelona, Spain",No
+9760512-261015,4729128,MSC Meraviglia,10/15/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261016,4729128,MSC Meraviglia,10/16/2026,"Palermo, Sicily Italy",No
+9760512-261017,4729128,MSC Meraviglia,10/17/2026,"Naples, Italy",No
+9760512-261011,4729129,MSC Meraviglia,10/11/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261012,4729129,MSC Meraviglia,10/12/2026,"Marseille, France Riviera",No
+9760512-261013,4729129,MSC Meraviglia,10/13/2026,"Barcelona, Spain",No
+9760512-261015,4729129,MSC Meraviglia,10/15/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261016,4729129,MSC Meraviglia,10/16/2026,"Palermo, Sicily Italy",No
+9760512-261017,4729129,MSC Meraviglia,10/17/2026,"Naples, Italy",No
+9760512-261018,4729129,MSC Meraviglia,10/18/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261012,4729130,MSC Meraviglia,10/12/2026,"Marseille, France Riviera",No
+9760512-261013,4729130,MSC Meraviglia,10/13/2026,"Barcelona, Spain",No
+9760512-261015,4729130,MSC Meraviglia,10/15/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261016,4729130,MSC Meraviglia,10/16/2026,"Palermo, Sicily Italy",No
+9760512-261017,4729130,MSC Meraviglia,10/17/2026,"Naples, Italy",No
+9760512-261018,4729130,MSC Meraviglia,10/18/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261019,4729130,MSC Meraviglia,10/19/2026,"Marseille, France Riviera",No
+9760512-261013,4729131,MSC Meraviglia,10/13/2026,"Barcelona, Spain",No
+9760512-261015,4729131,MSC Meraviglia,10/15/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261016,4729131,MSC Meraviglia,10/16/2026,"Palermo, Sicily Italy",No
+9760512-261017,4729131,MSC Meraviglia,10/17/2026,"Naples, Italy",No
+9760512-261018,4729131,MSC Meraviglia,10/18/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261019,4729131,MSC Meraviglia,10/19/2026,"Marseille, France Riviera",No
+9760512-261020,4729131,MSC Meraviglia,10/20/2026,"Barcelona, Spain",No
+9760512-261015,4729132,MSC Meraviglia,10/15/2026,"La Goulette-Tunis, Tunisia",No
+9760512-261016,4729132,MSC Meraviglia,10/16/2026,"Palermo, Sicily Italy",No
+9760512-261017,4729132,MSC Meraviglia,10/17/2026,"Naples, Italy",No
+9760512-261018,4729132,MSC Meraviglia,10/18/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261019,4729132,MSC Meraviglia,10/19/2026,"Marseille, France Riviera",No
+9760512-261020,4729132,MSC Meraviglia,10/20/2026,"Barcelona, Spain",No
+9760512-261016,4729133,MSC Meraviglia,10/16/2026,"Palermo, Sicily Italy",No
+9760512-261017,4729133,MSC Meraviglia,10/17/2026,"Naples, Italy",No
+9760512-261018,4729133,MSC Meraviglia,10/18/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261019,4729133,MSC Meraviglia,10/19/2026,"Marseille, France Riviera",No
+9760512-261020,4729133,MSC Meraviglia,10/20/2026,"Barcelona, Spain",No
+9760512-261021,4729133,MSC Meraviglia,10/21/2026,"Alicante, Spain",No
+9760512-261022,4729133,MSC Meraviglia,10/22/2026,"Gibraltar, UK",No
+9760512-261023,4729133,MSC Meraviglia,10/23/2026,"Cadiz, Spain, Sevilla",No
+9760512-261024,4729133,MSC Meraviglia,10/24/2026,"Casablanca, Marrakesh, Morocco",No
+9760512-261026,4729133,MSC Meraviglia,10/26/2026,"Las Palmas de Gran Canaria, Canary Islands",No
+9760512-261027,4729133,MSC Meraviglia,10/27/2026,"Funchal, Madeira Island Portugal",No
+9760512-261029,4729133,MSC Meraviglia,10/29/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261030,4729133,MSC Meraviglia,10/30/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261105,4729133,MSC Meraviglia,11/5/2026,"Boston, Massachusetts",No
+9760512-261106,4729133,MSC Meraviglia,11/6/2026,"Boston, Massachusetts",No
+9760512-261108,4729133,MSC Meraviglia,11/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-261111,4729133,MSC Meraviglia,11/11/2026,"Miami, Florida",No
+9760512-261017,4729134,MSC Meraviglia,10/17/2026,"Naples, Italy",No
+9760512-261018,4729134,MSC Meraviglia,10/18/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261019,4729134,MSC Meraviglia,10/19/2026,"Marseille, France Riviera",No
+9760512-261020,4729134,MSC Meraviglia,10/20/2026,"Barcelona, Spain",No
+9760512-261021,4729134,MSC Meraviglia,10/21/2026,"Alicante, Spain",No
+9760512-261022,4729134,MSC Meraviglia,10/22/2026,"Gibraltar, UK",No
+9760512-261023,4729134,MSC Meraviglia,10/23/2026,"Cadiz, Spain, Sevilla",No
+9760512-261024,4729134,MSC Meraviglia,10/24/2026,"Casablanca, Marrakesh, Morocco",No
+9760512-261026,4729134,MSC Meraviglia,10/26/2026,"Las Palmas de Gran Canaria, Canary Islands",No
+9760512-261027,4729134,MSC Meraviglia,10/27/2026,"Funchal, Madeira Island Portugal",No
+9760512-261029,4729134,MSC Meraviglia,10/29/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261030,4729134,MSC Meraviglia,10/30/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261105,4729134,MSC Meraviglia,11/5/2026,"Boston, Massachusetts",No
+9760512-261106,4729134,MSC Meraviglia,11/6/2026,"Boston, Massachusetts",No
+9760512-261108,4729134,MSC Meraviglia,11/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-261111,4729134,MSC Meraviglia,11/11/2026,"Miami, Florida",No
+9760512-261018,4729135,MSC Meraviglia,10/18/2026,"Livorno, Florence-Pisa, Italy",No
+9760512-261019,4729135,MSC Meraviglia,10/19/2026,"Marseille, France Riviera",No
+9760512-261020,4729135,MSC Meraviglia,10/20/2026,"Barcelona, Spain",No
+9760512-261021,4729135,MSC Meraviglia,10/21/2026,"Alicante, Spain",No
+9760512-261022,4729135,MSC Meraviglia,10/22/2026,"Gibraltar, UK",No
+9760512-261023,4729135,MSC Meraviglia,10/23/2026,"Cadiz, Spain, Sevilla",No
+9760512-261024,4729135,MSC Meraviglia,10/24/2026,"Casablanca, Marrakesh, Morocco",No
+9760512-261026,4729135,MSC Meraviglia,10/26/2026,"Las Palmas de Gran Canaria, Canary Islands",No
+9760512-261027,4729135,MSC Meraviglia,10/27/2026,"Funchal, Madeira Island Portugal",No
+9760512-261029,4729135,MSC Meraviglia,10/29/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261030,4729135,MSC Meraviglia,10/30/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261105,4729135,MSC Meraviglia,11/5/2026,"Boston, Massachusetts",No
+9760512-261106,4729135,MSC Meraviglia,11/6/2026,"Boston, Massachusetts",No
+9760512-261108,4729135,MSC Meraviglia,11/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-261111,4729135,MSC Meraviglia,11/11/2026,"Miami, Florida",No
+9760512-261019,4729136,MSC Meraviglia,10/19/2026,"Marseille, France Riviera",No
+9760512-261020,4729136,MSC Meraviglia,10/20/2026,"Barcelona, Spain",No
+9760512-261021,4729136,MSC Meraviglia,10/21/2026,"Alicante, Spain",No
+9760512-261022,4729136,MSC Meraviglia,10/22/2026,"Gibraltar, UK",No
+9760512-261023,4729136,MSC Meraviglia,10/23/2026,"Cadiz, Spain, Sevilla",No
+9760512-261024,4729136,MSC Meraviglia,10/24/2026,"Casablanca, Marrakesh, Morocco",No
+9760512-261026,4729136,MSC Meraviglia,10/26/2026,"Las Palmas de Gran Canaria, Canary Islands",No
+9760512-261027,4729136,MSC Meraviglia,10/27/2026,"Funchal, Madeira Island Portugal",No
+9760512-261029,4729136,MSC Meraviglia,10/29/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261030,4729136,MSC Meraviglia,10/30/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261105,4729136,MSC Meraviglia,11/5/2026,"Boston, Massachusetts",No
+9760512-261106,4729136,MSC Meraviglia,11/6/2026,"Boston, Massachusetts",No
+9760512-261108,4729136,MSC Meraviglia,11/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-261111,4729136,MSC Meraviglia,11/11/2026,"Miami, Florida",No
+9760512-261020,4729137,MSC Meraviglia,10/20/2026,"Barcelona, Spain",No
+9760512-261021,4729137,MSC Meraviglia,10/21/2026,"Alicante, Spain",No
+9760512-261022,4729137,MSC Meraviglia,10/22/2026,"Gibraltar, UK",No
+9760512-261023,4729137,MSC Meraviglia,10/23/2026,"Cadiz, Spain, Sevilla",No
+9760512-261024,4729137,MSC Meraviglia,10/24/2026,"Casablanca, Marrakesh, Morocco",No
+9760512-261026,4729137,MSC Meraviglia,10/26/2026,"Las Palmas de Gran Canaria, Canary Islands",No
+9760512-261027,4729137,MSC Meraviglia,10/27/2026,"Funchal, Madeira Island Portugal",No
+9760512-261029,4729137,MSC Meraviglia,10/29/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261030,4729137,MSC Meraviglia,10/30/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261105,4729137,MSC Meraviglia,11/5/2026,"Boston, Massachusetts",No
+9760512-261106,4729137,MSC Meraviglia,11/6/2026,"Boston, Massachusetts",No
+9760512-261108,4729137,MSC Meraviglia,11/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-261111,4729137,MSC Meraviglia,11/11/2026,"Miami, Florida",No
+9760512-261027,4729138,MSC Meraviglia,10/27/2026,"Funchal, Madeira Island Portugal",No
+9760512-261029,4729138,MSC Meraviglia,10/29/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261030,4729138,MSC Meraviglia,10/30/2026,"Ponta Delgada, Sao Miguel Island Azores Portugal",No
+9760512-261105,4729138,MSC Meraviglia,11/5/2026,"Boston, Massachusetts",No
+9760512-261106,4729138,MSC Meraviglia,11/6/2026,"Boston, Massachusetts",No
+9760512-261108,4729138,MSC Meraviglia,11/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9760512-261111,4729138,MSC Meraviglia,11/11/2026,"Miami, Florida",No
+9760512-261111,4729140,MSC Meraviglia,11/11/2026,"Miami, Florida",No
+9760512-261112,4729140,MSC Meraviglia,11/12/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261113,4729140,MSC Meraviglia,11/13/2026,"Freeport, Bahamas, Grand Bahama Island",No
+9760512-261115,4729140,MSC Meraviglia,11/15/2026,"Miami, Florida",No
+9760512-261111,4729139,MSC Meraviglia,11/11/2026,"Miami, Florida",No
+9760512-261112,4729139,MSC Meraviglia,11/12/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261113,4729139,MSC Meraviglia,11/13/2026,"Freeport, Bahamas, Grand Bahama Island",No
+9760512-261115,4729139,MSC Meraviglia,11/15/2026,"Miami, Florida",No
+9760512-261117,4729139,MSC Meraviglia,11/17/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261119,4729139,MSC Meraviglia,11/19/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261120,4729139,MSC Meraviglia,11/20/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-261121,4729139,MSC Meraviglia,11/21/2026,"Miami, Florida",No
+9760512-261115,4729142,MSC Meraviglia,11/15/2026,"Miami, Florida",No
+9760512-261117,4729142,MSC Meraviglia,11/17/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261119,4729142,MSC Meraviglia,11/19/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261120,4729142,MSC Meraviglia,11/20/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-261121,4729142,MSC Meraviglia,11/21/2026,"Miami, Florida",No
+9760512-261115,4729141,MSC Meraviglia,11/15/2026,"Miami, Florida",No
+9760512-261117,4729141,MSC Meraviglia,11/17/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261119,4729141,MSC Meraviglia,11/19/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261120,4729141,MSC Meraviglia,11/20/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-261121,4729141,MSC Meraviglia,11/21/2026,"Miami, Florida",No
+9760512-261124,4729141,MSC Meraviglia,11/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9760512-261125,4729141,MSC Meraviglia,11/25/2026,"Basseterre St Kitts, Port Zante",No
+9760512-261126,4729141,MSC Meraviglia,11/26/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9760512-261127,4729141,MSC Meraviglia,11/27/2026,"Puerto Plata-Amber Cove, Dominicana",No
+9760512-261129,4729141,MSC Meraviglia,11/29/2026,"Miami, Florida",No
+9760512-261121,4729144,MSC Meraviglia,11/21/2026,"Miami, Florida",No
+9760512-261124,4729144,MSC Meraviglia,11/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9760512-261125,4729144,MSC Meraviglia,11/25/2026,"Basseterre St Kitts, Port Zante",No
+9760512-261126,4729144,MSC Meraviglia,11/26/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9760512-261127,4729144,MSC Meraviglia,11/27/2026,"Puerto Plata-Amber Cove, Dominicana",No
+9760512-261129,4729144,MSC Meraviglia,11/29/2026,"Miami, Florida",No
+9760512-261121,4729143,MSC Meraviglia,11/21/2026,"Miami, Florida",No
+9760512-261124,4729143,MSC Meraviglia,11/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9760512-261125,4729143,MSC Meraviglia,11/25/2026,"Basseterre St Kitts, Port Zante",No
+9760512-261126,4729143,MSC Meraviglia,11/26/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9760512-261127,4729143,MSC Meraviglia,11/27/2026,"Puerto Plata-Amber Cove, Dominicana",No
+9760512-261129,4729143,MSC Meraviglia,11/29/2026,"Miami, Florida",No
+9760512-261201,4729143,MSC Meraviglia,12/1/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261203,4729143,MSC Meraviglia,12/3/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261204,4729143,MSC Meraviglia,12/4/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-261205,4729143,MSC Meraviglia,12/5/2026,"Miami, Florida",No
+9760512-261129,4729146,MSC Meraviglia,11/29/2026,"Miami, Florida",No
+9760512-261201,4729146,MSC Meraviglia,12/1/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261203,4729146,MSC Meraviglia,12/3/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261204,4729146,MSC Meraviglia,12/4/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-261205,4729146,MSC Meraviglia,12/5/2026,"Miami, Florida",No
+9760512-261129,4729145,MSC Meraviglia,11/29/2026,"Miami, Florida",No
+9760512-261201,4729145,MSC Meraviglia,12/1/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261203,4729145,MSC Meraviglia,12/3/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261204,4729145,MSC Meraviglia,12/4/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-261205,4729145,MSC Meraviglia,12/5/2026,"Miami, Florida",No
+9760512-261208,4729145,MSC Meraviglia,12/8/2026,"San Juan, Puerto Rico",No
+9760512-261209,4729145,MSC Meraviglia,12/9/2026,"Basseterre St Kitts, Port Zante",No
+9760512-261210,4729145,MSC Meraviglia,12/10/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9760512-261211,4729145,MSC Meraviglia,12/11/2026,"Puerto Plata-Amber Cove, Dominicana",No
+9760512-261213,4729145,MSC Meraviglia,12/13/2026,"Miami, Florida",No
+9760512-261205,4729148,MSC Meraviglia,12/5/2026,"Miami, Florida",No
+9760512-261208,4729148,MSC Meraviglia,12/8/2026,"San Juan, Puerto Rico",No
+9760512-261209,4729148,MSC Meraviglia,12/9/2026,"Basseterre St Kitts, Port Zante",No
+9760512-261210,4729148,MSC Meraviglia,12/10/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9760512-261211,4729148,MSC Meraviglia,12/11/2026,"Puerto Plata-Amber Cove, Dominicana",No
+9760512-261213,4729148,MSC Meraviglia,12/13/2026,"Miami, Florida",No
+9760512-261205,4729147,MSC Meraviglia,12/5/2026,"Miami, Florida",No
+9760512-261208,4729147,MSC Meraviglia,12/8/2026,"San Juan, Puerto Rico",No
+9760512-261209,4729147,MSC Meraviglia,12/9/2026,"Basseterre St Kitts, Port Zante",No
+9760512-261210,4729147,MSC Meraviglia,12/10/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9760512-261211,4729147,MSC Meraviglia,12/11/2026,"Puerto Plata-Amber Cove, Dominicana",No
+9760512-261213,4729147,MSC Meraviglia,12/13/2026,"Miami, Florida",No
+9760512-261215,4729147,MSC Meraviglia,12/15/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261217,4729147,MSC Meraviglia,12/17/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261218,4729147,MSC Meraviglia,12/18/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-261219,4729147,MSC Meraviglia,12/19/2026,"Miami, Florida",No
+9760512-261213,4729150,MSC Meraviglia,12/13/2026,"Miami, Florida",No
+9760512-261215,4729150,MSC Meraviglia,12/15/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261217,4729150,MSC Meraviglia,12/17/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261218,4729150,MSC Meraviglia,12/18/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-261219,4729150,MSC Meraviglia,12/19/2026,"Miami, Florida",No
+9760512-261213,4729149,MSC Meraviglia,12/13/2026,"Miami, Florida",No
+9760512-261215,4729149,MSC Meraviglia,12/15/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261217,4729149,MSC Meraviglia,12/17/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-261218,4729149,MSC Meraviglia,12/18/2026,"Nassau, Bahamas, New Providence Island",No
+9760512-261219,4729149,MSC Meraviglia,12/19/2026,"Miami, Florida",No
+9760512-261222,4729149,MSC Meraviglia,12/22/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9760512-261223,4729149,MSC Meraviglia,12/23/2026,"Basseterre St Kitts, Port Zante",No
+9760512-261224,4729149,MSC Meraviglia,12/24/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9760512-261225,4729149,MSC Meraviglia,12/25/2026,"Puerto Plata-Amber Cove, Dominicana",No
+9760512-261227,4729149,MSC Meraviglia,12/27/2026,"Miami, Florida",No
+9760512-261219,4729152,MSC Meraviglia,12/19/2026,"Miami, Florida",No
+9760512-261222,4729152,MSC Meraviglia,12/22/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9760512-261223,4729152,MSC Meraviglia,12/23/2026,"Basseterre St Kitts, Port Zante",No
+9760512-261224,4729152,MSC Meraviglia,12/24/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9760512-261225,4729152,MSC Meraviglia,12/25/2026,"Puerto Plata-Amber Cove, Dominicana",No
+9760512-261227,4729152,MSC Meraviglia,12/27/2026,"Miami, Florida",No
+9760512-261219,4729151,MSC Meraviglia,12/19/2026,"Miami, Florida",No
+9760512-261222,4729151,MSC Meraviglia,12/22/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9760512-261223,4729151,MSC Meraviglia,12/23/2026,"Basseterre St Kitts, Port Zante",No
+9760512-261224,4729151,MSC Meraviglia,12/24/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9760512-261225,4729151,MSC Meraviglia,12/25/2026,"Puerto Plata-Amber Cove, Dominicana",No
+9760512-261227,4729151,MSC Meraviglia,12/27/2026,"Miami, Florida",No
+9760512-261229,4729151,MSC Meraviglia,12/29/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261231,4729151,MSC Meraviglia,12/31/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-270101,4729151,MSC Meraviglia,1/1/2027,"Nassau, Bahamas, New Providence Island",No
+9760512-261227,4729154,MSC Meraviglia,12/27/2026,"Miami, Florida",No
+9760512-261229,4729154,MSC Meraviglia,12/29/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261231,4729154,MSC Meraviglia,12/31/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-270101,4729154,MSC Meraviglia,1/1/2027,"Nassau, Bahamas, New Providence Island",No
+9760512-261227,4729153,MSC Meraviglia,12/27/2026,"Miami, Florida",No
+9760512-261229,4729153,MSC Meraviglia,12/29/2026,"Grand Turk Island, Cockburn Town, Turks and Caicos",No
+9760512-261231,4729153,MSC Meraviglia,12/31/2026,"MSC Ocean Cay, Bahamas private island",No
+9760512-270101,4729153,MSC Meraviglia,1/1/2027,"Nassau, Bahamas, New Providence Island",No
+9241061-260103,4656353,Queen Mary 2,1/3/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260111,4656353,Queen Mary 2,1/11/2026,"Southampton, England",No
+9241061-260103,4656352,Queen Mary 2,1/3/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260111,4656352,Queen Mary 2,1/11/2026,"Southampton, England",No
+9241061-260119,4656352,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260111,4656358,Queen Mary 2,1/11/2026,"Southampton, England",No
+9241061-260119,4656358,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260111,4656357,Queen Mary 2,1/11/2026,"Southampton, England",No
+9241061-260119,4656357,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260123,4656357,Queen Mary 2,1/23/2026,"Willemstad Curacao, Netherlands Antilles",No
+9241061-260125,4656357,Queen Mary 2,1/25/2026,Panama Canal,No
+9241061-260130,4656357,Queen Mary 2,1/30/2026,"Manzanillo, Mexico Riviera",No
+9241061-260203,4656357,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260111,4656356,Queen Mary 2,1/11/2026,"Southampton, England",No
+9241061-260119,4656356,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260123,4656356,Queen Mary 2,1/23/2026,"Willemstad Curacao, Netherlands Antilles",No
+9241061-260125,4656356,Queen Mary 2,1/25/2026,Panama Canal,No
+9241061-260130,4656356,Queen Mary 2,1/30/2026,"Manzanillo, Mexico Riviera",No
+9241061-260202,4656356,Queen Mary 2,2/2/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260203,4656356,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260206,4656356,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260111,4656355,Queen Mary 2,1/11/2026,"Southampton, England",No
+9241061-260119,4656355,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260123,4656355,Queen Mary 2,1/23/2026,"Willemstad Curacao, Netherlands Antilles",No
+9241061-260125,4656355,Queen Mary 2,1/25/2026,Panama Canal,No
+9241061-260130,4656355,Queen Mary 2,1/30/2026,"Manzanillo, Mexico Riviera",No
+9241061-260202,4656355,Queen Mary 2,2/2/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260203,4656355,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260205,4656355,Queen Mary 2,2/5/2026,"San Francisco, California",No
+9241061-260206,4656355,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260211,4656355,Queen Mary 2,2/11/2026,"Honolulu, Oahu Island Hawaii",No
+9241061-260212,4656355,Queen Mary 2,2/12/2026,"Kailua-Kona, Hawaii Island",No
+9241061-260218,4656355,Queen Mary 2,2/18/2026,"Papeete, Tahiti Island French Polynesia",No
+9241061-260219,4656355,Queen Mary 2,2/19/2026,"Moorea Island, Society Islands French Polynesia",No
+9241061-260226,4656355,Queen Mary 2,2/26/2026,"Bay of Islands, Russell, New Zealand",No
+9241061-260227,4656355,Queen Mary 2,2/27/2026,"Auckland, New Zealand",No
+9241061-260228,4656355,Queen Mary 2,2/28/2026,"Tauranga, Rotorua, New Zealand",No
+9241061-260304,4656355,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260111,4656354,Queen Mary 2,1/11/2026,"Southampton, England",No
+9241061-260119,4656354,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260123,4656354,Queen Mary 2,1/23/2026,"Willemstad Curacao, Netherlands Antilles",No
+9241061-260125,4656354,Queen Mary 2,1/25/2026,Panama Canal,No
+9241061-260130,4656354,Queen Mary 2,1/30/2026,"Manzanillo, Mexico Riviera",No
+9241061-260202,4656354,Queen Mary 2,2/2/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260203,4656354,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260205,4656354,Queen Mary 2,2/5/2026,"San Francisco, California",No
+9241061-260206,4656354,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260211,4656354,Queen Mary 2,2/11/2026,"Honolulu, Oahu Island Hawaii",No
+9241061-260212,4656354,Queen Mary 2,2/12/2026,"Kailua-Kona, Hawaii Island",No
+9241061-260218,4656354,Queen Mary 2,2/18/2026,"Papeete, Tahiti Island French Polynesia",No
+9241061-260219,4656354,Queen Mary 2,2/19/2026,"Moorea Island, Society Islands French Polynesia",No
+9241061-260226,4656354,Queen Mary 2,2/26/2026,"Bay of Islands, Russell, New Zealand",No
+9241061-260227,4656354,Queen Mary 2,2/27/2026,"Auckland, New Zealand",No
+9241061-260228,4656354,Queen Mary 2,2/28/2026,"Tauranga, Rotorua, New Zealand",No
+9241061-260304,4656354,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260305,4656354,Queen Mary 2,3/5/2026,"Sydney, NSW Australia",No
+9241061-260307,4656354,Queen Mary 2,3/7/2026,"Brisbane, Queensland Australia",No
+9241061-260310,4656354,Queen Mary 2,3/10/2026,"Yorkeys Knob, Queensland Australia",No
+9241061-260314,4656354,Queen Mary 2,3/14/2026,"Darwin, NT Australia",No
+9241061-260317,4656354,Queen Mary 2,3/17/2026,"Bitung, Sulawesi Indonesia",No
+9241061-260321,4656354,Queen Mary 2,3/21/2026,"Hong Kong, China",No
+9241061-260322,4656354,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4656354,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4656354,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4656354,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4656354,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4656354,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4656354,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260412,4656354,Queen Mary 2,4/12/2026,"Cape Town, South Africa",No
+9241061-260413,4656354,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4656354,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4656354,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4656354,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4656354,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4656354,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260119,4711788,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260123,4711788,Queen Mary 2,1/23/2026,Cartagena Colombia,No
+9241061-260124,4711788,Queen Mary 2,1/24/2026,Panama Canal,No
+9241061-260125,4711788,Queen Mary 2,1/25/2026,Panama Canal,No
+9241061-260125,4711788,Queen Mary 2,1/25/2026,"Panama City, Fuerte Amador, Balboa",No
+9241061-260126,4711788,Queen Mary 2,1/26/2026,"Panama City, Fuerte Amador, Balboa",No
+9241061-260130,4711788,Queen Mary 2,1/30/2026,"Manzanillo, Mexico Riviera",No
+9241061-260203,4711788,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260119,4711787,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260123,4711787,Queen Mary 2,1/23/2026,Cartagena Colombia,No
+9241061-260124,4711787,Queen Mary 2,1/24/2026,Panama Canal,No
+9241061-260125,4711787,Queen Mary 2,1/25/2026,Panama Canal,No
+9241061-260125,4711787,Queen Mary 2,1/25/2026,"Panama City, Fuerte Amador, Balboa",No
+9241061-260126,4711787,Queen Mary 2,1/26/2026,"Panama City, Fuerte Amador, Balboa",No
+9241061-260130,4711787,Queen Mary 2,1/30/2026,"Manzanillo, Mexico Riviera",No
+9241061-260202,4711787,Queen Mary 2,2/2/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260203,4711787,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260206,4711787,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260119,4711785,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260123,4711785,Queen Mary 2,1/23/2026,Cartagena Colombia,No
+9241061-260124,4711785,Queen Mary 2,1/24/2026,Panama Canal,No
+9241061-260125,4711785,Queen Mary 2,1/25/2026,Panama Canal,No
+9241061-260125,4711785,Queen Mary 2,1/25/2026,"Panama City, Fuerte Amador, Balboa",No
+9241061-260126,4711785,Queen Mary 2,1/26/2026,"Panama City, Fuerte Amador, Balboa",No
+9241061-260130,4711785,Queen Mary 2,1/30/2026,"Manzanillo, Mexico Riviera",No
+9241061-260202,4711785,Queen Mary 2,2/2/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260203,4711785,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260205,4711785,Queen Mary 2,2/5/2026,"San Francisco, California",No
+9241061-260206,4711785,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260211,4711785,Queen Mary 2,2/11/2026,"Honolulu, Oahu Island Hawaii",No
+9241061-260212,4711785,Queen Mary 2,2/12/2026,"Kailua-Kona, Hawaii Island",No
+9241061-260218,4711785,Queen Mary 2,2/18/2026,"Papeete, Tahiti Island French Polynesia",No
+9241061-260219,4711785,Queen Mary 2,2/19/2026,"Moorea Island, Society Islands French Polynesia",No
+9241061-260226,4711785,Queen Mary 2,2/26/2026,"Bay of Islands, Russell, New Zealand",No
+9241061-260227,4711785,Queen Mary 2,2/27/2026,"Auckland, New Zealand",No
+9241061-260228,4711785,Queen Mary 2,2/28/2026,"Tauranga, Rotorua, New Zealand",No
+9241061-260304,4711785,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260305,4711785,Queen Mary 2,3/5/2026,"Sydney, NSW Australia",No
+9241061-260307,4711785,Queen Mary 2,3/7/2026,"Brisbane, Queensland Australia",No
+9241061-260310,4711785,Queen Mary 2,3/10/2026,"Yorkeys Knob, Queensland Australia",No
+9241061-260314,4711785,Queen Mary 2,3/14/2026,"Darwin, NT Australia",No
+9241061-260317,4711785,Queen Mary 2,3/17/2026,"Bitung, Sulawesi Indonesia",No
+9241061-260321,4711785,Queen Mary 2,3/21/2026,"Hong Kong, China",No
+9241061-260322,4711785,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711785,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4711785,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4711785,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711785,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711785,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711785,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260412,4711785,Queen Mary 2,4/12/2026,"Cape Town, South Africa",No
+9241061-260413,4711785,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4711785,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4711785,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4711785,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4711785,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4711785,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260501,4711785,Queen Mary 2,5/1/2026,"Le Havre-Paris, France",No
+9241061-260508,4711785,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260119,4711786,Queen Mary 2,1/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260123,4711786,Queen Mary 2,1/23/2026,Cartagena Colombia,No
+9241061-260124,4711786,Queen Mary 2,1/24/2026,Panama Canal,No
+9241061-260125,4711786,Queen Mary 2,1/25/2026,Panama Canal,No
+9241061-260125,4711786,Queen Mary 2,1/25/2026,"Panama City, Fuerte Amador, Balboa",No
+9241061-260126,4711786,Queen Mary 2,1/26/2026,"Panama City, Fuerte Amador, Balboa",No
+9241061-260130,4711786,Queen Mary 2,1/30/2026,"Manzanillo, Mexico Riviera",No
+9241061-260202,4711786,Queen Mary 2,2/2/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260203,4711786,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260205,4711786,Queen Mary 2,2/5/2026,"San Francisco, California",No
+9241061-260206,4711786,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260211,4711786,Queen Mary 2,2/11/2026,"Honolulu, Oahu Island Hawaii",No
+9241061-260212,4711786,Queen Mary 2,2/12/2026,"Kailua-Kona, Hawaii Island",No
+9241061-260218,4711786,Queen Mary 2,2/18/2026,"Papeete, Tahiti Island French Polynesia",No
+9241061-260219,4711786,Queen Mary 2,2/19/2026,"Moorea Island, Society Islands French Polynesia",No
+9241061-260226,4711786,Queen Mary 2,2/26/2026,"Bay of Islands, Russell, New Zealand",No
+9241061-260227,4711786,Queen Mary 2,2/27/2026,"Auckland, New Zealand",No
+9241061-260228,4711786,Queen Mary 2,2/28/2026,"Tauranga, Rotorua, New Zealand",No
+9241061-260304,4711786,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260203,4711790,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260205,4711790,Queen Mary 2,2/5/2026,"San Francisco, California",No
+9241061-260206,4711790,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260211,4711790,Queen Mary 2,2/11/2026,"Honolulu, Oahu Island Hawaii",No
+9241061-260212,4711790,Queen Mary 2,2/12/2026,"Kailua-Kona, Hawaii Island",No
+9241061-260218,4711790,Queen Mary 2,2/18/2026,"Papeete, Tahiti Island French Polynesia",No
+9241061-260219,4711790,Queen Mary 2,2/19/2026,"Moorea Island, Society Islands French Polynesia",No
+9241061-260226,4711790,Queen Mary 2,2/26/2026,"Bay of Islands, Russell, New Zealand",No
+9241061-260227,4711790,Queen Mary 2,2/27/2026,"Auckland, New Zealand",No
+9241061-260228,4711790,Queen Mary 2,2/28/2026,"Tauranga, Rotorua, New Zealand",No
+9241061-260304,4711790,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260203,4711789,Queen Mary 2,2/3/2026,"Los Angeles, Long Beach-San Pedro, California",No
+9241061-260205,4711789,Queen Mary 2,2/5/2026,"San Francisco, California",No
+9241061-260206,4711789,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260211,4711789,Queen Mary 2,2/11/2026,"Honolulu, Oahu Island Hawaii",No
+9241061-260212,4711789,Queen Mary 2,2/12/2026,"Kailua-Kona, Hawaii Island",No
+9241061-260218,4711789,Queen Mary 2,2/18/2026,"Papeete, Tahiti Island French Polynesia",No
+9241061-260219,4711789,Queen Mary 2,2/19/2026,"Moorea Island, Society Islands French Polynesia",No
+9241061-260226,4711789,Queen Mary 2,2/26/2026,"Bay of Islands, Russell, New Zealand",No
+9241061-260227,4711789,Queen Mary 2,2/27/2026,"Auckland, New Zealand",No
+9241061-260228,4711789,Queen Mary 2,2/28/2026,"Tauranga, Rotorua, New Zealand",No
+9241061-260304,4711789,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260305,4711789,Queen Mary 2,3/5/2026,"Sydney, NSW Australia",No
+9241061-260307,4711789,Queen Mary 2,3/7/2026,"Brisbane, Queensland Australia",No
+9241061-260310,4711789,Queen Mary 2,3/10/2026,"Yorkeys Knob, Queensland Australia",No
+9241061-260314,4711789,Queen Mary 2,3/14/2026,"Darwin, NT Australia",No
+9241061-260317,4711789,Queen Mary 2,3/17/2026,"Bitung, Sulawesi Indonesia",No
+9241061-260321,4711789,Queen Mary 2,3/21/2026,"Hong Kong, China",No
+9241061-260322,4711789,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711789,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4711789,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4711789,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711789,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711789,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711789,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260412,4711789,Queen Mary 2,4/12/2026,"Cape Town, South Africa",No
+9241061-260413,4711789,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4711789,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4711789,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4711789,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4711789,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4711789,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260501,4711789,Queen Mary 2,5/1/2026,"Le Havre-Paris, France",No
+9241061-260508,4711789,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260206,4711792,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260211,4711792,Queen Mary 2,2/11/2026,"Honolulu, Oahu Island Hawaii",No
+9241061-260212,4711792,Queen Mary 2,2/12/2026,"Kailua-Kona, Hawaii Island",No
+9241061-260218,4711792,Queen Mary 2,2/18/2026,"Papeete, Tahiti Island French Polynesia",No
+9241061-260219,4711792,Queen Mary 2,2/19/2026,"Moorea Island, Society Islands French Polynesia",No
+9241061-260226,4711792,Queen Mary 2,2/26/2026,"Bay of Islands, Russell, New Zealand",No
+9241061-260227,4711792,Queen Mary 2,2/27/2026,"Auckland, New Zealand",No
+9241061-260228,4711792,Queen Mary 2,2/28/2026,"Tauranga, Rotorua, New Zealand",No
+9241061-260304,4711792,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260206,4711791,Queen Mary 2,2/6/2026,"San Francisco, California",No
+9241061-260211,4711791,Queen Mary 2,2/11/2026,"Honolulu, Oahu Island Hawaii",No
+9241061-260212,4711791,Queen Mary 2,2/12/2026,"Kailua-Kona, Hawaii Island",No
+9241061-260218,4711791,Queen Mary 2,2/18/2026,"Papeete, Tahiti Island French Polynesia",No
+9241061-260219,4711791,Queen Mary 2,2/19/2026,"Moorea Island, Society Islands French Polynesia",No
+9241061-260226,4711791,Queen Mary 2,2/26/2026,"Bay of Islands, Russell, New Zealand",No
+9241061-260227,4711791,Queen Mary 2,2/27/2026,"Auckland, New Zealand",No
+9241061-260228,4711791,Queen Mary 2,2/28/2026,"Tauranga, Rotorua, New Zealand",No
+9241061-260304,4711791,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260305,4711791,Queen Mary 2,3/5/2026,"Sydney, NSW Australia",No
+9241061-260307,4711791,Queen Mary 2,3/7/2026,"Brisbane, Queensland Australia",No
+9241061-260310,4711791,Queen Mary 2,3/10/2026,"Yorkeys Knob, Queensland Australia",No
+9241061-260314,4711791,Queen Mary 2,3/14/2026,"Darwin, NT Australia",No
+9241061-260317,4711791,Queen Mary 2,3/17/2026,"Bitung, Sulawesi Indonesia",No
+9241061-260321,4711791,Queen Mary 2,3/21/2026,"Hong Kong, China",No
+9241061-260322,4711791,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711791,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4711791,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4711791,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711791,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711791,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711791,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260412,4711791,Queen Mary 2,4/12/2026,"Cape Town, South Africa",No
+9241061-260413,4711791,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4711791,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4711791,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4711791,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4711791,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4711791,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260501,4711791,Queen Mary 2,5/1/2026,"Le Havre-Paris, France",No
+9241061-260508,4711791,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260304,4711797,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260307,4711797,Queen Mary 2,3/7/2026,"Brisbane, Queensland Australia",No
+9241061-260310,4711797,Queen Mary 2,3/10/2026,"Yorkeys Knob, Queensland Australia",No
+9241061-260314,4711797,Queen Mary 2,3/14/2026,"Darwin, NT Australia",No
+9241061-260317,4711797,Queen Mary 2,3/17/2026,"Bitung, Sulawesi Indonesia",No
+9241061-260322,4711797,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260304,4711796,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260307,4711796,Queen Mary 2,3/7/2026,"Brisbane, Queensland Australia",No
+9241061-260310,4711796,Queen Mary 2,3/10/2026,"Yorkeys Knob, Queensland Australia",No
+9241061-260314,4711796,Queen Mary 2,3/14/2026,"Darwin, NT Australia",No
+9241061-260317,4711796,Queen Mary 2,3/17/2026,"Bitung, Sulawesi Indonesia",No
+9241061-260321,4711796,Queen Mary 2,3/21/2026,"Hong Kong, China",No
+9241061-260322,4711796,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711796,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260328,4711796,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260304,4711795,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260307,4711795,Queen Mary 2,3/7/2026,"Brisbane, Queensland Australia",No
+9241061-260310,4711795,Queen Mary 2,3/10/2026,"Yorkeys Knob, Queensland Australia",No
+9241061-260314,4711795,Queen Mary 2,3/14/2026,"Darwin, NT Australia",No
+9241061-260317,4711795,Queen Mary 2,3/17/2026,"Bitung, Sulawesi Indonesia",No
+9241061-260321,4711795,Queen Mary 2,3/21/2026,"Hong Kong, China",No
+9241061-260322,4711795,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711795,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4711795,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4711795,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711795,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711795,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711795,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260413,4711795,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260304,4711794,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260307,4711794,Queen Mary 2,3/7/2026,"Brisbane, Queensland Australia",No
+9241061-260310,4711794,Queen Mary 2,3/10/2026,"Yorkeys Knob, Queensland Australia",No
+9241061-260314,4711794,Queen Mary 2,3/14/2026,"Darwin, NT Australia",No
+9241061-260317,4711794,Queen Mary 2,3/17/2026,"Bitung, Sulawesi Indonesia",No
+9241061-260321,4711794,Queen Mary 2,3/21/2026,"Hong Kong, China",No
+9241061-260322,4711794,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711794,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4711794,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4711794,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711794,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711794,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711794,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260412,4711794,Queen Mary 2,4/12/2026,"Cape Town, South Africa",No
+9241061-260413,4711794,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4711794,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4711794,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4711794,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4711794,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4711794,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260304,4711793,Queen Mary 2,3/4/2026,"Sydney, NSW Australia",No
+9241061-260307,4711793,Queen Mary 2,3/7/2026,"Brisbane, Queensland Australia",No
+9241061-260310,4711793,Queen Mary 2,3/10/2026,"Yorkeys Knob, Queensland Australia",No
+9241061-260314,4711793,Queen Mary 2,3/14/2026,"Darwin, NT Australia",No
+9241061-260317,4711793,Queen Mary 2,3/17/2026,"Bitung, Sulawesi Indonesia",No
+9241061-260321,4711793,Queen Mary 2,3/21/2026,"Hong Kong, China",No
+9241061-260322,4711793,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711793,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4711793,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4711793,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711793,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711793,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711793,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260412,4711793,Queen Mary 2,4/12/2026,"Cape Town, South Africa",No
+9241061-260413,4711793,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4711793,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4711793,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4711793,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4711793,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4711793,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260501,4711793,Queen Mary 2,5/1/2026,"Le Havre-Paris, France",No
+9241061-260508,4711793,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260322,4711801,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711801,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260328,4711801,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260322,4711800,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711800,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4711800,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4711800,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711800,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711800,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711800,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260413,4711800,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260322,4711799,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711799,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4711799,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4711799,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711799,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711799,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711799,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260412,4711799,Queen Mary 2,4/12/2026,"Cape Town, South Africa",No
+9241061-260413,4711799,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4711799,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4711799,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4711799,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4711799,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4711799,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260322,4711798,Queen Mary 2,3/22/2026,"Hong Kong, China",No
+9241061-260324,4711798,Queen Mary 2,3/24/2026,"Da Nang, Hue City, Vietnam",No
+9241061-260327,4711798,Queen Mary 2,3/27/2026,Singapore,No
+9241061-260328,4711798,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711798,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711798,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711798,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260412,4711798,Queen Mary 2,4/12/2026,"Cape Town, South Africa",No
+9241061-260413,4711798,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4711798,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4711798,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4711798,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4711798,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4711798,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260501,4711798,Queen Mary 2,5/1/2026,"Le Havre-Paris, France",No
+9241061-260508,4711798,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260328,4711803,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711803,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711803,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711803,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260413,4711803,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260328,4711802,Queen Mary 2,3/28/2026,Singapore,No
+9241061-260329,4711802,Queen Mary 2,3/29/2026,"Klang, Kuala Lumpur, Malaysia Selangor",No
+9241061-260405,4711802,Queen Mary 2,4/5/2026,"Port Louis, Mauritius Island",No
+9241061-260409,4711802,Queen Mary 2,4/9/2026,"Durban, South Africa",No
+9241061-260412,4711802,Queen Mary 2,4/12/2026,"Cape Town, South Africa",No
+9241061-260413,4711802,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4711802,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4711802,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4711802,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4711802,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4711802,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260413,4711804,Queen Mary 2,4/13/2026,"Cape Town, South Africa",No
+9241061-260415,4711804,Queen Mary 2,4/15/2026,"Walvis Bay, Namibia",No
+9241061-260422,4711804,Queen Mary 2,4/22/2026,"Dakar, Senegal",No
+9241061-260425,4711804,Queen Mary 2,4/25/2026,"Santa Cruz de Tenerife, Canary Islands",No
+9241061-260427,4711804,Queen Mary 2,4/27/2026,"Cadiz, Spain, Sevilla",No
+9241061-260430,4711804,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260501,4711804,Queen Mary 2,5/1/2026,"Le Havre-Paris, France",No
+9241061-260508,4711804,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260430,4711806,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260501,4711806,Queen Mary 2,5/1/2026,"Le Havre-Paris, France",No
+9241061-260508,4711806,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260430,4711805,Queen Mary 2,4/30/2026,"Southampton, England",No
+9241061-260501,4711805,Queen Mary 2,5/1/2026,"Le Havre-Paris, France",No
+9241061-260508,4711805,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260515,4711805,Queen Mary 2,5/15/2026,"Southampton, England",No
+9241061-260501,4711807,Queen Mary 2,5/1/2026,"Le Havre-Paris, France",No
+9241061-260508,4711807,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260508,4711809,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260515,4711809,Queen Mary 2,5/15/2026,"Southampton, England",No
+9241061-260508,4711808,Queen Mary 2,5/8/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260515,4711808,Queen Mary 2,5/15/2026,"Southampton, England",No
+9241061-260517,4711808,Queen Mary 2,5/17/2026,"Stavanger, Norway",No
+9241061-260518,4711808,Queen Mary 2,5/18/2026,"Skjolden, Sognefjord, Norway",No
+9241061-260519,4711808,Queen Mary 2,5/19/2026,"Olden, Norway",No
+9241061-260522,4711808,Queen Mary 2,5/22/2026,"Southampton, England",No
+9241061-260529,4711808,Queen Mary 2,5/29/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260515,4711810,Queen Mary 2,5/15/2026,"Southampton, England",No
+9241061-260517,4711810,Queen Mary 2,5/17/2026,"Stavanger, Norway",No
+9241061-260518,4711810,Queen Mary 2,5/18/2026,"Skjolden, Sognefjord, Norway",No
+9241061-260519,4711810,Queen Mary 2,5/19/2026,"Olden, Norway",No
+9241061-260522,4711810,Queen Mary 2,5/22/2026,"Southampton, England",No
+9241061-260522,4711812,Queen Mary 2,5/22/2026,"Southampton, England",No
+9241061-260529,4711812,Queen Mary 2,5/29/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260522,4711811,Queen Mary 2,5/22/2026,"Southampton, England",No
+9241061-260529,4711811,Queen Mary 2,5/29/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260605,4711811,Queen Mary 2,6/5/2026,"Southampton, England",No
+9241061-260529,4711815,Queen Mary 2,5/29/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260605,4711815,Queen Mary 2,6/5/2026,"Southampton, England",No
+9241061-260529,4711814,Queen Mary 2,5/29/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260605,4711814,Queen Mary 2,6/5/2026,"Southampton, England",No
+9241061-260606,4711814,Queen Mary 2,6/6/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260608,4711814,Queen Mary 2,6/8/2026,"Le Havre-Paris, France",No
+9241061-260529,4711813,Queen Mary 2,5/29/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260605,4711813,Queen Mary 2,6/5/2026,"Southampton, England",No
+9241061-260606,4711813,Queen Mary 2,6/6/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260608,4711813,Queen Mary 2,6/8/2026,"Le Havre-Paris, France",No
+9241061-260609,4711813,Queen Mary 2,6/9/2026,"Cherbourg, France",No
+9241061-260610,4711813,Queen Mary 2,6/10/2026,"Southampton, England",No
+9241061-260617,4711813,Queen Mary 2,6/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260605,4711816,Queen Mary 2,6/5/2026,"Southampton, England",No
+9241061-260606,4711816,Queen Mary 2,6/6/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260608,4711816,Queen Mary 2,6/8/2026,"Le Havre-Paris, France",No
+9241061-260609,4711816,Queen Mary 2,6/9/2026,"Cherbourg, France",No
+9241061-260610,4711816,Queen Mary 2,6/10/2026,"Southampton, England",No
+9241061-260608,4711817,Queen Mary 2,6/8/2026,"Le Havre-Paris, France",No
+9241061-260609,4711817,Queen Mary 2,6/9/2026,"Cherbourg, France",No
+9241061-260610,4711817,Queen Mary 2,6/10/2026,"Southampton, England",No
+9241061-260617,4711817,Queen Mary 2,6/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260610,4711819,Queen Mary 2,6/10/2026,"Southampton, England",No
+9241061-260617,4711819,Queen Mary 2,6/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260610,4711818,Queen Mary 2,6/10/2026,"Southampton, England",No
+9241061-260617,4711818,Queen Mary 2,6/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260624,4711818,Queen Mary 2,6/24/2026,"Southampton, England",No
+9241061-260617,4711821,Queen Mary 2,6/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260624,4711821,Queen Mary 2,6/24/2026,"Southampton, England",No
+9241061-260617,4711820,Queen Mary 2,6/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260624,4711820,Queen Mary 2,6/24/2026,"Southampton, England",No
+9241061-260625,4711820,Queen Mary 2,6/25/2026,"Southampton, England",No
+9241061-260626,4711820,Queen Mary 2,6/26/2026,"Southampton, England",No
+9241061-260703,4711820,Queen Mary 2,7/3/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260624,4711822,Queen Mary 2,6/24/2026,"Southampton, England",No
+9241061-260626,4711822,Queen Mary 2,6/26/2026,"Southampton, England",No
+9241061-260626,4711825,Queen Mary 2,6/26/2026,"Southampton, England",No
+9241061-260703,4711825,Queen Mary 2,7/3/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260626,4711824,Queen Mary 2,6/26/2026,"Southampton, England",No
+9241061-260703,4711824,Queen Mary 2,7/3/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260704,4711824,Queen Mary 2,7/4/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260705,4711824,Queen Mary 2,7/5/2026,"Newport RI, Rhode Island",No
+9241061-260707,4711824,Queen Mary 2,7/7/2026,"Halifax, Nova Scotia Canada",No
+9241061-260708,4711824,Queen Mary 2,7/8/2026,"Halifax, Nova Scotia Canada",No
+9241061-260710,4711824,Queen Mary 2,7/10/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260626,4711823,Queen Mary 2,6/26/2026,"Southampton, England",No
+9241061-260703,4711823,Queen Mary 2,7/3/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260704,4711823,Queen Mary 2,7/4/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260705,4711823,Queen Mary 2,7/5/2026,"Newport RI, Rhode Island",No
+9241061-260707,4711823,Queen Mary 2,7/7/2026,"Halifax, Nova Scotia Canada",No
+9241061-260708,4711823,Queen Mary 2,7/8/2026,"Halifax, Nova Scotia Canada",No
+9241061-260710,4711823,Queen Mary 2,7/10/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260717,4711823,Queen Mary 2,7/17/2026,"Southampton, England",No
+9241061-260703,4711827,Queen Mary 2,7/3/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260705,4711827,Queen Mary 2,7/5/2026,"Newport RI, Rhode Island",No
+9241061-260707,4711827,Queen Mary 2,7/7/2026,"Halifax, Nova Scotia Canada",No
+9241061-260708,4711827,Queen Mary 2,7/8/2026,"Halifax, Nova Scotia Canada",No
+9241061-260710,4711827,Queen Mary 2,7/10/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260703,4711826,Queen Mary 2,7/3/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260705,4711826,Queen Mary 2,7/5/2026,"Newport RI, Rhode Island",No
+9241061-260707,4711826,Queen Mary 2,7/7/2026,"Halifax, Nova Scotia Canada",No
+9241061-260708,4711826,Queen Mary 2,7/8/2026,"Halifax, Nova Scotia Canada",No
+9241061-260710,4711826,Queen Mary 2,7/10/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260717,4711826,Queen Mary 2,7/17/2026,"Southampton, England",No
+9241061-260710,4711830,Queen Mary 2,7/10/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260717,4711830,Queen Mary 2,7/17/2026,"Southampton, England",No
+9241061-260710,4711829,Queen Mary 2,7/10/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260717,4711829,Queen Mary 2,7/17/2026,"Southampton, England",No
+9241061-260719,4711829,Queen Mary 2,7/19/2026,"Hamburg, Germany",No
+9241061-260710,4711828,Queen Mary 2,7/10/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260717,4711828,Queen Mary 2,7/17/2026,"Southampton, England",No
+9241061-260719,4711828,Queen Mary 2,7/19/2026,"Hamburg, Germany",No
+9241061-260721,4711828,Queen Mary 2,7/21/2026,"Southampton, England",No
+9241061-260728,4711828,Queen Mary 2,7/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260717,4711832,Queen Mary 2,7/17/2026,"Southampton, England",No
+9241061-260719,4711832,Queen Mary 2,7/19/2026,"Hamburg, Germany",No
+9241061-260717,4711831,Queen Mary 2,7/17/2026,"Southampton, England",No
+9241061-260719,4711831,Queen Mary 2,7/19/2026,"Hamburg, Germany",No
+9241061-260721,4711831,Queen Mary 2,7/21/2026,"Southampton, England",No
+9241061-260719,4711834,Queen Mary 2,7/19/2026,"Hamburg, Germany",No
+9241061-260721,4711834,Queen Mary 2,7/21/2026,"Southampton, England",No
+9241061-260719,4711833,Queen Mary 2,7/19/2026,"Hamburg, Germany",No
+9241061-260721,4711833,Queen Mary 2,7/21/2026,"Southampton, England",No
+9241061-260728,4711833,Queen Mary 2,7/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260721,4711836,Queen Mary 2,7/21/2026,"Southampton, England",No
+9241061-260728,4711836,Queen Mary 2,7/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260721,4711835,Queen Mary 2,7/21/2026,"Southampton, England",No
+9241061-260728,4711835,Queen Mary 2,7/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260804,4711835,Queen Mary 2,8/4/2026,"Southampton, England",No
+9241061-260728,4711838,Queen Mary 2,7/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260804,4711838,Queen Mary 2,8/4/2026,"Southampton, England",No
+9241061-260728,4711837,Queen Mary 2,7/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260804,4711837,Queen Mary 2,8/4/2026,"Southampton, England",No
+9241061-260805,4711837,Queen Mary 2,8/5/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260807,4711837,Queen Mary 2,8/7/2026,"Olden, Norway",No
+9241061-260808,4711837,Queen Mary 2,8/8/2026,"Skjolden, Sognefjord, Norway",No
+9241061-260811,4711837,Queen Mary 2,8/11/2026,"Isafjordur, Westfjords Iceland",No
+9241061-260812,4711837,Queen Mary 2,8/12/2026,"Reykjavik, Iceland",No
+9241061-260813,4711837,Queen Mary 2,8/13/2026,"Reykjavik, Iceland",No
+9241061-260818,4711837,Queen Mary 2,8/18/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260804,4711840,Queen Mary 2,8/4/2026,"Southampton, England",No
+9241061-260805,4711840,Queen Mary 2,8/5/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260807,4711840,Queen Mary 2,8/7/2026,"Olden, Norway",No
+9241061-260808,4711840,Queen Mary 2,8/8/2026,"Skjolden, Sognefjord, Norway",No
+9241061-260811,4711840,Queen Mary 2,8/11/2026,"Isafjordur, Westfjords Iceland",No
+9241061-260812,4711840,Queen Mary 2,8/12/2026,"Reykjavik, Iceland",No
+9241061-260813,4711840,Queen Mary 2,8/13/2026,"Reykjavik, Iceland",No
+9241061-260818,4711840,Queen Mary 2,8/18/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260804,4711839,Queen Mary 2,8/4/2026,"Southampton, England",No
+9241061-260805,4711839,Queen Mary 2,8/5/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260807,4711839,Queen Mary 2,8/7/2026,"Olden, Norway",No
+9241061-260808,4711839,Queen Mary 2,8/8/2026,"Skjolden, Sognefjord, Norway",No
+9241061-260811,4711839,Queen Mary 2,8/11/2026,"Isafjordur, Westfjords Iceland",No
+9241061-260812,4711839,Queen Mary 2,8/12/2026,"Reykjavik, Iceland",No
+9241061-260813,4711839,Queen Mary 2,8/13/2026,"Reykjavik, Iceland",No
+9241061-260818,4711839,Queen Mary 2,8/18/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260825,4711839,Queen Mary 2,8/25/2026,"Southampton, England",No
+9241061-260818,4711843,Queen Mary 2,8/18/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260825,4711843,Queen Mary 2,8/25/2026,"Southampton, England",No
+9241061-260818,4711842,Queen Mary 2,8/18/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260825,4711842,Queen Mary 2,8/25/2026,"Southampton, England",No
+9241061-260827,4711842,Queen Mary 2,8/27/2026,"Hamburg, Germany",No
+9241061-260818,4711841,Queen Mary 2,8/18/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260825,4711841,Queen Mary 2,8/25/2026,"Southampton, England",No
+9241061-260827,4711841,Queen Mary 2,8/27/2026,"Hamburg, Germany",No
+9241061-260829,4711841,Queen Mary 2,8/29/2026,"Bergen, Norway",No
+9241061-260830,4711841,Queen Mary 2,8/30/2026,"Olden, Norway",No
+9241061-260831,4711841,Queen Mary 2,8/31/2026,"Alesund, Norway",No
+9241061-260902,4711841,Queen Mary 2,9/2/2026,"Hamburg, Germany",No
+9241061-260904,4711841,Queen Mary 2,9/4/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260905,4711841,Queen Mary 2,9/5/2026,"Southampton, England",No
+9241061-260912,4711841,Queen Mary 2,9/12/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260825,4711845,Queen Mary 2,8/25/2026,"Southampton, England",No
+9241061-260827,4711845,Queen Mary 2,8/27/2026,"Hamburg, Germany",No
+9241061-260825,4711844,Queen Mary 2,8/25/2026,"Southampton, England",No
+9241061-260827,4711844,Queen Mary 2,8/27/2026,"Hamburg, Germany",No
+9241061-260829,4711844,Queen Mary 2,8/29/2026,"Bergen, Norway",No
+9241061-260830,4711844,Queen Mary 2,8/30/2026,"Olden, Norway",No
+9241061-260831,4711844,Queen Mary 2,8/31/2026,"Alesund, Norway",No
+9241061-260902,4711844,Queen Mary 2,9/2/2026,"Hamburg, Germany",No
+9241061-260904,4711844,Queen Mary 2,9/4/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260905,4711844,Queen Mary 2,9/5/2026,"Southampton, England",No
+9241061-260827,4711846,Queen Mary 2,8/27/2026,"Hamburg, Germany",No
+9241061-260829,4711846,Queen Mary 2,8/29/2026,"Bergen, Norway",No
+9241061-260830,4711846,Queen Mary 2,8/30/2026,"Olden, Norway",No
+9241061-260831,4711846,Queen Mary 2,8/31/2026,"Alesund, Norway",No
+9241061-260902,4711846,Queen Mary 2,9/2/2026,"Hamburg, Germany",No
+9241061-260902,4711848,Queen Mary 2,9/2/2026,"Hamburg, Germany",No
+9241061-260904,4711848,Queen Mary 2,9/4/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260905,4711848,Queen Mary 2,9/5/2026,"Southampton, England",No
+9241061-260902,4711847,Queen Mary 2,9/2/2026,"Hamburg, Germany",No
+9241061-260904,4711847,Queen Mary 2,9/4/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-260905,4711847,Queen Mary 2,9/5/2026,"Southampton, England",No
+9241061-260912,4711847,Queen Mary 2,9/12/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260905,4711850,Queen Mary 2,9/5/2026,"Southampton, England",No
+9241061-260912,4711850,Queen Mary 2,9/12/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260905,4711849,Queen Mary 2,9/5/2026,"Southampton, England",No
+9241061-260912,4711849,Queen Mary 2,9/12/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260919,4711849,Queen Mary 2,9/19/2026,"Southampton, England",No
+9241061-260912,4711852,Queen Mary 2,9/12/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260919,4711852,Queen Mary 2,9/19/2026,"Southampton, England",No
+9241061-260912,4711851,Queen Mary 2,9/12/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260919,4711851,Queen Mary 2,9/19/2026,"Southampton, England",No
+9241061-260926,4711851,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260919,4711857,Queen Mary 2,9/19/2026,"Southampton, England",No
+9241061-260926,4711857,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260919,4711856,Queen Mary 2,9/19/2026,"Southampton, England",No
+9241061-260926,4711856,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260929,4711856,Queen Mary 2,9/29/2026,"Boston, Massachusetts",No
+9241061-261001,4711856,Queen Mary 2,10/1/2026,"Sydney NS, Nova Scotia Canada",No
+9241061-261004,4711856,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-260919,4711855,Queen Mary 2,9/19/2026,"Southampton, England",No
+9241061-260926,4711855,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260929,4711855,Queen Mary 2,9/29/2026,"Boston, Massachusetts",No
+9241061-261001,4711855,Queen Mary 2,10/1/2026,"Sydney NS, Nova Scotia Canada",No
+9241061-261003,4711855,Queen Mary 2,10/3/2026,"Quebec City, Canada",No
+9241061-261004,4711855,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-261005,4711855,Queen Mary 2,10/5/2026,"Quebec City, Canada",No
+9241061-261006,4711855,Queen Mary 2,10/6/2026,"Saguenay, Quebec Canada",No
+9241061-261007,4711855,Queen Mary 2,10/7/2026,"Sept-Iles, Quebec Canada",No
+9241061-261009,4711855,Queen Mary 2,10/9/2026,"Halifax, Nova Scotia Canada",No
+9241061-261011,4711855,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260919,4711854,Queen Mary 2,9/19/2026,"Southampton, England",No
+9241061-260926,4711854,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260929,4711854,Queen Mary 2,9/29/2026,"Boston, Massachusetts",No
+9241061-261001,4711854,Queen Mary 2,10/1/2026,"Sydney NS, Nova Scotia Canada",No
+9241061-261003,4711854,Queen Mary 2,10/3/2026,"Quebec City, Canada",No
+9241061-261004,4711854,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-261005,4711854,Queen Mary 2,10/5/2026,"Quebec City, Canada",No
+9241061-261006,4711854,Queen Mary 2,10/6/2026,"Saguenay, Quebec Canada",No
+9241061-261007,4711854,Queen Mary 2,10/7/2026,"Sept-Iles, Quebec Canada",No
+9241061-261009,4711854,Queen Mary 2,10/9/2026,"Halifax, Nova Scotia Canada",No
+9241061-261011,4711854,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261018,4711854,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-260919,4711853,Queen Mary 2,9/19/2026,"Southampton, England",No
+9241061-260926,4711853,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260929,4711853,Queen Mary 2,9/29/2026,"Boston, Massachusetts",No
+9241061-261001,4711853,Queen Mary 2,10/1/2026,"Sydney NS, Nova Scotia Canada",No
+9241061-261003,4711853,Queen Mary 2,10/3/2026,"Quebec City, Canada",No
+9241061-261004,4711853,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-261005,4711853,Queen Mary 2,10/5/2026,"Quebec City, Canada",No
+9241061-261006,4711853,Queen Mary 2,10/6/2026,"Saguenay, Quebec Canada",No
+9241061-261007,4711853,Queen Mary 2,10/7/2026,"Sept-Iles, Quebec Canada",No
+9241061-261009,4711853,Queen Mary 2,10/9/2026,"Halifax, Nova Scotia Canada",No
+9241061-261011,4711853,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261018,4711853,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-261020,4711853,Queen Mary 2,10/20/2026,"Hamburg, Germany",No
+9241061-260926,4711861,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260929,4711861,Queen Mary 2,9/29/2026,"Boston, Massachusetts",No
+9241061-261001,4711861,Queen Mary 2,10/1/2026,"Sydney NS, Nova Scotia Canada",No
+9241061-261004,4711861,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-260926,4711860,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260929,4711860,Queen Mary 2,9/29/2026,"Boston, Massachusetts",No
+9241061-261001,4711860,Queen Mary 2,10/1/2026,"Sydney NS, Nova Scotia Canada",No
+9241061-261003,4711860,Queen Mary 2,10/3/2026,"Quebec City, Canada",No
+9241061-261004,4711860,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-261005,4711860,Queen Mary 2,10/5/2026,"Quebec City, Canada",No
+9241061-261006,4711860,Queen Mary 2,10/6/2026,"Saguenay, Quebec Canada",No
+9241061-261007,4711860,Queen Mary 2,10/7/2026,"Sept-Iles, Quebec Canada",No
+9241061-261009,4711860,Queen Mary 2,10/9/2026,"Halifax, Nova Scotia Canada",No
+9241061-261011,4711860,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260926,4711859,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260929,4711859,Queen Mary 2,9/29/2026,"Boston, Massachusetts",No
+9241061-261001,4711859,Queen Mary 2,10/1/2026,"Sydney NS, Nova Scotia Canada",No
+9241061-261003,4711859,Queen Mary 2,10/3/2026,"Quebec City, Canada",No
+9241061-261004,4711859,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-261005,4711859,Queen Mary 2,10/5/2026,"Quebec City, Canada",No
+9241061-261006,4711859,Queen Mary 2,10/6/2026,"Saguenay, Quebec Canada",No
+9241061-261007,4711859,Queen Mary 2,10/7/2026,"Sept-Iles, Quebec Canada",No
+9241061-261009,4711859,Queen Mary 2,10/9/2026,"Halifax, Nova Scotia Canada",No
+9241061-261011,4711859,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261018,4711859,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-260926,4711858,Queen Mary 2,9/26/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-260929,4711858,Queen Mary 2,9/29/2026,"Boston, Massachusetts",No
+9241061-261001,4711858,Queen Mary 2,10/1/2026,"Sydney NS, Nova Scotia Canada",No
+9241061-261003,4711858,Queen Mary 2,10/3/2026,"Quebec City, Canada",No
+9241061-261004,4711858,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-261005,4711858,Queen Mary 2,10/5/2026,"Quebec City, Canada",No
+9241061-261006,4711858,Queen Mary 2,10/6/2026,"Saguenay, Quebec Canada",No
+9241061-261007,4711858,Queen Mary 2,10/7/2026,"Sept-Iles, Quebec Canada",No
+9241061-261009,4711858,Queen Mary 2,10/9/2026,"Halifax, Nova Scotia Canada",No
+9241061-261011,4711858,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261018,4711858,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-261020,4711858,Queen Mary 2,10/20/2026,"Hamburg, Germany",No
+9241061-261004,4711863,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-261006,4711863,Queen Mary 2,10/6/2026,"Saguenay, Quebec Canada",No
+9241061-261007,4711863,Queen Mary 2,10/7/2026,"Sept-Iles, Quebec Canada",No
+9241061-261009,4711863,Queen Mary 2,10/9/2026,"Halifax, Nova Scotia Canada",No
+9241061-261011,4711863,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261004,4711862,Queen Mary 2,10/4/2026,"Quebec City, Canada",No
+9241061-261006,4711862,Queen Mary 2,10/6/2026,"Saguenay, Quebec Canada",No
+9241061-261007,4711862,Queen Mary 2,10/7/2026,"Sept-Iles, Quebec Canada",No
+9241061-261009,4711862,Queen Mary 2,10/9/2026,"Halifax, Nova Scotia Canada",No
+9241061-261011,4711862,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261018,4711862,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-261020,4711862,Queen Mary 2,10/20/2026,"Hamburg, Germany",No
+9241061-261011,4711866,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261018,4711866,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-261011,4711865,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261018,4711865,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-261020,4711865,Queen Mary 2,10/20/2026,"Hamburg, Germany",No
+9241061-261011,4711864,Queen Mary 2,10/11/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261018,4711864,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-261020,4711864,Queen Mary 2,10/20/2026,"Hamburg, Germany",No
+9241061-261022,4711864,Queen Mary 2,10/22/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-261023,4711864,Queen Mary 2,10/23/2026,"Southampton, England",No
+9241061-261030,4711864,Queen Mary 2,10/30/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261018,4711868,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-261020,4711868,Queen Mary 2,10/20/2026,"Hamburg, Germany",No
+9241061-261018,4711867,Queen Mary 2,10/18/2026,"Southampton, England",No
+9241061-261020,4711867,Queen Mary 2,10/20/2026,"Hamburg, Germany",No
+9241061-261022,4711867,Queen Mary 2,10/22/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-261023,4711867,Queen Mary 2,10/23/2026,"Southampton, England",No
+9241061-261020,4711870,Queen Mary 2,10/20/2026,"Hamburg, Germany",No
+9241061-261022,4711870,Queen Mary 2,10/22/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-261023,4711870,Queen Mary 2,10/23/2026,"Southampton, England",No
+9241061-261020,4711869,Queen Mary 2,10/20/2026,"Hamburg, Germany",No
+9241061-261022,4711869,Queen Mary 2,10/22/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-261023,4711869,Queen Mary 2,10/23/2026,"Southampton, England",No
+9241061-261030,4711869,Queen Mary 2,10/30/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261023,4711872,Queen Mary 2,10/23/2026,"Southampton, England",No
+9241061-261030,4711872,Queen Mary 2,10/30/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261023,4711871,Queen Mary 2,10/23/2026,"Southampton, England",No
+9241061-261030,4711871,Queen Mary 2,10/30/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261106,4711871,Queen Mary 2,11/6/2026,"Southampton, England",No
+9241061-261030,4711874,Queen Mary 2,10/30/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261106,4711874,Queen Mary 2,11/6/2026,"Southampton, England",No
+9241061-261030,4711873,Queen Mary 2,10/30/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261106,4711873,Queen Mary 2,11/6/2026,"Southampton, England",No
+9241061-261108,4711873,Queen Mary 2,11/8/2026,"Rotterdam, Netherlands South Holland",No
+9241061-261109,4711873,Queen Mary 2,11/9/2026,"Rotterdam, Netherlands South Holland",No
+9241061-261110,4711873,Queen Mary 2,11/10/2026,"Southampton, England",No
+9241061-261117,4711873,Queen Mary 2,11/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261106,4711875,Queen Mary 2,11/6/2026,"Southampton, England",No
+9241061-261108,4711875,Queen Mary 2,11/8/2026,"Rotterdam, Netherlands South Holland",No
+9241061-261109,4711875,Queen Mary 2,11/9/2026,"Rotterdam, Netherlands South Holland",No
+9241061-261110,4711875,Queen Mary 2,11/10/2026,"Southampton, England",No
+9241061-261110,4711878,Queen Mary 2,11/10/2026,"Southampton, England",No
+9241061-261117,4711878,Queen Mary 2,11/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261110,4711877,Queen Mary 2,11/10/2026,"Southampton, England",No
+9241061-261117,4711877,Queen Mary 2,11/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261121,4711877,Queen Mary 2,11/21/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9241061-261122,4711877,Queen Mary 2,11/22/2026,"Basseterre St Kitts, Port Zante",No
+9241061-261123,4711877,Queen Mary 2,11/23/2026,"St Johns Antigua, RCI Royal Beach Club",No
+9241061-261124,4711877,Queen Mary 2,11/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9241061-261128,4711877,Queen Mary 2,11/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261110,4711876,Queen Mary 2,11/10/2026,"Southampton, England",No
+9241061-261117,4711876,Queen Mary 2,11/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261121,4711876,Queen Mary 2,11/21/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9241061-261122,4711876,Queen Mary 2,11/22/2026,"Basseterre St Kitts, Port Zante",No
+9241061-261123,4711876,Queen Mary 2,11/23/2026,"St Johns Antigua, RCI Royal Beach Club",No
+9241061-261124,4711876,Queen Mary 2,11/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9241061-261128,4711876,Queen Mary 2,11/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261205,4711876,Queen Mary 2,12/5/2026,"Southampton, England",No
+9241061-261117,4711880,Queen Mary 2,11/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261121,4711880,Queen Mary 2,11/21/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9241061-261122,4711880,Queen Mary 2,11/22/2026,"Basseterre St Kitts, Port Zante",No
+9241061-261123,4711880,Queen Mary 2,11/23/2026,"St Johns Antigua, RCI Royal Beach Club",No
+9241061-261124,4711880,Queen Mary 2,11/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9241061-261128,4711880,Queen Mary 2,11/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261117,4711879,Queen Mary 2,11/17/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261121,4711879,Queen Mary 2,11/21/2026,"St Thomas Island USVI, Charlotte Amalie, US Virgin Islands",No
+9241061-261122,4711879,Queen Mary 2,11/22/2026,"Basseterre St Kitts, Port Zante",No
+9241061-261123,4711879,Queen Mary 2,11/23/2026,"St Johns Antigua, RCI Royal Beach Club",No
+9241061-261124,4711879,Queen Mary 2,11/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9241061-261128,4711879,Queen Mary 2,11/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261205,4711879,Queen Mary 2,12/5/2026,"Southampton, England",No
+9241061-261128,4711882,Queen Mary 2,11/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261205,4711882,Queen Mary 2,12/5/2026,"Southampton, England",No
+9241061-261128,4711881,Queen Mary 2,11/28/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261205,4711881,Queen Mary 2,12/5/2026,"Southampton, England",No
+9241061-261206,4711881,Queen Mary 2,12/6/2026,"Le Havre-Paris, France",No
+9241061-261208,4711881,Queen Mary 2,12/8/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-261209,4711881,Queen Mary 2,12/9/2026,"Rotterdam, Netherlands South Holland",No
+9241061-261210,4711881,Queen Mary 2,12/10/2026,"Rotterdam, Netherlands South Holland",No
+9241061-261212,4711881,Queen Mary 2,12/12/2026,"Southampton, England",No
+9241061-261219,4711881,Queen Mary 2,12/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261205,4711883,Queen Mary 2,12/5/2026,"Southampton, England",No
+9241061-261206,4711883,Queen Mary 2,12/6/2026,"Le Havre-Paris, France",No
+9241061-261208,4711883,Queen Mary 2,12/8/2026,"Zeebrugge, Bruges, Belgium",No
+9241061-261209,4711883,Queen Mary 2,12/9/2026,"Rotterdam, Netherlands South Holland",No
+9241061-261210,4711883,Queen Mary 2,12/10/2026,"Rotterdam, Netherlands South Holland",No
+9241061-261212,4711883,Queen Mary 2,12/12/2026,"Southampton, England",No
+9241061-261212,4711886,Queen Mary 2,12/12/2026,"Southampton, England",No
+9241061-261219,4711886,Queen Mary 2,12/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261212,4711885,Queen Mary 2,12/12/2026,"Southampton, England",No
+9241061-261219,4711885,Queen Mary 2,12/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261223,4711885,Queen Mary 2,12/23/2026,"Tortola Island BVI, Road Town, UK Virgin Islands",No
+9241061-261224,4711885,Queen Mary 2,12/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9241061-261226,4711885,Queen Mary 2,12/26/2026,"Bridgetown, Barbados",No
+9241061-261227,4711885,Queen Mary 2,12/27/2026,"Castries, St Lucia Island",No
+9241061-261228,4711885,Queen Mary 2,12/28/2026,"Roseau, Dominica",No
+9241061-261229,4711885,Queen Mary 2,12/29/2026,"Basseterre St Kitts, Port Zante",No
+9241061-270102,4711885,Queen Mary 2,1/2/2027,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261212,4711884,Queen Mary 2,12/12/2026,"Southampton, England",No
+9241061-261219,4711884,Queen Mary 2,12/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261223,4711884,Queen Mary 2,12/23/2026,"Tortola Island BVI, Road Town, UK Virgin Islands",No
+9241061-261224,4711884,Queen Mary 2,12/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9241061-261226,4711884,Queen Mary 2,12/26/2026,"Bridgetown, Barbados",No
+9241061-261227,4711884,Queen Mary 2,12/27/2026,"Castries, St Lucia Island",No
+9241061-261228,4711884,Queen Mary 2,12/28/2026,"Roseau, Dominica",No
+9241061-261229,4711884,Queen Mary 2,12/29/2026,"Basseterre St Kitts, Port Zante",No
+9241061-270102,4711884,Queen Mary 2,1/2/2027,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261219,4711888,Queen Mary 2,12/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261223,4711888,Queen Mary 2,12/23/2026,"Tortola Island BVI, Road Town, UK Virgin Islands",No
+9241061-261224,4711888,Queen Mary 2,12/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9241061-261226,4711888,Queen Mary 2,12/26/2026,"Bridgetown, Barbados",No
+9241061-261227,4711888,Queen Mary 2,12/27/2026,"Castries, St Lucia Island",No
+9241061-261228,4711888,Queen Mary 2,12/28/2026,"Roseau, Dominica",No
+9241061-261229,4711888,Queen Mary 2,12/29/2026,"Basseterre St Kitts, Port Zante",No
+9241061-270102,4711888,Queen Mary 2,1/2/2027,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261219,4711887,Queen Mary 2,12/19/2026,"New York, NYC Manhattan-Brooklyn",Yes
+9241061-261223,4711887,Queen Mary 2,12/23/2026,"Tortola Island BVI, Road Town, UK Virgin Islands",No
+9241061-261224,4711887,Queen Mary 2,12/24/2026,"Philipsburg St Maarten, Netherlands Antilles",No
+9241061-261226,4711887,Queen Mary 2,12/26/2026,"Bridgetown, Barbados",No
+9241061-261227,4711887,Queen Mary 2,12/27/2026,"Castries, St Lucia Island",No
+9241061-261228,4711887,Queen Mary 2,12/28/2026,"Roseau, Dominica",No
+9241061-261229,4711887,Queen Mary 2,12/29/2026,"Basseterre St Kitts, Port Zante",No
+9241061-270102,4711887,Queen Mary 2,1/2/2027,"New York, NYC Manhattan-Brooklyn",Yes
