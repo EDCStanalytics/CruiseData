@@ -1,10 +1,10 @@
-﻿Vessel,IMO,Line,YearOfConstruction
-Enchanted Princess,9807126,Princess,2021
-MSC Meraviglia,9760512,MSC,2017
-Queen Mary 2,9241061,Carnival,2004
-Island Princess,9230402,Princess,2003
-MSC Poesia,9387073,MSC,2008
-MSC Divina,9585285,MSC,2012
-Seven Seas Splendor,9807085,Norwegian,2021
-Queen Anne,9839399,Carnival,2024
-Emerald Princess,9333151,Princess,2007
+Vessel,IMO,Line,YearOfConstruction,Guest,Crew
+Enchanted Princess,9807126,Princess,2021,4402,1346
+MSC Meraviglia,9760512,MSC,2017,5386,1536
+Queen Mary 2,9241061,Carnival,2004,3271,1253
+Island Princess,9230402,Princess,2003,2657,900
+MSC Poesia,9387073,MSC,2008,3060,1039
+MSC Divina,9585285,MSC,2012,4202,1388
+Seven Seas Splendor,9807085,Norwegian,2021,829,542
+Queen Anne,9839399,Carnival,2024,3353,1225
+Emerald Princess,9333151,Princess,2007,3679,1200
