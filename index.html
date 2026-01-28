@@ -11,7 +11,6 @@
     <script src="https://unpkg.com/topojson-client@3"></script>
     <script src="https://unpkg.com/d3-geo-projection@4"></script>
 
-
   <!-- Styles -->
     <link rel="stylesheet" href="globe.css">
   <!-- Your app scripts (defer to avoid blocking the parser) -->
@@ -27,12 +26,12 @@
     <script  src="./JavaScripts/chartEmbed.js" defer></script>
     <script src="focus.js" defer></script>
     <script src="./JavaScripts/connections.js" defer></script>
+    <script src="./JavaScripts/calendar.js" defer></script>
     
 <!-- This installs Font Awesome-->
         <script src="https://kit.fontawesome.com/14dbedf33a.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   
-
 
 
 
@@ -50,6 +49,7 @@
 </head>
 
 <body>
+  
   <header class="hBar" id="theHeaderBar">
     <h1>Cruise Data Portal</h1>
 
@@ -59,6 +59,7 @@
         <li>Vessels</li>
         <li>Services</li>
       </ul>
+      
     </nav>
 
     <!-- Help icon -->
@@ -74,6 +75,16 @@
   <div id="earth"></div>
 
   <div id="dataSpace">
+    
+ 
+<div class="button-group">
+  <button id="openPier12Btn" style="cursor:pointer" class="open-btn">Pier 12</button>
+  <button id="openPier88Btn" style="cursor:pointer" class="open-btn">Pier 88</button>
+  <button id="openPier90Btn" style="cursor:pointer" class="open-btn">Pier 90</button>
+
+  
+</div>
+
     <div id="berthSpace"></div>
 
     <div id="cardSpace"></div>
@@ -113,12 +124,11 @@
   </div>
 </div>
 
-
   </body>
 
   </div>
 
-  <!-- Popup Modal -->
+  <!-- Popup Modal - Dialog A -->
   <dialog id="exportChoiceModal" class="export-modal">
     <form method="dialog" class="export-modal__content">
       <div class="export-modal__header">
@@ -135,5 +145,63 @@
       </div>
     </form>
   </dialog>
+
+<!-- Second dialog for PDF selection - Dialog B -->
+<dialog id="pdfSelectModal" class="export-modal">
+  <form method="dialog" class="export-modal__content">
+    <div class="export-modal__header">
+      <button type="button" id="pdfModalCloseBtn" class="export-modal__close" aria-label="Close">✕</button>
+      <h3>Select PDFs to open</h3>
+    </div>
+
+    <!-- Scrollable list -->
+    <div class="export-modal__list" id="pdfListContainer" aria-label="PDF list">
+      <!-- Populated dynamically by JS -->
+    </div>
+
+    <div class="export-modal__actions">
+      <button type="button" id="openSelectedPdfsBtn" class="btn btn-primary">Open Selected</button>
+      <button type="button" id="openAllPdfsBtn" class="btn btn-secondary">Open All</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Calendar Dialog -->
+<dialog id="calendarDialog" class="calendar-dialog" aria-labelledby="calendarDialogTitle">
+  <div class="dialog__header">
+   
+   <!--- <h3 id="calendarDialogTitle" class="dialog__title">Upcoming Calls</h3>  -->
+   
+    <button id="closeCalendarBtn" class="dialog__close" aria-label="Close">✕</button>
+  </div>
+  <div class="dialog__body">
+    <div class="calendar">
+      <div class="calendar__header">
+        <button id="prevBtn" class="calendar__nav-btn" aria-label="Previous month">Prev</button>
+        <h4 id="monthYear" class="calendar__title">Month YYYY</h4>
+        <button id="nextBtn" class="calendar__nav-btn" aria-label="Next month">Next</button>
+      </div>
+      <div id="calendarGrid" class="calendar__grid" aria-label="Calendar grid">
+        <!-- Rendered by JS -->
+      </div>
+      
+<div id="routePanel"
+     style="display:none; padding:15px; margin-top:15px;
+            border:1px solid #ccc; background:#fafafa;
+            border-radius:8px;">
+</div>
+
+    </div>
+  </div>
+  </dialog>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
