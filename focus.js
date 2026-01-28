@@ -1,520 +1,31 @@
-document.addEventListener("DOMContentLoaded", () => {
+/* my code recommendation: INSERTION — initialize global callsSelection + renderer */
 
-/* my code recommendation: INSERTION — focus.js */
-/* PURPOSE: Step 2 — add orchestration skeletons (no behavior change) and wire them from existing handlers. */
-/* Place this first block once (global scope, near the top of focus.js, e.g., after DOMContentLoaded begins). */
+// --- Global Calls Selection State -------------------------------------------
+// Any UI element that changes what the user wants to inspect should update this array
+// before calling window.renderUsageMultiples().
+// Example shapes:
+//   { type: "vessel", name: "MSC Meraviglia" }
+//   { type: "line",   name: "Carnival Cruise Line" }
+window.callsSelection = [];
 
 
-//1st insertion
-/* === AppState + orchestrator stubs (NO-OP) === */
-window.AppState = window.AppState || {
-  focusedBucket: null,
-  activeCallId: null,
-  activeVesselName: null,
-  powerCanvas: { hasTrend: false, chartCount: 0, hasTable: false },
-  activeTrendRole: null
+// --- Central Render Function -----------------------------------------------
+// Re-renders the Usage Multiples chart each time the selection changes.
+// focus.js controls PowerCanvas sizing; we simply use the host's current box.
+window.renderUsageMultiples = function renderUsageMultiples() {
+  const hostEl = document.querySelector('.pc-chart');
+  if (!hostEl) return;
+
+  const availableHeight = hostEl.clientHeight;
+  const width = hostEl.clientWidth;
+
+  charts.drawUsageMultiples(hostEl, window.callsSelection, {
+    availableHeight,
+    width
+  });
 };
 
 
-/* my code recommendation: */
-// INSERT HERE 👉 descriptor layout helpers
-function getLayout(bucket) {
-  return (bucket?.dataset?.layout || '').trim(); // '', 'right', 'right-usage', 'right-impact', 'right-connections'
-}
-function setLayout(bucket, name) {
-  if (!bucket) return;
-  if (!name) { bucket.removeAttribute('data-layout'); return; }
-  bucket.dataset.layout = String(name);
-}
-
-
-(function () {
-  const S = window.AppState;
-
-  // Compare slots (null or { callId, vessel })
-  if (!('alpha' in S)) S.alpha = null;
-  if (!('bravo' in S)) S.bravo = null;
-
-  // Slot presence
-  S.hasAlpha = function () { return !!this.alpha; };
-  S.hasBravo = function () { return !!this.bravo; };
-
-  // Return a Set of currently selected callIds (for highlight sweeps)
-  S.getSelectedIds = function () {
-    const ids = new Set();
-    if (this.alpha?.callId != null) ids.add(this.alpha.callId);
-    if (this.bravo?.callId != null) ids.add(this.bravo.callId);
-    return ids;
-  };
-
-  // Return { alpha?: vesselName, bravo?: vesselName }
-  S.getVessels = function () {
-    const v = {};
-    if (this.alpha?.vessel) v.alpha = this.alpha.vessel;
-    if (this.bravo?.vessel) v.bravo = this.bravo.vessel;
-    return v;
-  };
-
-  // Set/clear a slot; payload = null OR { callId, vessel }
-  S.setSlot = function (slot, payload) {
-    if (slot !== 'alpha' && slot !== 'bravo') return;
-    this[slot] = payload ? { callId: payload.callId, vessel: payload.vessel } : null;
-  };
-  S.clearSlot = function (slot) { this.setSlot(slot, null); };
-
-  // Utilities for later orchestrator steps
-  S.isSelected = function (callId) {
-    return (this.alpha?.callId === callId) || (this.bravo?.callId === callId);
-  };
-  S.whichSlotByVessel = function (vessel) {
-    if (this.alpha?.vessel === vessel) return 'alpha';
-    if (this.bravo?.vessel === vessel) return 'bravo';
-    return null;
-  };
-})();
- 
-
-window.emitIntent = window.emitIntent || function (type, payload) {
-  // Delegate to helpers (defined earlier in helpers.js)
-  if (window.Helpers && typeof window.Helpers.emitIntent === 'function') {
-    window.Helpers.emitIntent(type, payload);
-  } else {
-    try { console.debug('[intent]', type, payload); } catch (e) {}
-  }
-};
-
-
-// INSERT HERE 👉 orchestrator + utilities for call selection (Alpha/Bravo)
-
-// 0) Helper: is RIGHT KPI focused?
-function isRightFocused() {
-  const rb = document.getElementById('rightChartContainer');
-  return !!rb && rb.classList.contains('focused');
-}
-
-// 1) Ensure PowerCanvas is visible ONLY when right bucket is focused
-
-function ensurePowerCanvasVisible() {
-  if (!isRightFocused()) return null; // respect focus-driven visibility
-  const leftHost = document.getElementById('leftChartContainer') ||
-                   document.getElementById('rightChartContainer');
-  const { canvas, contentHost } = pcRender({ type: 'chart' }, leftHost);
-  
-  const rightBucket = document.getElementById('rightChartContainer');
-  const childH = Math.round((rightBucket?.clientHeight ?? leftHost.clientHeight) * 0.40);
-  canvas.style.setProperty('--pc-child-h', `${childH}px`);
-  return { canvas, contentHost };
-}
-
-
-// 2) Selection rules (Alpha/Bravo) — per your updated D3:
-//    - If both empty → Alpha = picked
-//    - If only Alpha used:
-//        • same call → clear Alpha (no selections)
-//        • same vessel (different call) → replace Alpha
-//        • different vessel → Bravo = picked
-//    - If Alpha + Bravo used:
-//        • unrelated vessel → replace Bravo with picked
-//        • related to Alpha → remove Alpha; Bravo → Alpha; clear Bravo
-//        • related to Bravo → set Bravo = picked (same vessel, new call)
-
-function computeNextSelectionSlots(state, picked) {
-  const A = state.alpha, B = state.bravo;
-  const same = (x) => x?.callId === picked.callId && x?.vessel === picked.vessel;
-  const sameVessel = (x) => x?.vessel === picked.vessel;
-
-  // no selections
-  if (!A && !B) {
-    return { alpha: { callId: picked.callId, vessel: picked.vessel }, bravo: null };
-  }
-
-  // INSERT HERE 👉 only-Alpha: any click on the same vessel should toggle OFF
-  if (A && !B) {
-    if (same(A) || sameVessel(A)) {
-      // toggle off (hide usage chart)
-      return { alpha: null, bravo: null };
-    }
-    // different vessel → add Bravo
-    return { alpha: A, bravo: { callId: picked.callId, vessel: picked.vessel } };
-  }
-
-  // Alpha + Bravo present
-  const pickedIsAlphaVessel = sameVessel(A);
-  const pickedIsBravoVessel = sameVessel(B);
-
-  if (!pickedIsAlphaVessel && !pickedIsBravoVessel) {
-    // unrelated vessel → replace Bravo
-    return { alpha: A, bravo: { callId: picked.callId, vessel: picked.vessel } };
-  }
-
-  if (pickedIsAlphaVessel) {
-    // click related to Alpha → remove Alpha; Bravo becomes new Alpha; Bravo cleared
-    return { alpha: B ? { ...B } : null, bravo: null };
-  }
-
-if (pickedIsBravoVessel) {
-  // click related to Bravo → remove Bravo; keep Alpha as the single selection
-  return { alpha: A ? { ...A } : null, bravo: null };
-}
-
-  // pickedIsBravoVessel: this call becomes the new Bravo
-  return { alpha: A, bravo: { callId: picked.callId, vessel: picked.vessel } };
-}
-
-
-// 3) State writer: apply slots to AppState
-function applySelectionsToState(next) {
-  const S = window.AppState;
-  S.setSlot('alpha', next.alpha);
-  S.setSlot('bravo', next.bravo);
-}
-
-// 4) Orchestrator: single entry point all click sites can use
-
-
-window.orchestrateCallSelect = function orchestrateCallSelect(payload) {
-  const S = window.AppState;
-  const picked = { callId: payload.callId, vessel: payload.vessel };
-
-  // Decide next slots
-  let next = computeNextSelectionSlots(S, picked);
-
-  // Shift+click on an unrelated vessel ⇒ force compare
-  if (payload.shiftKey && S.alpha?.vessel && S.alpha.vessel !== picked.vessel) {
-    next = { alpha: { ...S.alpha }, bravo: { callId: picked.callId, vessel: picked.vessel } };
-  }
-
-  applySelectionsToState(next);
-
-  // Ensure PC visibility for right-focus
-  const pc = ensurePowerCanvasVisible();
-
-  if (typeof window.renderUsageForSelections === 'function') {
-    window.renderUsageForSelections({ alpha: next.alpha, bravo: next.bravo });
-  } else {
-    // (fallback omitted here)
-  }
-
-  // INSERT HERE 👉 apply highlights for Alpha/Bravo selections
-  if (typeof window.updateRadialHighlightsForSelections === 'function') {
-    window.updateRadialHighlightsForSelections({ alpha: next.alpha, bravo: next.bravo });
-  } else {
-    // Legacy fallback: highlight Alpha only
-    const id = next?.alpha?.callId ?? null;
-    const vessel = next?.alpha?.vessel ?? null;
-    updateRadialHighlights(id, vessel);
-  }
-  // (highlights block unchanged)
-};
-
-
-
-
-// ...surrounding context above...
-
-// INSERT HERE 👉 render (single or dual) with full compare redraw
-window.renderUsageForSelections = async function ({ alpha, bravo }) {
-  const leftHost = document.getElementById('leftChartContainer') ||
-                   document.getElementById('rightChartContainer');
-
-  // No selections → remove chart and maybe destroy canvas
-  if (!alpha && !bravo) {
-    const canvas = document.getElementById('powerCanvas');
-    const chartEl = canvas?.querySelector('.pc-chart');
-    if (chartEl) chartEl.remove();
-    if (canvas) pcMaybeDestroy(canvas);
-    return;
-  }
-
-  // Ensure PowerCanvas (visibility already governed by right focus)
-  const { canvas } = pcRender({ type: 'chart' }, leftHost);
-  const rightBucket = document.getElementById('rightChartContainer');
-  const childH = Math.round((rightBucket?.clientHeight ?? leftHost.clientHeight) * 0.40);
-  canvas.style.setProperty('--pc-child-h', `${childH}px`);
-
-  // Single ship → existing single-series chart
-  if (alpha && !bravo) {
-    await drawPowerCanvasChart(alpha.vessel);
-    window.activeVesselName = alpha.vessel || null;
-    return;
-  }
-
-  // Dual ship → full compare chart (split vertical panes + common X)
-  if (alpha && bravo) {
-    await drawPowerCanvasChartCompare(alpha.vessel, bravo.vessel);
-    // Keep Alpha as the active vessel for trend filters
-    window.activeVesselName = alpha.vessel || null;
-    return;
-  }
-};
-
-// ...surrounding context below...
-
-// INSERT HERE 👉 dual-ship compare chart with split Y panes and common X
-async function drawPowerCanvasChartCompare(alphaName, bravoName) {
-  const canvas = document.getElementById('powerCanvas');
-  if (!canvas) return;
-
-  // Host directly above the table (middle slot)
-  let chartHost = canvas.querySelector('.pc-chart');
-  if (!chartHost) {
-    chartHost = document.createElement('div');
-    chartHost.className = 'pc-chart';
-  }
-  chartHost.innerHTML = '';
-  const tblHost = canvas.querySelector('.pc-table-host');
-  if (tblHost) canvas.insertBefore(chartHost, tblHost); else canvas.appendChild(chartHost);
-
-  // === Data (T12 window) ===
-  const { t12Calls, connById, lastStart, lastEnd } = await window.fillBuckets();
-  const norm = s => String(s || '').toLowerCase().replace(/[ \-]+/g, ' ').replace(/[^\w\s]/g, '').trim();
-
-  const aKey = norm(alphaName);
-  const bKey = norm(bravoName);
-  const aCalls = t12Calls.filter(c => norm(c.vessel) === aKey);
-  const bCalls = t12Calls.filter(c => norm(c.vessel) === bKey);
-  if (!aCalls.length && !bCalls.length) {
-    chartHost.textContent = 'No data available for comparison';
-    return;
-  }
-
-  // === Dimensions ===
-  const width  = chartHost.clientWidth;
-  const height = chartHost.clientHeight;
-
-const margin = { top: 32, right: 20, bottom: 64, left: 52 };
-const innerW = Math.max(0, width  - margin.left - margin.right);
-const innerH = Math.max(0, height - margin.top  - margin.bottom)
-
-
-  // Vertical split: 5% gap; each pane gets 47.5% of innerH
-  const gapH   = Math.round(innerH * 0.05);
-  const paneH  = Math.max(0, Math.floor((innerH - gapH) / 2));
-
-  // === Scales ===
-  const xStart = new Date(lastStart.getFullYear(), lastStart.getMonth(), 1);
-  const xEnd   = new Date(lastEnd.getFullYear(),   lastEnd.getMonth() + 1, 1);
-  const x = d3.scaleTime().domain([xStart, xEnd]).range([0, innerW]);
-
-  const yTop = d3.scaleTime()
-    .domain([new Date(0,0,0,6,0), new Date(0,0,0,18,0)]) // 6 → 18
-    .range([paneH, 0]);
-
-  const yBot = d3.scaleTime()
-    .domain([new Date(0,0,0,6,0), new Date(0,0,0,18,0)])
-    .range([paneH, 0]);
-
-  // === SVG + groups ===
-  const svg = d3.select(chartHost)
-    .append('svg')
-    .attr('width', width)
-    .attr('height', height);
-
-  const gRoot = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-  const gTop = gRoot.append('g').attr('class', 'series alpha');               // Alpha (top)
-  const gBot = gRoot.append('g').attr('class', 'series bravo')                // Bravo (bottom)
-                   .attr('transform', `translate(0,${paneH + gapH})`);
-
-  // === Axes ===
-  // Common X axis at bottom of the full plot
-  const xAxis = d3.axisBottom(x)
-    .ticks(d3.timeMonth.every(1))
-    .tickFormat(d3.timeFormat('%b %y'))
-    .tickSizeOuter(0);
-
-  gRoot.append('g')
-    .attr('class', 'x-axis')
-    .attr('transform', `translate(0,${innerH})`)
-    .call(xAxis);
-
-  // Y axes (every 4 hours) on each pane
-  const yAxisTop = d3.axisLeft(yTop).ticks(d3.timeHour.every(4)).tickSizeOuter(0);
-  const yAxisBot = d3.axisLeft(yBot).ticks(d3.timeHour.every(4)).tickSizeOuter(0);
-
-  gTop.append('g').attr('class', 'y-axis').call(yAxisTop);
-  gBot.append('g').attr('class', 'y-axis').call(yAxisBot);
-
-  // === Helpers ===
-  const toTOD     = d => new Date(0,0,0, d.getHours(), d.getMinutes(), d.getSeconds(), 0);
-  const isMulti   = (a, b) => a.toDateString() !== b.toDateString();
-  const clampTOD  = dt => {
-    const min = new Date(0,0,0,6,0), max = new Date(0,0,0,18,0);
-    const t = toTOD(dt); return (t < min) ? min : (t > max) ? max : t;
-  };
-
-  const connColor = window.buildConnColorScale();
-
-
-const itemsFor = calls => calls.map(c => {
-  const xMidnight = new Date(c.arrival.getFullYear(), c.arrival.getMonth(), c.arrival.getDate());
-  const X  = x(xMidnight);
-  const y1 = clampTOD(c.arrival);
-  const y2 = isMulti(c.arrival, c.departure) ? new Date(0,0,0,18,0) : clampTOD(c.departure);
-  const conn = connById.get(c.id) || null;
-  let cy1 = null, cy2 = null, connVal = 0;
-  if (conn) {
-    const stayMsRaw = c.departure - c.arrival;
-    const stayMsAdj = Math.max(0, stayMsRaw - (3 * 60 * 60 * 1000));
-    const connMs    = conn.disconnect - conn.connect;
-    connVal = stayMsAdj > 0 ? Math.max(0, Math.min(1.25, connMs / stayMsAdj)) : 0;
-    cy1 = clampTOD(conn.connect);
-    cy2 = isMulti(conn.connect, conn.disconnect) ? new Date(0,0,0,18,0) : clampTOD(conn.disconnect);
-  }
-  return { c, X, y1, y2, cy1, cy2, connVal };
-});
-
-
-  const A = itemsFor(aCalls);
-  const B = itemsFor(bCalls);
-
-  // === Draw (Alpha, top pane) ===
-  gTop.append('g').attr('class', 'calls')
-    .selectAll('line.power-stay')
-    .data(A)
-    .enter().append('line')
-    .attr('class', 'power-stay')
-    .attr('x1', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
-    .attr('x2', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
-    .attr('y1', d => yTop(d.y1))
-    .attr('y2', d => yTop(d.y2));
-
-
-gTop.append('g').attr('class', 'connections')
-  .selectAll('line.power-conn')
-  .data(A.filter(d => d.cy1 != null))
-  .enter().append('line')
-  .attr('class', 'power-conn')
-  // INSERT HERE 👉 per-visit color (CSS variable picked up by .power-conn rule)
-  .style('--conn-color', d => connColor(d.connVal))
-  .attr('x1', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
-  .attr('x2', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
-  .attr('y1', d => Math.min(yTop(d.cy1), yTop(d.cy2)))
-  .attr('y2', d => Math.max(yTop(d.cy1), yTop(d.cy2)));
-
-
-  // === Draw (Bravo, bottom pane) ===
-  gBot.append('g').attr('class', 'calls')
-    .selectAll('line.power-stay')
-    .data(B)
-    .enter().append('line')
-    .attr('class', 'power-stay')
-    .attr('x1', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
-    .attr('x2', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
-    .attr('y1', d => yBot(d.y1))
-    .attr('y2', d => yBot(d.y2));
-
-
-gBot.append('g').attr('class', 'connections')
-  .selectAll('line.power-conn')
-  .data(B.filter(d => d.cy1 != null))
-  .enter().append('line')
-  .attr('class', 'power-conn')
-  // INSERT HERE 👉 per-visit color (CSS variable picked up by .power-conn rule)
-  .style('--conn-color', d => connColor(d.connVal))
-  .attr('x1', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
-  .attr('x2', d => x(new Date(d.c.arrival.getFullYear(), d.c.arrival.getMonth(), d.c.arrival.getDate())))
-  .attr('y1', d => Math.min(yBot(d.cy1), yBot(d.cy2)))
-  .attr('y2', d => Math.max(yBot(d.cy1), yBot(d.cy2)));
-
-
-  // === Title (include "Comparison") ===
-  svg.append('text')
-    .attr('class', 'chart-title')
-    .attr('x', width / 2)
-    .attr('y', 20)
-    .attr('text-anchor', 'middle')
-    .text('Shore Power Usage Comparison');
-
-  // === Legend pills (bottom-left, Alpha + Bravo) — styling via CSS
-
-// === Legend pills (Alpha + Bravo) — centered as a pair
-const legendG = svg.append('g').attr('class', 'chart-legend');
-
-// Alpha text to measure
-const aText = (alphaName || '').trim();
-const aTextEl = legendG.append('text')
-  .attr('class', 'legend-text alpha')
-  .attr('text-anchor', 'start')
-  .attr('dominant-baseline', 'middle')
-  .text(aText);
-const aTextW = (typeof aTextEl.node().getComputedTextLength === 'function')
-  ? aTextEl.node().getComputedTextLength() : aText.length * 7;
-const aTextH = 14;
-const aPillW = aTextW + 24;
-
-// Bravo text to measure
-const bText = (bravoName || '').trim();
-const bTextEl = legendG.append('text')
-  .attr('class', 'legend-text bravo')
-  .attr('text-anchor', 'start')
-  .attr('dominant-baseline', 'middle')
-  .text(bText);
-const bTextW = (typeof bTextEl.node().getComputedTextLength === 'function')
-  ? bTextEl.node().getComputedTextLength() : bText.length * 7;
-const bTextH = 14;
-const bPillW = bTextW + 24;
-
-// Center the combined row
-const gap = 12;
-const totalW = aPillW + gap + bPillW;
-const offsetX = Math.max(0, (width - totalW) / 2);
-const offsetY = height - 20;
-legendG.attr('transform', `translate(${offsetX}, ${offsetY})`);
-
-// Alpha pill + text at 0
-legendG.insert('rect', ':first-child')
-  .attr('class', 'legend-pill alpha')
-  .attr('x', -12)
-  .attr('y', -aTextH / 2 - 6)
-  .attr('width', aPillW)
-  .attr('height', aTextH + 12);
-aTextEl.attr('x', 0);
-
-// Bravo pill + text at aPillW + gap
-const bX = aPillW + gap;
-legendG.insert('rect', ':first-child')
-  .attr('class', 'legend-pill bravo')
-  .attr('x', bX - 12)
-  .attr('y', -bTextH / 2 - 6)
-  .attr('width', bPillW)
-  .attr('height', bTextH + 12);
-bTextEl.attr('x', bX);
-
-
-  // After draw: ensure canvas sized/placed for the new content
-  const hostBucket = document.getElementById('leftChartContainer') ||
-                     document.getElementById('rightChartContainer');
-  if (hostBucket) {
-    pcSizeFor(canvas, { type: 'chart' }, hostBucket);
-    pcPlace(canvas, hostBucket);
-  }
-};
-
-
-
-window.onFocusBucket = function (side, meta = {}) {
-  /* Step 2 skeleton — no behavior change; real sequences will be added later */
-};
-
-
-window.onSelectCall = function ({ vessel, callId, shiftKey }) {
-  window.orchestrateCallSelect({ vessel, callId, source: 'radial', shiftKey: !!shiftKey });
-};
-
-
-window.onToggleTrend = function ({ role, vessel }) {
-  /* Step 2 skeleton — no behavior change; real sequences will be added later */
-};
-
-
-/* Deferred PowerCanvas reveal (table) timer holder */
-window.PCReveal = window.PCReveal || { timer: null };
-
-
-// ... existing code above (PCReveal + scheduleDelayedReveal + helpers) ...
-
-// INSERT HERE 👉 lightweight, reusable tick batcher (once per frame)
 window.TickBatch = window.TickBatch || (function () {
   let q = [];
   let scheduled = false;
@@ -541,62 +52,24 @@ window.TickBatch = window.TickBatch || (function () {
   };
 })();
 
-//tick test
 
-// INSERT HERE 👉 TEMP TEST: coalescing check (remove after verifying)
-(function () {
-  // On first right-bucket focus, fire a burst of jobs and measure runs
-  let ran = false;
-  let rafFrames = 0;
-  let jobsExecuted = 0;
+document.addEventListener("DOMContentLoaded", () => {
 
-  // On-screen status (works even if DevTools is blocked)
-  const badge = document.createElement('div');
-  badge.id = 'tickBatchTest';
-  badge.style.cssText = 'position:fixed;right:8px;bottom:8px;z-index:99999;padding:6px 10px;background:#111;color:#fff;font:12px/1.2 monospace;border-radius:6px;opacity:.9';
-  badge.textContent = 'TickBatch Test: waiting…';
-  document.addEventListener('DOMContentLoaded', () => document.body.appendChild(badge));
+//with the dom fully loaded, add click listeners to the kpibuckets
+document.getElementById('ospChartContainer')
+  .addEventListener('click', () => {
+    console.log("cue OSP bucket focus");
+    CueDirector.emit('CLICK_BUCKET_OSP');
+  });
 
-  // Count RAF frames while our jobs are pending
-  function frameCounter() {
-    if (!ran) return;
-    rafFrames++;
-    requestAnimationFrame(frameCounter);
-  }
-
-  // Hook into first focus of RIGHT KPI bucket
-  document.addEventListener('click', (e) => {
-    const right = document.getElementById('rightChartContainer');
-    if (!right) return;
-    if (!right.contains(e.target)) return;
-
-    // Fire only once
-    if (ran) return;
-    ran = true;
-
-    // Start counting frames
-    requestAnimationFrame(frameCounter);
-
-    // Queue N small jobs in the same tick
-    const N = 50;
-    for (let i = 0; i < N; i++) {
-      window.TickBatch.queue(() => { jobsExecuted++; });
-    }
-
-    // Check results on next macrotask (after RAF had a chance to run)
-    setTimeout(() => {
-      badge.textContent = `TickBatch Test: jobsExecuted=${jobsExecuted}, rafFrames=${rafFrames}`;
-      // PASS criteria: jobsExecuted === 50 and rafFrames ≈ 1..2 (1 is ideal; 2 is fine due to counter loop)
-      // If jobsExecuted < 50 → some jobs didn’t run.
-      // If rafFrames grows >> 2 → jobs weren’t coalesced.
-    }, 100);
-  }, { capture: true });
-})();
+  
+document.getElementById('callsChartContainer')
+  .addEventListener('click', () => {
+    console.log("cue calls bucket focus");
+    CueDirector.emit('CLICK_BUCKET_CALLS');
+  });
 
 
-
-
-//end tick test
 
 
 /* my code recommendation: INSERTION — focus.js */
@@ -622,28 +95,6 @@ window.scheduleDelayedReveal = function (opts) {
   }, delay);
   if (opts.cancelRef) opts.cancelRef.timer = t;
 };
-
-
-/* my code recommendation: INSERTION — focus.js */
-/* Reuseable: validity check and reveal routine for PowerCanvas Table (right-focus, left-anchor) */
-window.isRightBucketStillFocused = function () {
-  var right = document.getElementById('rightChartContainer');
-  return !!right && right.classList.contains('focused');
-};
-
-window.revealPowerCanvasTableLeftAnchored = function () {
-  var right = document.getElementById('rightChartContainer');
-  var hostBucket = document.getElementById('leftChartContainer') || right;
-  var result = pcRender({ type: 'table' }, hostBucket); // builds/ensures table
-  var canvas = result && result.canvas ? result.canvas : document.getElementById('powerCanvas');
-  if (!canvas) return;
-  var childH = Math.round(((right && right.clientHeight) || hostBucket.clientHeight) / 3);
-  canvas.style.setProperty('--pc-child-h', String(childH) + 'px');
-};
-
-//end 1st insertion
-
-
 
 
   
@@ -691,7 +142,7 @@ window.revealPowerCanvasTableLeftAnchored = function () {
   const t12Connections = connections.filter(c =>
         window.Helpers.rangeCheck(c.connect, lastStart, lastEnd));
 
-  console.log(`Filtering for data between ${lastStart} and ${lastEnd}`)
+  //console.log(`Filtering for data between ${lastStart} and ${lastEnd}`)
     
   //sort the calls by arrival
   const sortedCalls = t12Calls
@@ -699,31 +150,6 @@ window.revealPowerCanvasTableLeftAnchored = function () {
         .sort((a, b) => a.arrival - b.arrival)
 
 
-// Build the connection lookup map (id -> connection) and attach notes
-
-/* const connById = new Map();
-    t12Connections.forEach(c => { if (c.id != null) connById.set(c.id, c); }); 
-
-
-const connById = new Map();
-t12Connections.forEach(c => {
-  if (c.id != null) {
-    // Add the note using CallID or id
-    const note = window.getConnectionNote(c.id);
-    
- console.log(`Connection ID: ${c.id}, Note:`, note); // ✅ Log connection and note
-
-    c.note = note; // attach note to the connection object
-    connById.set(c.id, c);
-  }
-});
-
-
-
-  // Attach the matched connection onto each sorted call (or null)
-  sortedCalls.forEach(c => { c.connection = connById.get(c.id) ?? null; }); */
-
-  
 // Build a lookup map from calls (id -> call)
 const callsById = new Map();
 t12Calls.forEach(call => {
@@ -741,7 +167,7 @@ t12Connections.forEach(conn => {
     conn.note = connNote ?? null;
     connById.set(conn.id, conn);
 
-    console.log(`Connection ID: ${conn.id}, Connection Note:`, connNote);
+    //console.log(`Connection ID: ${conn.id}, Connection Note:`, connNote);
   }
 });
 
@@ -751,29 +177,27 @@ sortedCalls.forEach(call => {
   const mappedConnection = connById.get(call.id) ?? null;
   call.connection = mappedConnection;
 
-  // ✅ Attach note for every call using NotesMap (preferred) or fallback
-  // Assumes NotesMap is a Map keyed by call.id. If it is an object, adapt to NotesMap[call.id].
   const noteFromMap = NotesMap?.get ? NotesMap.get(call.id) : NotesMap?.[call.id];
   const finalNote = noteFromMap ?? window.getConnectionNote(call.id) ?? null;
 
   call.note = finalNote;
 
   // Debug log: show both IDs and the note
-  console.log(
-    `Call ID: ${call.id}, Connection ID: ${mappedConnection ? mappedConnection.id : 'null'}, Note:`,
-    finalNote
-  );
+  //console.log(
+  //  `Call ID: ${call.id}, Connection ID: ${mappedConnection ? mappedConnection.id : 'null'}, Note:`,
+  //  finalNote
+  //);
   
 // Count how many calls have a note
 const callsWithNotesCount = sortedCalls.filter(call => call.note && call.note.trim() !== '').length;
 
-console.log(`Total calls: ${sortedCalls.length}`);
-console.log(`Calls with notes: ${callsWithNotesCount}`);
-console.log(`Calls without notes: ${sortedCalls.length - callsWithNotesCount}`);
-``
+//console.log(`Total calls: ${sortedCalls.length}`);
+//console.log(`Calls with notes: ${callsWithNotesCount}`);
+//console.log(`Calls without notes: ${sortedCalls.length - callsWithNotesCount}`);
+
 
 });
-``
+
 
 
   // Month labels + 12 completed-month buckets (shared by both charts)
@@ -805,35 +229,10 @@ console.log(`Calls without notes: ${sortedCalls.length - callsWithNotesCount}`);
 }
 
 
-/* my code recommendation: */
-function updateFocusOffsetFor(bucket) {
-  if (!bucket) return;
-  const h = bucket.clientHeight;                     // height *after* focus
-  const OFFSET_COEFF = .35;                            // reuse your coefficient
-  const offsetY = Math.round(h * OFFSET_COEFF);
-  document.documentElement.style.setProperty('--focus-offset-y', `${offsetY}px`);
-}
 
 
 
 
-// INSERT HERE 👉 batch digit transforms to one RAF for smoother updates
-window.setRotorValue = function (speedReadEl, value) {
-  const s = String(value);
-  const stacks = speedReadEl.querySelectorAll('.digit .stack');
-  const pad = s.padStart(stacks.length, '0');
-
-  // Queue a single-frame batch of DOM writes
-  window.TickBatch.queue(function () {
-    for (let i = 0; i < stacks.length; i++) {
-      const stack = stacks[i];
-      const d = Number(pad[i]);
-      // Guard against NaN and missing nodes
-      if (!stack || Number.isNaN(d)) continue;
-      stack.style.transform = `translateY(-${d}em)`;
-    }
-  });
-};
 
 
 
@@ -860,19 +259,7 @@ if (conn && stayMsAdj > 0) {
 };
 
 
-/* my code recommendation: */
-// Returns the number of connections in the T12 window
-async function getConnCountT12() {
-  const connections = await window.connectionsPromise;
-  const { lastStart, lastEnd } = window.Helpers.getT24(); // your existing date window
-  // Count any connection whose 'connect' OR 'disconnect' falls inside the window
-  let count = 0;
-  for (const c of connections) {
-    const ts = c.connect ?? c.disconnect;
-    if (ts && window.Helpers.rangeCheck(ts, lastStart, lastEnd)) count++;
-  }
-  return count;
-}
+
 
 
 
@@ -881,7 +268,7 @@ window.radialCtx = new Map();
 document.documentElement.style.setProperty('--focus-offset-y', '0px');
 
 
-/* my code recommendation: */
+/* my code recommendation: 
 // — Unified shore-power color configuration —
 window.ConnColorConfig = {
   // Breakpoints (domain) — tune as needed
@@ -928,119 +315,7 @@ window.buildConnColorScale = function () {
     .range(window.ConnColorConfig.palettes.rg_y_gb_bright)
     .clamp(true);
 };
-
-
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Buckets click handler: ignore clicks from trend arrow; preserve existing logic */
-buckets.forEach(bucket => {
-  bucket.addEventListener("click", async (evt) => {
-
-//2nd insertion    
-window.emitIntent('FOCUS_BUCKET', { side: bucket.id === 'rightChartContainer' ? 'right' : 'left', isAlreadyFocused: bucket.classList.contains('focused') });
-window.onFocusBucket(bucket.id === 'rightChartContainer' ? 'right' : 'left', { isAlreadyFocused: bucket.classList.contains('focused') });
-//end 2nd insertion
-
-
-
-
-    // --- NEW GUARD: do not toggle focus when the trend arrow is clicked ---
-    const t = evt.target;
-    if (t?.closest?.('.trendArrow, .trendArrowSvg')) {
-      evt.stopPropagation();
-      evt.preventDefault();
-      return; // let the arrow’s own handler run (handleTrendArrowClick)
-    }
-    // ----------------------------------------------------------------------
-
-    const isAlreadyFocused = bucket.classList.contains("focused");
-
-    // Reset all buckets and shipCards if clicked again
-    if (isAlreadyFocused) {
-      setLayout(bucket, null);
-      bucket.classList.remove('focused');
-      const kpi = bucket.querySelector('.baseStats');
-      void setRotorToProbe(bucket, 0);
-      await waitForTransitionEndOnce(kpi);
-      updateFocusOffsetFor(bucket);
-
-      buckets.forEach(b => {
-        b.classList.remove('focused', 'shrunk');
-        b.style.removeProperty('--bucket-h');
-      });
-
-      shipCards.classList.remove("collapsed");
-      removeRadial("leftRadialChart");
-      removeRadial("rightRadialChart");
-      document.getElementById('rightCentralChart')?.replaceChildren();
-      document.getElementById('leftCentralChart')?.replaceChildren();
-
-  /* Cancel any pending delayed PowerCanvas reveal when unfocusing */
-  if (window.PCReveal && window.PCReveal.timer) { clearTimeout(window.PCReveal.timer); window.PCReveal.timer = null; }
-
-
-      return;
-    }
-
-    // Collapse shipCards
-    shipCards.classList.add("collapsed");
-
-    // Apply focused/shrunk classes
-    buckets.forEach(b => {
-      if (b === bucket) {
-        b.classList.add("focused");
-        b.classList.remove("shrunk");
-      } else {
-        b.classList.remove("focused");
-        b.classList.add("shrunk");
-      }
-    });
-
-    if (bucket.id === "rightChartContainer") {
-      // --- RIGHT branch ---
-      setLayout(bucket, 'right');
-      removeRadial("leftRadialChart");
-      await waitForTransitionEndOnce(bucket);
-      updateFocusOffsetFor(bucket);
-      positionProbeDots(bucket);
-
-      await dR_kWh();
-      await dR_usage();
-      // window.drawPerformCentral('rightCentralChart');
-      
-await window.radialCalendar('rightRadialChart');
-// INSERT HERE 👉 usage gauge moved to 'right-usage' scene; do not draw it in plain 'right'
-await window.drawPowerArcs('rightRadialChart');
-window.Scene.set('right');
-/* Schedule a 5s delayed reveal of PowerCanvas with its Table (anchored left) */
-window.scheduleDelayedReveal({
-  delayMs: 1000,
-  isValid: window.isRightBucketStillFocused,
-  reveal: window.revealPowerCanvasTableLeftAnchored,
-  cancelRef: window.PCReveal
-});
-
-  
-
-
-    } else {
-      // --- LEFT branch ---
-      setLayout(bucket, 'left');
-  /* Switching to left focus? cancel any pending right-side delayed reveal */
-  if (window.PCReveal && window.PCReveal.timer) { clearTimeout(window.PCReveal.timer); window.PCReveal.timer = null; }
-
-      removeRadial("rightRadialChart");
-      await waitForTransitionEndOnce(bucket);
-      updateFocusOffsetFor(bucket);
-      positionProbeDots(bucket);
-
-      // drawRadialT12('leftRadialChart');
-      await window.radialCalendar('leftRadialChart');
-      await window.drawCallArcs('leftRadialChart');
-    }
-  });
-});
+*/
 
 });
 
@@ -1268,6 +543,7 @@ window.build60Columns = (byMonth) => {
     return { columns60Calls, maxStack };
 }
 
+/* DELETE AFTER MIGRATION TO CHARTS.JS IS COMPLETE
 window.drawCallArcs = async function (containerID) {
     const ctx = window.radialCtx.get(containerID);
     if (!ctx) return;
@@ -1298,7 +574,7 @@ window.drawCallArcs = async function (containerID) {
         .append('title')
         .text(d => `${d.call.vessel ?? 'Unknown'} — ${fmtShortMD(d.call.arrival)}`);
 }
-
+*/
 
 /* my code recommendation: */
 // ADD: ring gauge overlay (value in [0..1.25])
@@ -1731,6 +1007,7 @@ const noteText = v.note ? `\u000AConnection Note: ${v.note}` : '';
 
 /* my code recommendation: */
 hit.on('click', function (event, d) {
+  console.log("you poked my heart 2");
   //3rd insertion
   
 window.emitIntent('SELECT_CALL', { vessel: d?.call?.vessel ?? null, callId: d?.call?.id ?? null, shiftKey: !!event.shiftKey });
@@ -1765,8 +1042,8 @@ activeCallId = callId;
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Host the PowerCanvas off the LEFT bucket to keep it on the left half */
 const hostBucket =
-  document.getElementById('leftChartContainer') ??
-  document.getElementById('rightChartContainer');
+  document.getElementById('callsChartContainer') ??
+  document.getElementById('ospChartContainer');
 
   if (!hostBucket) return;
 
@@ -1777,7 +1054,7 @@ const hostBucket =
 
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Use RIGHT bucket height so child elements are exactly one third of it */
-const rightBucket = document.getElementById('rightChartContainer');
+const rightBucket = document.getElementById('ospChartContainer');
 const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
 canvas.style.setProperty('--pc-child-h', `${childH}px`);
 
@@ -2034,78 +1311,10 @@ svg.append('g')
 
 
 
-// === CONFIG for KPI probe points ===
-window.KPIProbeConfig = {
-  innerRatio: 0.60,    // (2) inner circle diameter vs. bucket diameter; tweakable
-  deltaDeg: 45,       // (3-4) +/- degrees around 6 o’clock; default 4 & 8 positions
-  betweenFraction: 0.50, // (5) fraction from center toward the 6-point; tweakable
-  sixDeg: 90          // 6 o’clock angle (0° = 3 o’clock, +CW with screen coords)
-};
 
 
-// Ensure we have exactly 5 dot elements per bucket
-function ensureProbeDots(bucket) {
-  const N = 5;
-  const existing = bucket.querySelectorAll('.probe-dot');
-  if (existing.length === N) return Array.from(existing);
-
-  existing.forEach(d => d.remove());
-  const dots = [];
-  for (let i = 0; i < N; i++) {
-    const dot = document.createElement('span');
-    dot.className = 'probe-dot';
-    bucket.appendChild(dot);
-    dots.push(dot);
-  }
-  return dots;
-}
 
 
-// Compute the five points given the bucket's current size
-function computeProbePositions(bucket) {
-  const rimPx = parseFloat(getComputedStyle(bucket).getPropertyValue('--instrument-rim')) || 0;
-  const bounds = bucket.getBoundingClientRect();
-  const diameter = Math.min(bounds.width - rimPx * 2, bounds.height - rimPx * 2);
-  const R = diameter / 2;
-
-  // Center of the bucket (in its own coordinate space)
-  const cx = bucket.clientWidth / 2;
-  const cy = bucket.clientHeight / 2;
-
-  const cfg = window.KPIProbeConfig;
-  const rInner = R * cfg.innerRatio;
-  const toRad = d => (d * Math.PI) / 180;
-
-  // (1) center
-  const p1 = { x: cx, y: cy };
-
-  // (2–4) three points on inner circle: 6 o’clock centered, +/- delta around it
-  const a6 = toRad(cfg.sixDeg);
-  const aBefore = toRad(cfg.sixDeg - cfg.deltaDeg);
-  const aAfter  = toRad(cfg.sixDeg + cfg.deltaDeg);
-
-  const p2 = { x: cx + rInner * Math.cos(aBefore), y: cy + rInner * Math.sin(aBefore) };
-  const p3 = { x: cx + rInner * Math.cos(a6),      y: cy + rInner * Math.sin(a6)      }; // 6 o’clock
-  const p4 = { x: cx + rInner * Math.cos(aAfter),  y: cy + rInner * Math.sin(aAfter)  };
-
-  // (5) between center and the 6-point, fractional distance f (default 0.5)
-  const f = cfg.betweenFraction;
-  const p5 = { x: cx + (p3.x - cx) * f, y: cy + (p3.y - cy) * f };
-
-  return [p1, p2, p3, p4, p5];
-}
-
-
-// Position (or re-position) the dots
-function positionProbeDots(bucket) {
-  const dots = ensureProbeDots(bucket);
-  const pts = computeProbePositions(bucket);
-  dots.forEach((dot, i) => {
-    const { x, y } = pts[i];
-    dot.style.left = `${x}px`;
-    dot.style.top  = `${y}px`;
-  });
-}
 
 
 /* my code recommendation: */
@@ -2254,261 +1463,6 @@ async function getKwhT12Value() {
 }
 
 
-function setupRotor({
-  // identity / placement
-  role,                      // e.g., 'kwh'
-  bucketId,                  // e.g., 'rightChartContainer'
-  id,                        // optional element id; default: 'rotor-' + role
-  adoptSelector,             // optional: adopt an existing element instead of creating a new one
-
-  // content
-  labelText,                 // e.g., 'kWh Provided'
-  valueGetter,               // async () => number; supplies odometer value
-
- // STANDARD OPTIONS (no role-specific logic inside setup):
-  pillText,                         // string or (value) => string
-  digitsRenderer,                   // (speedEl, value) => void
-  digitsRoller,                     // (speedEl, value) => void
-
-
-  appearWhen,
-  appearAt,
-  moveAfterAppearTo,
-  positions = null,
-  scales = { 1: 1.8, 2: 0.5, 3: 0.5, 4: 0.5, 5: 0.8 },
-  hideWhen,
-  hideTo,
-  startHidden = true,        // start hidden until rule is met
-
-  // timing
-  syncReveal = 'instant'     // 'instant' | 'transitionEnd' (wait for bucket focus transition)
-}) {
-
-// Wait for bucket's transition and one extra frame so geometry is current
-async function afterGeometrySettles() {
-  // If caller asked to sync with transitionEnd, await it
-  if (syncReveal === 'transitionEnd') {
-    await waitForTransitionEndOnce(bucket);
-  }
-  // Then give the browser one more paint to update clientWidth/clientHeight
-  await new Promise(r => requestAnimationFrame(() => r()));
-}
-
-  // resolve bucket
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
-
-  // create or adopt rotor element
-const rotorEl = adoptSelector
-  ? RotorFactory.adopt(bucket, adoptSelector, role, appearAt)
-  : RotorFactory.create(bucket, { role, id: id ?? `rotor-${role}` }, appearAt);
-
-if (!rotorEl) return null;
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Harden renderer: if digitsRenderer throws, fall back to odometer */
-function buildContent(el, value) {
-  el.innerHTML = '';
-  const speed = document.createElement('div');
-  speed.className = 'speedRead';
-  speed.id = `rotor-${role}-value`;
-
-  const label = document.createElement('div');
-  label.className = 'baseLabel';
-  label.textContent = labelText ?? '';
-
-  el.appendChild(speed);
-  el.appendChild(label);
-
-  const v = Number(value ?? 0);
-
-  if (typeof digitsRenderer === 'function') {
-    try {
-      digitsRenderer(speed, v);
-    } catch (err) {
-      console.error(`digitsRenderer(${role}) failed:`, err);
-      // Safe fallback: plain odometer
-      window.Helpers.initOdometer(speed, Math.round(v));
-      window.Helpers.rollOdometer(speed, Math.round(v));
-    }
-  } else {
-    window.Helpers.initOdometer(speed, Math.round(v));
-    window.Helpers.rollOdometer(speed, Math.round(v));
-  }
-
-  // Attach pill using provided pillText (string or function)
-  const pill = typeof pillText === 'function' ? pillText(v) : pillText;
-  attachRotorPill(speed, pill);
-}
-
-
-
-/* my code recommendation: */
-
-  function getFocusLevel(bucket) {
-    // INSERT HERE 👉 use the descriptor stored on the bucket
-    return (bucket?.dataset?.layout || '').trim();
-  }
-
-
-  /* my code recommendation: */
-  function applyScaleForProbe(humanPoint) {
-    const scale = (scales && scales[humanPoint]) ?? null;
-    if (scale != null) RotorFactory.scale(rotorEl, scale);  // sets --rotor-scale inline
-  }
-
-
-
-  /* my code recommendation: */
-  // REPLACEMENT — resolve probe by *layout name* (no numeric scenes)
-  function resolveProbeForLevel(layoutName) {
-    // INSERT HERE 👉 positions is now an object keyed by descriptors: { 'right': 4, 'right-usage': 2, ... }
-    if (!positions || Array.isArray(positions)) return null; // numeric maps no longer supported
-    return positions[layoutName] ?? null;
-  }
-
-  /* my code recommendation: */
-  // REPLACEMENT — position rotor using descriptor layout, then scale
-  async function setToLevelPositionAsync(layoutName) {
-    const human = resolveProbeForLevel(layoutName);
-    if (human == null) return;
-    await afterGeometrySettles();
-    RotorFactory.toProbe(bucket, rotorEl, Math.max(0, Math.min(4, (human - 1) || 0)));
-    applyScaleForProbe(human);
-    rotorEl.dataset.probe = String(human);
-    positionProbeDots(bucket);
-  }
-
-
-
-
-  // load the value once (initial build only)
-  (async () => {
-    try {
-      const val = await Promise.resolve().then(valueGetter);
-      buildContent(rotorEl, val);
-    } catch (e) {
-      console.error(`setupRotor(${role}) failed to populate:`, e);
-      buildContent(rotorEl, 0);
-    }
-  })();
-
-  // helper: human point → index
-  const toIdx = (human) => Math.max(0, Math.min(4, (human ?? 1) - 1));
-
-  // initial placement
-  
-  if (startHidden) {
-    rotorEl.classList.add('is-hidden'); // CSS controls opacity/pointer-events
-  }
-
-  // visibility predicate
-  const appearPredicate = (b) => {
-    if (typeof appearWhen === 'function') return !!appearWhen(b);
-    if (appearWhen === 'always') return true;
-    if (appearWhen === 'focus') return b.classList.contains('focused');
-    return false;
-  };
-
-  // hide rule
-  const shouldHide = (b) => {
-    if (hideWhen === 'never') return false;
-    return !b.classList.contains('focused'); // default: blur
-  };
-
-  
-
-  // Initial spawn: prefer positions[0] if provided; else appearAt
-  const initialLevel = 0;
-  const initialHuman = resolveProbeForLevel(initialLevel) ?? appearAt;
-  RotorFactory.toProbe(bucket, rotorEl, Math.max(0, Math.min(4, (initialHuman - 1) || 0)));
-
-
-  /* my code recommendation: */
-  applyScaleForProbe(initialHuman);
-rotorEl.dataset.probe = String(initialHuman);
-
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Harden roller: if digitsRoller throws, fall back to plain roll */
-async function revealAndMove() {
-  if (syncReveal === 'transitionEnd') {
-    await waitForTransitionEndOnce(bucket);
-  }
-  rotorEl.classList.remove('is-hidden');
-
-  // One frame so the fade/roll overlap cleanly
-  await new Promise(r => requestAnimationFrame(() => r()));
-
-  const s = rotorEl.querySelector('.speedRead');
-  if (s) {
-    try {
-      const v = await Promise.resolve().then(valueGetter);
-      if (typeof digitsRoller === 'function') {
-        digitsRoller(s, Number(v ?? 0));
-      } else {
-        window.Helpers.rollOdometer(s, Math.round(Number(v ?? 0)));
-      }
-    } catch (err) {
-      console.error(`digitsRoller(${role}) failed:`, err);
-      // Minimal fallback if getter/roller fails
-      window.Helpers.rollOdometer(s, 0);
-    }
-  }
-
-  positionProbeDots(bucket);
-  // (no movement on reveal; we already spawn at appearAt)
-}
-
-
-
-
-
-// hide & reset
-function hideAndReset() {
-  rotorEl.classList.add('is-hidden');
-
-  // Reset digit stacks to "000" so next reveal rolls from zero
-  const s = rotorEl.querySelector('.speedRead');
-  if (s) window.setRotorValue(s, '000');
-}
-
-
-/* my code recommendation: */
-
-  /* my code recommendation: */
-  // REPLACEMENT — observe class + data-layout (no data-focus)
-  const obs = new MutationObserver((muts) => {
-    for (const m of muts) {
-      if (m.type !== 'attributes') continue;
-      if (m.attributeName !== 'class' && m.attributeName !== 'data-layout') continue;
-      const layout = getFocusLevel(bucket); // descriptor string
-      // INSERT HERE 👉 move rotor for this layout after geometry settles
-      void setToLevelPositionAsync(layout);
-      if (appearPredicate(bucket)) {
-        void revealAndMove();
-      } else if (shouldHide(bucket)) {
-        hideAndReset();
-      }
-    }
-  });
-  obs.observe(bucket, { attributes: true, attributeFilter: ['class','data-layout'] });
-
-
-
-/* my code recommendation: */
-// In case page loads with focus pre-set
-void setToLevelPositionAsync(getFocusLevel(bucket));
-
-
-  // in case the page loads with bucket already focused
-  if (appearPredicate(bucket)) void revealAndMove();
-
-  return rotorEl;
-}  // ← CLOSES setupRotor PROPERLY
-
 
 
 
@@ -2516,44 +1470,7 @@ void setToLevelPositionAsync(getFocusLevel(bucket));
 // Magnitude-driven compact formatter with exactly 3 displayed digits.
 // Returns { digitsOnly, dotIndex, unit, fracDigits }.
 // Groups: <1k (''), <1e6 ('k'), <1e9 ('M'), >=1e9 ('B').
-function formatKwhCompact(n) {
-  const abs = Math.max(0, Number(n) || 0);
 
-  // 1) Determine magnitude group and unit
-  let base = 1, unit = '';
-  if (abs >= 1_000 && abs < 1_000_000) { base = 1_000; unit = 'k'; }
-  else if (abs >= 1_000_000 && abs < 1_000_000_000) { base = 1_000_000; unit = 'M'; }
-  else if (abs >= 1_000_000_000) { base = 1_000_000_000; unit = 'B'; }
-
-  // 2) Scale to the group and pick exactly three digits
-  const scaled = abs / base;                // e.g., 207.89 (k), 1.37 (M), 13.478 (M)
-  const i = Math.floor(scaled);
-  const frac = scaled - i;
-
-  if (scaled >= 100) {
-    // Has hundreds → show hundreds, tens, ones (no fractional)
-    const hundreds = Math.floor(i / 100) % 10;
-    const tens     = Math.floor(i / 10)  % 10;
-    const ones     = i % 10;
-    return {
-      digitsOnly: '' + hundreds + tens + ones,  // e.g., "207"
-      dotIndex: -1,                              // no fractional digit
-      unit,
-      fracDigits: 0
-    };
-  } else {
-    // No hundreds → show tens, ones, tenths (last digit is fractional)
-    const tens   = Math.floor(i / 10) % 10;     // keep leading 0 if needed
-    const ones   = i % 10;
-    const tenths = Math.floor(frac * 10) % 10;
-    return {
-      digitsOnly: '' + tens + ones + tenths,    // e.g., "013", "134"
-      dotIndex: 2,                               // fractional starts at index 2 (third digit)
-      unit,
-      fracDigits: 1
-    };
-  }
-}
 
 
 /* my code recommendation: */
@@ -2564,15 +1481,7 @@ function formatKwhCompact(n) {
  *          where the third digit ("5") is tenths => tagged .is-frac by builder.
  */
 
-function formatPercentCompact(n) {
-  const v = Math.max(0, Math.min(125, Number(n) || 0)); // clamp 0..125
-  const i = Math.floor(v);
-  const frac = v - i;
-  const tens   = Math.floor(i / 10) % 10;
-  const ones   = i % 10;
-  const tenths = Math.floor(frac * 10) % 10;            // always present (0..9)
-  return { digitsOnly: '' + tens + ones + tenths, dotIndex: 2 };
-}
+
 
 
 
@@ -2598,59 +1507,7 @@ function unitFull(u) {
  *   { digitsOnly: "137", dotIndex: 1, unit: "M", ... }
  * -> digits at indices >= dotIndex are fractional ("37")
  */
-function buildCompactOdometer(speedEl, fmt) {
-  if (!speedEl || !fmt) return;
-  speedEl.innerHTML = '';
 
-  // helper: one rolling digit with 0..9 stack
-  const makeDigit = () => {
-    const d = document.createElement('span');
-    d.className = 'digit';
-    const stack = document.createElement('span');
-    stack.className = 'stack';
-    for (let i = 0; i < 10; i++) {
-      const s = document.createElement('span');
-      s.textContent = String(i);
-      stack.appendChild(s);
-    }
-    d.appendChild(stack);
-    return d;
-  };
-
-  const digits = String(fmt.digitsOnly || '').split(''); // e.g., "137"
-  const hasFrac = typeof fmt.dotIndex === 'number' && fmt.dotIndex >= 0;
-  const intLen = hasFrac ? fmt.dotIndex : digits.length;
-
-
-  
-/* my code recommendation: */
-// Create a wrapper for the integer digits so we can center the pill on them
-const intWrap = document.createElement('span');
-intWrap.className = 'int';
-speedEl.appendChild(intWrap);
-
-// Build digits: integers go in .int; fractional digits follow in the main container
-for (let i = 0; i < digits.length; i++) {
-  const d = makeDigit();
-  if (hasFrac && i >= intLen) d.classList.add('is-frac'); // mark decimal part
-  (i < intLen ? intWrap : speedEl).appendChild(d);
-}
-
-
-
-
-/* my code recommendation: */
-// Add the spelled-out magnitude pill (hide if < 1,000 => unit '')
-if (fmt.unit) {
-  const tag = document.createElement('span');
-  tag.className = 'magnitudeTag';
-  tag.textContent = unitFull(fmt.unit);  // thousand / million / billion
-  intWrap.appendChild(tag);              // centered on integer digits
-}
-
-  // roll stacks to the target number
-  window.setRotorValue(speedEl, '000');
-}
 
 
 /* my code recommendation: */
@@ -2660,55 +1517,7 @@ if (fmt.unit) {
  * - dotIndex: number in [0..2] for first fractional digit; -1 for none
  *      e.g., 2 => only the 3rd digit (index 2) is fractional
  */
-function buildFixed3Odometer(speedEl, digits3, dotIndex = -1) {
-  if (!speedEl) return;
 
-  // Clear and prepare container
-  speedEl.innerHTML = '';
-
-  // Helper: one rolling digit with 0..9 stack
-  const makeDigit = () => {
-    const d = document.createElement('span');
-    d.className = 'digit';
-    const stack = document.createElement('span');
-    stack.className = 'stack';
-    for (let i = 0; i < 10; i++) {
-      const s = document.createElement('span');
-      s.textContent = String(i);
-      stack.appendChild(s);
-    }
-    d.appendChild(stack);
-    return d;
-  };
-
-  // Ensure exactly 3 characters; pad left with 0 if shorter
-  const s = String(digits3 ?? '').padStart(3, '0');
-  const chars = s.split('');
-
-  // Create .int wrapper so a pill can be centered on non-fractional digits
-  const intWrap = document.createElement('span');
-  intWrap.className = 'int';
-  speedEl.appendChild(intWrap);
-
-
-  // Build three digit stacks
-  for (let i = 0; i < 3; i++) {
-    const d = makeDigit();
-    // Tag fractional digits (>= dotIndex) if any
-    if (dotIndex >= 0 && i >= dotIndex) d.classList.add('is-frac');
-    (dotIndex >= 0 && i >= dotIndex ? speedEl : intWrap).appendChild(d);
-  }
-
-  
-
-
-
-
-  /* my code recommendation: */
-  // Start at "000" so the reveal shows a rolling transition
-  window.setRotorValue(speedEl, '000');
-
-}
 
 
 
@@ -2754,326 +1563,11 @@ function attachRotorPill(speedEl, pillText) {
 
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Center the pill under the full 3-digit block by attaching it to .speedRead */
-function attachRotorPill(speedEl, pillText) {
-  if (!speedEl || !pillText) return;
 
-  // Create or reuse the pill directly under .speedRead (full-width anchor)
-  let tag = speedEl.querySelector('.magnitudeTag');
-  if (!tag) {
-    tag = document.createElement('span');
-    tag.className = 'magnitudeTag';
-    speedEl.appendChild(tag);
-  }
-  tag.textContent = String(pillText);
-}
 
 
-/* my code recommendation: REPLACEMENT — focus.js */
-/* kWh rotor: use T12 trend + SVG arrow */
-async function dR_kWh() {
-  const bucketId = 'rightChartContainer';
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
 
-  const existing = bucket.querySelector('.baseStats[data-role="kwh"]');
-  if (existing) return existing;
 
-  const trend = await window.ensureT12Trend();
-  const kwhT = trend.series.kwh;
-
-  return setupRotor({
-    role: 'kwh',
-    bucketId,
-    labelText: 'kWh Provided',
-    pillText: (val) => {
-      const fmt = formatKwhCompact(val ?? 0);
-      return fmt?.unit ? (unitFull(fmt.unit) + ' kWh') : '';
-    },
-    valueGetter: () => kwhT.current,
-
-    // build + arrow (SVG concave sides; color via trend mapping)
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* dR_kWh digitsRenderer: render digits, draw arrow, toggle trend on click */
-digitsRenderer: (speedEl, val) => {
-  // Render compact kWh (three digits; may include tenths depending on magnitude)
-  const fmt = formatKwhCompact(val ?? 0);
-  buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
-
-  // Draw the arrow with direction/color from the T12 trend
-  attachTrendArrow(speedEl, kwhT.dir, kwhT.color);
-
-  // Precise click handler on the arrow (wrapper & SVG), capture phase
-  const arrowWrap = speedEl.querySelector('.trendArrow');
-  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
-
-  const onArrow = (e) => {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    handleTrendArrowClick('kwh');     // toggles the kWh Provided trend chart
-  };
-
-  arrowWrap?.addEventListener('click', onArrow, { capture: true });
-  arrowSvg ?.addEventListener('click', onArrow, { capture: true });
-},
-
-
-
-    // roll the three stacks to target digits
-    digitsRoller: (speedEl, val) => {
-      const fmt = formatKwhCompact(val ?? 0);
-      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
-    },
-
-    appearWhen: 'focus',
-    hideWhen: 'blur',
-    startHidden: true,
-    syncReveal: 'transitionEnd',
-    positions: { 'right': 2, 'right-impact': 5 }
-  });
-}
-
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Usage Rate rotor: use T12 trend + SVG arrow */
-async function dR_usage() {
-  const bucketId = 'rightChartContainer';
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
-
-  const existing = bucket.querySelector('.baseStats[data-role="usage"]');
-  if (existing) return existing;
-
-  const trend = await window.ensureT12Trend();
-  const useT = trend.series.usageRate; // 0..1.25 (rate)
-
-  return setupRotor({
-    role: 'usage',
-    bucketId,
-    labelText: 'Shore Power Usage',
-    pillText: 'Usage Rate',
-    valueGetter: () => Math.max(0, useT.current) * 100, // percent for digits
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* dR_usage digitsRenderer: render digits, draw arrow, toggle trend on click */
-digitsRenderer: (speedEl, val) => {
-  // Render 2 integer digits + tenths
-  const fmt = formatPercentCompact(val ?? 0);
-  buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
-
-  // Draw the arrow with direction/color from the T12 trend
-  attachTrendArrow(speedEl, useT.dir, useT.color);
-
-  // Precise click handler on the arrow (wrapper & SVG), capture phase
-  const arrowWrap = speedEl.querySelector('.trendArrow');
-  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
-
-  const onArrow = (e) => {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    handleTrendArrowClick('usage');   // toggles the Usage Rate trend chart
-  };
-
-  arrowWrap?.addEventListener('click', onArrow, { capture: true });
-  arrowSvg ?.addEventListener('click', onArrow, { capture: true });
-},
-
-
-
-    // roll the three stacks to target digits
-    digitsRoller: (speedEl, val) => {
-      const fmt = formatPercentCompact(val ?? 0);
-      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
-    },
-
-    appearWhen: 'focus',
-    hideWhen: 'blur',
-    startHidden: true,
-    syncReveal: 'transitionEnd',
-    positions: { 'right': 4, 'right-usage': 2 }
-  });
-}
-
-
-
-/* my code recommendation: */
-// Connections count rotor (T12), 3-digit, no fractional — RIGHT bucket
-async function dR_connections() {
-  const bucketId = 'rightChartContainer';
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
-
-  const existing = bucket.querySelector('.baseStats[data-role="connections"]');
-  if (existing) return existing;
-
-  /* my code recommendation: */
-  const { t12ConnectionsCount } = await window.fillBuckets();
-  const connCount = t12ConnectionsCount;
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Replace ONLY the setupRotor(...) block inside dR_connections(...) */
-const trend = await window.ensureT12Trend();
-const connT = trend.series.connections;
-
-return setupRotor({
-  role: 'connections',
-  bucketId,
-  labelText: 'Connections',
-  pillText: 'Connections',
-  valueGetter: () => connT.current,               // T12 count (current window)
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* dR_connections digitsRenderer: render digits, draw arrow, toggle trend on click */
-digitsRenderer: (speedEl, val) => {
-  // Render 3 fixed digits (no fractional)
-  const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
-  buildFixed3Odometer(speedEl, s, -1);
-
-  // Draw the arrow with direction/color from the T12 trend
-  attachTrendArrow(speedEl, connT.dir, connT.color);
-
-  // Precise click handler on the arrow (wrapper & SVG), capture phase
-  const arrowWrap = speedEl.querySelector('.trendArrow');
-  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
-
-
-
-const onArrow = (e) => {
-  e.preventDefault();
-  e.stopImmediatePropagation();
-  e.stopPropagation();
-
-  const rightBucket = document.getElementById('rightChartContainer');
-  const isRightFocused = !!rightBucket && rightBucket.classList.contains('focused');
-
-  if (!isRightFocused) {
-    // Ignore until the KPI bucket is focused
-    return;
-  }
-
-  // Proceed: toggle the Connections trend chart
-  handleTrendArrowClick('connections');
-};
-
-
-  arrowWrap?.addEventListener('click', onArrow, { capture: true });
-  arrowSvg ?.addEventListener('click', onArrow, { capture: true });
-},
-
-
-  digitsRoller: (speedEl, val) => {
-    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
-    window.setRotorValue(speedEl, s);
-  },
-  appearWhen: 'always',
-  hideWhen: 'never',
-  startHidden: false, syncReveal: 'transitionEnd',
-  positions: { '': 1, 'right': 5, 'right-connections': 3 }
-});
-
-
-}
-
-
-
-/* my code recommendation: */
-// Ship calls count rotor (T12), 3-digit, no fractional — LEFT bucket
-
-/* my code recommendation: */
-// Ship calls count rotor (T12), 3-digit, no fractional — LEFT bucket
-async function dR_calls() {
-  const bucketId = 'leftChartContainer';
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
-
-  const existing = bucket.querySelector('.baseStats[data-role="calls"]');
-  if (existing) return existing;
-
-  /* my code recommendation: */
-  const { t12Calls } = await window.fillBuckets(); // arrival ∈ T12
-  const callCount = t12Calls.length;
-
-/*
-  return setupRotor({
-    role: 'calls',
-    bucketId,
-    labelText: 'Ship Calls (T12)',
-    pillText: 'Ship Calls',
-    valueGetter: () => callCount,                 // function; factory requirement
-
-    // Always 3-digit width, no fractional; start stacks at "000"
-    digitsRenderer: (speedEl, val) => {
-      const n = Math.max(0, Math.floor(Number(val) || 0));
-      const s = String(n).padStart(3, '0');
-      buildFixed3Odometer(speedEl, s, -1);        // dotIndex=-1 ⇒ no .is-frac
-    },
-    digitsRoller: (speedEl, val) => {
-      const n = Math.max(0, Math.floor(Number(val) || 0));
-      const s = String(n).padStart(3, '0');
-      window.setRotorValue(speedEl, s);           // roll during fade
-    },
-
-    appearWhen: 'always',
-    hideWhen: 'never',
-    startHidden: false, syncReveal: 'transitionEnd',
-    positions: { 0: 1, 1: 1, 2: 1 }
-  });
-  */
-
-  
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Inside dR_calls(...) after computing callCount, replace the setupRotor config with: */
-const trend = await window.ensureT12Trend();
-const callsT = trend.series.calls;
-
-return setupRotor({
-  role: 'calls',
-  bucketId,
-  labelText: 'Ship Calls (T12)',
-  pillText: 'Ship Calls',
-  valueGetter: () => callsT.current,
-  digitsRenderer: (speedEl, val) => {
-    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
-    buildFixed3Odometer(speedEl, s, -1);
-    attachTrendArrow(speedEl, callsT.dir, callsT.color);
-  },
-  digitsRoller: (speedEl, val) => {
-    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
-    window.setRotorValue(speedEl, s);
-  },
-  appearWhen: 'always',
-  hideWhen: 'never',
-  startHidden: false, syncReveal: 'transitionEnd',
-  positions: { 0: 1, 1: 1, 2: 1 }
-});
-
-}
-
-
-/* my code recommendation: */
-// When user clicks the kWh rotor, escalate to level-2 for the right bucket
-document.addEventListener('click', (e) => {
-  const kwhEl = e.target.closest('.baseStats[data-role="kwh"]');
-  if (!kwhEl) return;
-  const bucket = kwhEl.closest('.kpiBucket');
-  if (!bucket) return;
-  
-  if (bucket.classList.contains('focused')) {
-    e.stopPropagation();         // avoid double-handling
-    bucket.click();              // triggers the existing "unfocus + reset" behavior
-    return;
-  }
-
-  // Otherwise, do nothing (no escalation to level 2).
-  // Future: re-enable by setting bucket.dataset.focus = '2' when level-2 is supported.
-});
 
 
 /* my code recommendation: */
@@ -3105,8 +1599,9 @@ function createPowerCanvas(bucket) {
 // Attach click handler to each call segment in the LEFT radial chart
 document.querySelectorAll('#leftRadialChart g.power-item').forEach(item => {
   item.addEventListener('click', () => {
+    console.log("you poked my heart 4");
     const callId = item.__data__?.call?.id;
-    const bucket = document.getElementById('leftChartContainer');
+    const bucket = document.getElementById('callsChartContainer');
     if (!bucket || callId == null) return;
 
     const existing = document.getElementById('powerCanvas');
@@ -3138,11 +1633,59 @@ if (existing && (activeCallId === callId || !bucket.classList.contains('focused'
 });
 
 
+/* my code recommendation: INSERTION — focus.js (OSP radial hit → callsSelection + render) */
+// INSERT HERE 👉 add delegated click handler for OSP radial “power-hit” paths
+
+// We listen on document so the handler works whenever the OSP radial is (re)drawn by charts.js.
+document.addEventListener('click', function onOspHitClick(e) {
+  console.log("you poked my heart 5");
+  const hit = e.target.closest('#ospRadialChart .power-hit');
+  if (!hit) {
+    console.log("you missed the call hit box");
+    return; // not a click on the OSP radial hit area
+  } else {
+  // Stop scene/bucket toggles and other handlers from firing
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+
+  // Read the bound datum from the D3-generated element
+  const datum = hit.__data__ || (window.d3 ? d3.select(hit).datum() : null);
+  const vessel = datum?.call?.vessel ?? null;
+  if (!vessel) {console.log('no vessel selected!'); return};;
+
+  // Ensure PowerCanvas exists and size the child slot; keep chart anchored to LEFT bucket per your convention
+  const leftHost = document.getElementById('callsChartContainer') ?? document.getElementById('ospChartContainer');
+  if (typeof window.pcRender === 'function' && leftHost) {
+    const { canvas } = pcRender({ type: 'chart' }, leftHost);
+    const rightBucket = document.getElementById('ospChartContainer');
+    const childH = Math.round((rightBucket?.clientHeight ?? leftHost.clientHeight) * 0.40);
+    if (canvas?.style) canvas.style.setProperty('--pc-child-h', `${childH}px`);
+  }
+
+  // Toggle the clicked vessel in the global selection (no alpha/bravo; single unified list)
+  window.callsSelection = Array.isArray(window.callsSelection) ? window.callsSelection : [];
+  const idx = window.callsSelection.findIndex(x => x?.type === 'vessel' && x?.name === vessel);
+  if (idx >= 0) {
+    window.callsSelection.splice(idx, 1);
+  } else {
+    window.callsSelection.push({ type: 'vessel', name: vessel });
+  }
+
+  // Re-render the unified Usage Multiples chart
+  if (typeof window.renderUsageMultiples === 'function') {
+    window.renderUsageMultiples();
+  }
+}
+});
+
+
+
 /* my code recommendation: REPLACEMENT — focus.js (left bucket observer) */
-const leftBucket = document.getElementById('leftChartContainer');
+const leftBucket = document.getElementById('callsChartContainer');
 if (leftBucket) {
   const obs = new MutationObserver(() => {
-    const rightBucket = document.getElementById('rightChartContainer');
+    const rightBucket = document.getElementById('ospChartContainer');
     const leftFocused  = leftBucket.classList.contains('focused');
     const rightFocused = !!rightBucket && rightBucket.classList.contains('focused');
 
@@ -3447,8 +1990,8 @@ gCalls.append('rect')
 
   // After draw: refresh canvas sizing/placement
   const hostBucket =
-    document.getElementById('leftChartContainer') ??
-    document.getElementById('rightChartContainer');
+    document.getElementById('callsChartContainer') ??
+    document.getElementById('ospChartContainer');
   if (hostBucket) {
     pcSizeFor(canvas, { type: 'chart' }, hostBucket);
     pcPlace(canvas, hostBucket);
@@ -3459,7 +2002,7 @@ gCalls.append('rect')
 
 function updateRadialHighlights(selectedCallId = null, selectedVessel = null) {
   // 1) Clear any existing highlight classes on both radial charts
-  const items = document.querySelectorAll('#rightRadialChart g.power-item, #leftRadialChart g.power-item');
+  const items = document.querySelectorAll('#ospRadialChart g.power-item, #leftRadialChart g.power-item');
   items.forEach(el => el.classList.remove('is-selected-call', 'is-related-call'));
 
   // 2) If no callId provided, or the provided callId matches the current activeCallId,
@@ -3484,7 +2027,7 @@ function updateRadialHighlights(selectedCallId = null, selectedVessel = null) {
 // INSERT HERE 👉 v2 highlights: .is-selected/.is-related × .is-alpha/.is-bravo
 window.updateRadialHighlightsForSelections = function ({ alpha, bravo }) {
   // All items on both radials
-  const items = document.querySelectorAll('#rightRadialChart g.power-item, #leftRadialChart g.power-item');
+  const items = document.querySelectorAll('#ospRadialChart g.power-item, #leftRadialChart g.power-item');
 
   // 1) Clear both the new and legacy highlight classes
   items.forEach(el => {
@@ -3536,92 +2079,49 @@ window.updateRadialHighlightsForSelections = function ({ alpha, bravo }) {
 };
 
 
-/* my code recommendation: */
-// INSERTION — Scene coordinator (descriptor-only: '', 'right', 'right-usage', 'right-impact', 'right-connections')
-window.Scene = (function () {
-  const registry = new Map();   // key -> { scenes: { [scene]: { mount() } }, unmount() }
-  let current = '';
 
-  function get() { return current; }
-
-  
-function set(scene) {
-  const next = (scene || '').trim();
-  if (next === current) return api;
-
-  current = next;
-
-  const left  = document.getElementById('leftChartContainer');
-  const right = document.getElementById('rightChartContainer');
-
-  // 1) Keep bucket layouts in sync with the scene (regardless of focus)
-  //    right* → write on RIGHT, clear LEFT
-  //    'left' → write on LEFT,  clear RIGHT
-  //    ''     → clear both
-  if (next.startsWith('right')) {
-    if (right) right.dataset.layout = next;
-    if (left)  left.removeAttribute('data-layout');
-  } else if (next === 'left') {
-    if (left)  left.dataset.layout = 'left';
-    if (right) right.removeAttribute('data-layout');
-  } else {
-    if (left)  left.removeAttribute('data-layout');
-    if (right) right.removeAttribute('data-layout');
-  }
-
-  // 2) Leaving any right* scene → tear down PowerCanvas and cancel delayed reveal
-  if (!next.startsWith('right')) {
-    if (window.PCReveal && window.PCReveal.timer) {
-      clearTimeout(window.PCReveal.timer);
-      window.PCReveal.timer = null;
-    }
-    const canvas = document.getElementById('powerCanvas');
-    if (canvas) {
-      canvas.classList.remove('is-visible');                     // start fade-out
-      setTimeout(() => { if (canvas.parentNode) canvas.remove(); }, 400); // remove after fade
-    }
-  }
-
-  // 3) Scene participants: unmount stale → mount current
-  registry.forEach((spec) => {
-    const isMounted = spec._mounted === true;
-    if (isMounted && typeof spec.unmount === 'function') {
-      try { spec.unmount(); } catch(e) {}
-      spec._mounted = false;
-    }
-  });
-  registry.forEach((spec) => {
-    const mount = spec?.scenes?.[next]?.mount;
-    if (typeof mount === 'function') {
-      try { mount(); spec._mounted = true; } catch(e) { spec._mounted = false; }
-    }
-  });
-
-  return api;
-}
+/* my code recommendation: INSERTION — promote DOM helpers to global scope */
+// INSERT HERE 👉 make helpers visible to Scene.set and others outside DOMContentLoaded
+window.getBucketEl = window.getBucketEl || function (which) {
+  if (which === 'calls') return document.getElementById('callsChartContainer') || document.getElementById('callsChartContainer');
+  if (which === 'osp')   return document.getElementById('ospChartContainer')   || document.getElementById('ospChartContainer');
+  return null;
+};
+window.getRadialEl = window.getRadialEl || function (which) {
+  if (which === 'calls') return document.getElementById('callsRadialChart') || document.getElementById('leftRadialChart');
+  if (which === 'osp')   return document.getElementById('ospRadialChart')   || document.getElementById('ospRadialChart');
+  return null;
+};
+window.getCentralEl = window.getCentralEl || function (which) {
+  if (which === 'calls') return document.getElementById('callsCentralChart') || document.getElementById('leftCentralChart');
+  if (which === 'osp')   return document.getElementById('ospCentralChart')   || document.getElementById('rightCentralChart');
+  return null;
+};
 
 
-  function register(key, spec) {
-    if (!key) return api;
-    registry.set(key, Object.assign({ scenes: {}, unmount: null, _mounted: false }, spec || {}));
-    return api;
-  }
+/* my code recommendation: INSERTION — promote canonical layout reader */
 
-  const api = { get, set, register };
-  return api;
-})();
+window.readLayoutCanonical = window.readLayoutCanonical || function (bucket) {
+  const raw = (bucket?.dataset?.layout || '').trim();
+  if (raw === 'left')          return 'calls';
+  if (raw === 'right')         return 'osp';
+  if (raw === 'right-usage')   return 'osp-usage';
+  if (raw === 'right-impact')  return 'osp-impact';
+  return raw; // already canonical: '', 'calls', 'osp', 'osp-usage', 'osp-impact'
+};
+
 
 
 
 // INSERT HERE 👉 sync Usage gauge on right radial with current descriptor layout
 function updateRightUsageGauge() {
-  const rightBucket = document.getElementById('rightChartContainer');
+  const rightBucket = document.getElementById('ospChartContainer');
   const layout = (rightBucket?.dataset?.layout || '').trim();
-  const chartSel = '#rightRadialChart';
+  const chartSel = '#ospRadialChart';
   const svg = document.querySelector(chartSel + ' svg') || document.querySelector(chartSel);
 
   // Always remove existing gauge first
-  const oldGauge = document.querySelector('#rightRadialChart .conn-gauge');
+  const oldGauge = document.querySelector('#ospRadialChart .conn-gauge');
   if (oldGauge) oldGauge.remove();
 
   // Only draw for 'right-usage'
@@ -3629,7 +2129,7 @@ function updateRightUsageGauge() {
     // defer: ensure radial is present before drawing
     Promise.resolve().then(async () => {
       const { avg, n } = await window.getAvgConnQualityT12();
-      await window.drawConnQualityGauge('rightRadialChart', avg, n);
+      await window.drawConnQualityGauge('ospRadialChart', avg, n);
     });
   }
 }
@@ -3747,6 +2247,7 @@ async function buildPowerCanvasTable() {
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Header click: first click → desc, subsequent clicks toggle asc/desc */
 th.addEventListener('click', () => {
+  console.log("you poked my heart 6");
   const sameCol = table.dataset.sortKey === col.key;
   const nextDir = sameCol
     ? (table.dataset.sortDir === 'desc' ? 'asc' : 'desc')
@@ -3857,8 +2358,8 @@ function pcEnsureCanvas(hostBucket) {
 /* PowerCanvas: size to fit children (trend + chart + table) + top/bottom margins */
 function pcSizeFor(canvas, spec, hostBucket) {
   // Width anchored to RIGHT bucket so canvas is just a bit wider than the right KPI bucket
-  const leftBucket = document.getElementById('leftChartContainer') || hostBucket;
-  const rightBucket = document.getElementById('rightChartContainer') || hostBucket;
+  const leftBucket = document.getElementById('callsChartContainer') || hostBucket;
+  const rightBucket = document.getElementById('ospChartContainer') || hostBucket;
 
   // Use right-bucket width as reference; aim ~+5%, but clamp so it never crosses center line
   const refW = rightBucket?.clientWidth || leftBucket?.clientWidth || Math.round(window.innerWidth / 2);
@@ -3905,7 +2406,7 @@ function pcSizeFor(canvas, spec, hostBucket) {
 
 /* Place the PowerCanvas relative to the LEFT KPI bucket (never cross center line) */
 function pcPlace(canvas, hostBucket) {
-  const leftHost = document.getElementById('leftChartContainer') || hostBucket;
+  const leftHost = document.getElementById('callsChartContainer') || hostBucket;
   // Align the canvas’ RIGHT edge to the leftHost’s RIGHT edge (i.e., the screen center line)
   // so it won’t overlap the right radial chart.
   const leftEdge = leftHost.offsetLeft + (leftHost.clientWidth - canvas.clientWidth);
@@ -4051,39 +2552,353 @@ function pcRender(spec, hostBucket) {
 }
 
 
-/* my code recommendation: */
+
+
+
+
+
+/* ============================================================================================
+   CUE DIRECTOR
+   Listens for cues emitted from UI interactions and determines scene transitions.
+   Works with the Scene Composer (Scene.register / Scene.set) using declarative Model‑B scenes.
+   ============================================================================================
+*/
+
+window.CueDirector = (function () {
+
+  // Each scene may extend this map with its own transitions:
+  // { cueName : nextSceneName }
+  const cueTables = new Map();
+
+  return {
+
+    // ---------------------------------------------------------
+    // Scene.registerTransitions(name, { CUE: 'nextScene', ... })
+    // Allows each scene to declare how it responds to cues.
+    // ---------------------------------------------------------
+    registerTransitions(sceneName, transitions) {
+      cueTables.clear();
+      cueTables.set(sceneName, transitions || {});
+    },
+
+    // ---------------------------------------------------------
+    // emit(cueName, payload?)
+    // Entry point for all click handlers → Director receives cue
+    // ---------------------------------------------------------
+
+emit(cueName, payload = {}) {
+  const { source } = payload; // e.g. 'header'
+  const current = window.Scene.get();
+
+  if (source === 'header') {
+    console.log(
+      `[CueDirector] GLOBAL cue "${cueName}" → ${payload.targetScene}`
+    );
+    window.Scene.set(payload.targetScene);
+    return;
+  }
+
+  const table = cueTables.get(current);
+
+  if (!table || !table[cueName]) {
+    console.log(
+      `[CueDirector] Ignored cue "${cueName}" in scene "${current}"`
+    );
+    return;
+  }
+
+  const nextScene = table[cueName];
+  console.log(`[CueDirector] ${current} --(${cueName})→ ${nextScene}`);
+  window.Scene.set(nextScene);
+}
+
+  };
+
+})();
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  THE DIRECTOR
+//  THIS FUNCTION RESPONDS TO USER INTERACTIONS BY MOVING TO THE APPROPRIATE SCENE
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+window.Scene = (function () {
+
+  const registry = new Map();
+  let currentScene = null;
+
+  // ---------------------------------------------------------------
+  // API: Scene.register(name, { include, mount, unmount })
+  // ---------------------------------------------------------------
+  function register(name, def) {
+    if (!def || !Array.isArray(def.include)) {
+      throw new Error(`Scene "${name}" must define an include:[] array`);
+    }
+    registry.set(name, {
+      include: def.include,
+      mount: def.mount || (async () => {}),
+      unmount: def.unmount || (() => {}),
+      transitions: def.transitions || {} 
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // API: Scene.get()
+  // ---------------------------------------------------------------
+  function get() {
+    return currentScene;
+  }
+
+  // ---------------------------------------------------------------
+  // API: Scene.set(name)
+  //   Drives scene transitions: unmount old, diff DOM, mount new
+  // ---------------------------------------------------------------
+  async function set(name) {
+    if (!registry.has(name)) {
+      console.warn(`Scene "${name}" is not registered.`);
+      return;
+    }
+    if (currentScene === name) {
+      return; // no-op
+    }
+
+    const oldDef = currentScene ? registry.get(currentScene) : null;
+    const newDef = registry.get(name);
+
+    // 1. UNMOUNT OLD SCENE
+    if (oldDef && typeof oldDef.unmount === 'function') {
+      try {
+        await oldDef.unmount();
+      } catch (err) {
+        console.error(`Error during unmount of scene "${currentScene}":`, err);
+      }
+    }
+
+
+/* REPLACEMENT — Scene.set() DOM composition using fade‑hide
+   ---------------------------------------------------------
+   Removes NO DOM. Only toggles .scene-hidden on top‑level
+   scene-managed elements under #D3andME. Prevents flash,
+   preserves nested rotors, charts, SVG, and avoids layout
+   jumps.
+*/
+
+const newSet = new Set(newDef.include);
+
+// 2. HIDE elements not in the new guest list (fade‑out only)
+for (const el of document.querySelectorAll('#D3andME [id]')) {
+  const id = el.id;
+  if (!newSet.has(id)) {
+    el.classList.add('scene-hidden');
+  }
+}
+
+// 3. SHOW required elements (fade‑in only)
+//    Create missing containers only if truly absent.
+for (const id of newDef.include) {
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = id;
+    document.getElementById('D3andME').appendChild(el);
+  }
+  el.classList.remove('scene-hidden');
+}
+
+
+    // Set the new scene
+    currentScene = name;
+
+
+if (typeof window.CueDirector?.registerTransitions === 'function') {
+  window.CueDirector.registerTransitions(
+    name,
+    newDef.transitions || {}
+  );
+}
+
+
+    // 4. MOUNT NEW SCENE
+    if (typeof newDef.mount === 'function') {
+      try {
+        await newDef.mount();
+      } catch (err) {
+        console.error(`Error during mount of scene "${name}":`, err);
+      }
+    }
+  }
+
+  return { register, set, get };
+})();
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  SCENE REGISTRATIONS
+//  ELEMENTS INCLUDED IN A SCENE REGISTRATION ARE ADDED OR MOVED TO THEIR ASSIGNED LOCATION
+//  ELEMENTS NOT INCLUDED IN A SCENE REGISTRATION ARE REMOVED
+//
+//  CURRENT LIST OF SCENES:
+//    LOAD:         THIS IS THE SCENE THAT IS SET WHEN THE PAGE LOADS
+//    CALLS:        FIRST LEVEL EXPANSION OF CALL METRIC FROM LOAD SCENE
+//    CALLS-CAP:    EXPANSION OF PASSENGER VOLUMES RELATED TO CALLS (UNDEVELOPED)
+//    OSP:          FIRST LEVEL EXPANSION OF CONNECTION METRIC FROM LOAD SCENE
+//    OSP-USAGE:    EXPANSION OF OSP METRICS RELATED TO THE USAGE RATING
+//    OSP-IMPACT:   EXPANSION OF OSP METRICS RELATED TO THE KWH CONSUMED
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/* Scene.register('load') — Declarative baseline scene (Model‑B) */
+
+window.Scene.register('overview', {
+  include: [
+    'callsChartContainer',
+    'ospChartContainer'
+  ],
+
+  async mount() {
+    LayoutDirector.requestLayout('overview', 'scene:load')
+    document.getElementById('callsChartContainer').classList.remove('shrunk');
+    document.getElementById('ospChartContainer').classList.remove('shrunk');
+  },
+
+  transitions: {
+    CLICK_BUCKET_CALLS: 'calls',
+    CLICK_BUCKET_OSP:   'osp'
+  }
+});
+
+
+
+window.Scene.register('calls', {
+  include: [
+    'callsChartContainer',
+    //'ospChartContainer',
+    'rotor-calls',
+    'callsRadialChart',
+    'callsCentralChart'
+  ],
+
+  async mount() {
+    LayoutDirector.requestLayout('kpi', 'scene:calls')
+    document.getElementById('callsChartContainer').classList.remove('shrunk');
+    document.getElementById('ospChartContainer').classList.add('shrunk');
+
+    // Draw CALLS radial (this scene owns it)
+    const callsRadial = document.getElementById('callsRadialChart');
+    if (callsRadial) {
+      await charts.drawRadialCalendar(callsRadial, {});
+      await charts.drawCallArcs(callsRadial);
+    }
+  },
+
+  transitions: {
+    CLICK_BUCKET_CALLS: 'overview',
+    CLICK_BUCKET_OSP:   'osp'
+  }
+});
+
+
+
+/* Scene.register('osp') — Declarative OSP scene (Model‑B) */
+
+window.Scene.register('osp', {
+
+  include: [
+    'callsChartContainer',
+    'ospChartContainer',
+    'rotor-connections',
+    'rotor-usage',
+    'rotor-kwh',
+    'ospRadialChart',
+    'ospCentralChart',
+    'powerCanvas'
+  ],
+
+  async mount() {
+    LayoutDirector.requestLayout('kpi', 'scene:osp')
+    document.getElementById('callsChartContainer').classList.add('shrunk');
+    document.getElementById('ospChartContainer').classList.remove('shrunk');
+
+    // Draw OSP radial for this scene
+    const ospRadial = document.getElementById('ospRadialChart');
+    if (ospRadial) {
+      await charts.drawRadialCalendar(ospRadial, {});
+      await charts.drawPowerArcs(ospRadial);
+    }
+
+    // Central chart area (clean slate, owned by scene)
+    document.getElementById('ospCentralChart')?.replaceChildren();
+
+    // Prepare PowerCanvas (hidden) — reveal is done in osp‑usage / osp‑impact
+    const bucket = document.getElementById('ospChartContainer');
+    if (bucket && typeof window.pcRender === 'function') {
+      window.pcRender({ type: 'chart' }, bucket);
+    }
+  },
+
+  transitions: {
+    CLICK_BUCKET_OSP:   'overview',
+    CLICK_BUCKET_CALLS: 'calls',
+    SELECT_CALL:        'osp-usage',
+    CLICK_TREND_ARROW:  'osp-impact'
+  }
+});
+
+
+
+///////////////////////////////////////////////////////////////////////////////////
+//
+//  END SCENE REGISTRY
+//
+////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+/*
 // INSERTION — Scene participant: Usage gauge (right radial), only in 'right-usage'
 window.Scene.register('right-usage-gauge', {
   scenes: {
     'right-usage': {
       mount: () => {
         // remove any old gauge first, then draw for this scene
-        const old = document.querySelector('#rightRadialChart .conn-gauge');
+        const old = document.querySelector('#ospRadialChart .conn-gauge');
         if (old) old.remove();
         Promise.resolve().then(async () => {
           const { avg, n } = await window.getAvgConnQualityT12();
-          await window.drawConnQualityGauge('rightRadialChart', avg, n);
+          await window.drawConnQualityGauge('ospRadialChart', avg, n);
         });
       }
     }
   },
   unmount: () => {
-    const old = document.querySelector('#rightRadialChart .conn-gauge');
+    const old = document.querySelector('#ospRadialChart .conn-gauge');
     if (old) old.remove();
   }
 });
+*/
 
-/* my code recommendation: */
-// INSERTION — Scene participant: T12 trend (PowerCanvas top)
-
-// INSERTION — Scene participant: T12 trend (PowerCanvas top)
- // INSERT HERE 👉
-/* my code recommendation: register a right-scene chart anchored to probe 5 */
+/* my code recommendation: register a right-scene chart anchored to probe 5 
 window.Scene.register('right-cruise-connections-chart', {
   scenes: {
     'right': {
       mount: async () => {
-        const bucket = document.getElementById('rightChartContainer');
+        const bucket = document.getElementById('ospChartContainer');
         if (!bucket) return;
 
         // Ensure/position host so its *bottom center* sits on probe point 5
@@ -4115,7 +2930,7 @@ window.Scene.register('right-cruise-connections-chart', {
         });
 
 
-/* my code recommendation: REPLACEMENT */
+/* my code recommendation: REPLACEMENT 
 const guard = (e) => {
   // Let interactive chart elements handle their own clicks, but don't let events escape the host
   if (e.target.closest('.chart-interactive')) {
@@ -4153,9 +2968,9 @@ window.Scene.register('pc-trend', {
   scenes: {
     'right-usage': {
       mount: async () => {
-        const hostBucket = document.getElementById('leftChartContainer') || document.getElementById('rightChartContainer');
+        const hostBucket = document.getElementById('callsChartContainer') || document.getElementById('ospChartContainer');
         const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
-        const rightBucket = document.getElementById('rightChartContainer');
+        const rightBucket = document.getElementById('ospChartContainer');
         const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
         canvas.style.setProperty('--pc-child-h', `${childH}px`);
         // ensure trend host at TOP
@@ -4167,16 +2982,24 @@ window.Scene.register('pc-trend', {
         }
         trendHost.dataset.role = 'usageRate';
         trendHost.dataset.vessel = window.activeVesselName ?? '';
-        await drawT12TrendChart(trendHost, 'usageRate', 'Usage Rate', window.activeVesselName ?? null);
+        //await drawT12TrendChart(trendHost, 'usageRate', 'Usage Rate', window.activeVesselName ?? null);
+        
+await charts.getT12Trend({ vesselName: window.activeVesselName ?? null });
+charts.drawT12Trend(trendHost, {
+  seriesKey:   'usageRate',
+  legendLabel: 'Usage Rate',
+  vesselName:  window.activeVesselName ?? null
+});
+
         pcSizeFor(canvas, { type: 'chart' }, hostBucket);
         pcPlace(canvas, hostBucket);
       }
     },
     'right-impact': {
       mount: async () => {
-        const hostBucket = document.getElementById('leftChartContainer') || document.getElementById('rightChartContainer');
+        const hostBucket = document.getElementById('callsChartContainer') || document.getElementById('ospChartContainer');
         const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
-        const rightBucket = document.getElementById('rightChartContainer');
+        const rightBucket = document.getElementById('ospChartContainer');
         const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
         canvas.style.setProperty('--pc-child-h', `${childH}px`);
         let trendHost = contentHost.querySelector('.pc-trend');
@@ -4187,16 +3010,27 @@ window.Scene.register('pc-trend', {
         }
         trendHost.dataset.role = 'kwh';
         trendHost.dataset.vessel = window.activeVesselName ?? '';
-        await drawT12TrendChart(trendHost, 'kwh', 'kWh Provided', window.activeVesselName ?? null);
+        //await drawT12TrendChart(trendHost, 'kwh', 'kWh Provided', window.activeVesselName ?? null);
+        
+// Ensure data for this vessel
+
+await charts.getT12Trend({ vesselName: window.activeVesselName ?? null });
+charts.drawT12Trend(trendHost, {
+  seriesKey:   'kwh',
+  legendLabel: 'kWh Provided',
+  vesselName:  window.activeVesselName ?? null
+});
+
+
         pcSizeFor(canvas, { type: 'chart' }, hostBucket);
         pcPlace(canvas, hostBucket);
       }
     },
     'right-connections': {
       mount: async () => {
-        const hostBucket = document.getElementById('leftChartContainer') || document.getElementById('rightChartContainer');
+        const hostBucket = document.getElementById('callsChartContainer') || document.getElementById('ospChartContainer');
         const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
-        const rightBucket = document.getElementById('rightChartContainer');
+        const rightBucket = document.getElementById('ospChartContainer');
         const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
         canvas.style.setProperty('--pc-child-h', `${childH}px`);
         let trendHost = contentHost.querySelector('.pc-trend');
@@ -4207,7 +3041,16 @@ window.Scene.register('pc-trend', {
         }
         trendHost.dataset.role = 'connections';
         trendHost.dataset.vessel = window.activeVesselName ?? '';
-        await drawT12TrendChart(trendHost, 'connections', 'Connections', window.activeVesselName ?? null);
+        //await drawT12TrendChart(trendHost, 'connections', 'Connections', window.activeVesselName ?? null);
+        
+await charts.getT12Trend({ vesselName: window.activeVesselName ?? null });
+charts.drawT12Trend(trendHost, {
+  seriesKey:   'connections',
+  legendLabel: 'Connections',
+  vesselName:  window.activeVesselName ?? null
+});
+
+        
         pcSizeFor(canvas, { type: 'chart' }, hostBucket);
         pcPlace(canvas, hostBucket);
       }
@@ -4221,11 +3064,12 @@ window.Scene.register('pc-trend', {
   }
 });
 
-
+*/
 
 
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Cache per vessel ('' = all vessels) */
+/* REMOVE THIS BLOCK AFTER TESTING MIGRATION TO CHARTS.JS
 window.ensureT12Trend = async function(vesselNameOrNull) {
   const norm = s => String(s || '')
     .toLowerCase()
@@ -4243,7 +3087,7 @@ window.ensureT12Trend = async function(vesselNameOrNull) {
   window.__T12TrendCache.set(key, { data, stamp: Date.now() });
   return data;
 };
-
+*/
 
 
 /* my code recommendation: INSERTION — focus.js */
@@ -4251,60 +3095,7 @@ window.ensureT12Trend = async function(vesselNameOrNull) {
 
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Draw a concave-sided arrow as SVG, sized to the middle digit width */
-function attachTrendArrow(speedEl, dir, color) {
-  if (!speedEl) return;
 
-  // host element (above digits)
-  let wrap = speedEl.querySelector('.trendArrow');
-  if (!wrap) {
-    wrap = document.createElement('span');
-    wrap.className = 'trendArrow'; // positioned by CSS
-    speedEl.appendChild(wrap);
-  }
-
-  // svg element (reused if present)
-  let svg = wrap.querySelector('svg.trendArrowSvg');
-  if (!svg) {
-    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-
-svg.setAttribute('class', 'trendArrowSvg');
-svg.setAttribute('viewBox', '0 0 100 30');             // ↓ half-height box
-svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-svg.setAttribute('aria-hidden', 'true');
-
-const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-path.setAttribute('class', 'arrow-shape');
-
-
-    /* Concave-sided UP arrow shape:
-       - Tip at (50,0)
-       - Side curves bow inward using cubic Beziers
-       - Base is a gentle arc (quadratic) */
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Concave-sided UP arrow with a straight horizontal base */
-
-
-path.setAttribute(
-  'd',
-  'M50,0 ' +                  // tip
-  'A 70 70 0 0 0 88,30 ' +    // right side arc (bows inward toward center)
-  'L 12,30 ' +                // base: perfectly horizontal
-  'A 70 70 0 0 0 50,0 Z'      // left side arc back to tip
-);
-
-    svg.appendChild(path);
-    wrap.appendChild(svg);
-  }
-
-  // orientation
-  svg.classList.toggle('is-down', dir === 'down');
-  svg.classList.toggle('is-up',   dir !== 'down'); // 'up' or 'flat' treated as up orientation
-
-  // color via CSS variable (no inline fill)
-  speedEl.style.setProperty('--trend-color', String(color ?? '#2b4d7d'));
-};
 
 
 
@@ -4319,6 +3110,8 @@ path.setAttribute(
 
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Add optional vesselKey filter (normalized, lowercase, punctuation stripped) */
+/*
+REMOVE THIS BLOCK AFTER TESTING MIGRATION TO CHARTS.JS
 async function computeT12Trend(vesselKey = null) {
   const [calls, connections] = await Promise.all([window.callsPromise, window.connectionsPromise]);
   const { lastEnd } = window.Helpers.getT24();
@@ -4419,7 +3212,7 @@ async function computeT12Trend(vesselKey = null) {
     }
   };
 }
-
+*/
 
 
 
@@ -4433,6 +3226,32 @@ const TrendRoleMap = {
   kwh:         { key: 'kwh',        label: 'kWh Provided' }
 };
 
+// refresh open T12 trend when vessel selection changes
+function refreshOpenTrendFor(vesselName) {
+  const canvas = document.getElementById('powerCanvas');
+  const trendHost = canvas?.querySelector('.pc-trend');
+  if (!trendHost) return;
+
+  // role in dataset is one of: 'usageRate' | 'kwh' | 'connections'
+  const role = trendHost.dataset.role;
+  const cfg = {
+    usageRate:   { key: 'usageRate',   label: 'Usage Rate' },
+    kwh:         { key: 'kwh',         label: 'kWh Provided' },
+    connections: { key: 'connections', label: 'Connections' }
+  }[role];
+  if (!cfg) return;
+
+  const vessel = vesselName ?? '';
+  charts.getT12Trend({ vesselName: vessel }).then(() => {
+    charts.drawT12Trend(trendHost, {
+      seriesKey:   cfg.key,
+      legendLabel: cfg.label,
+      vesselName:  vessel
+    });
+  });
+}
+
+
 
 
 
@@ -4443,136 +3262,7 @@ const TrendRoleMap = {
    - 2nd click on the SAME role (and same vessel filter) → remove the trend chart.
    - Clicking a different role replaces the chart with that role.
 */
-async function handleTrendArrowClick(role) {
-//4th insertion
 
-window.emitIntent('TOGGLE_T12_TREND', { role, vessel: window.activeVesselName ?? null });
-window.onToggleTrend({ role, vessel: window.activeVesselName ?? null });
-
-//end 4th insertion
-
-
-  const leftBucket  = document.getElementById('leftChartContainer');
-  const rightBucket = document.getElementById('rightChartContainer');
-  const hostBucket  = leftBucket ?? rightBucket;
-  if (!hostBucket) return;
-
-  
-  /* my code recommendation: INSERTION — focus.js */
-  /* Instant reveal hook: cancel any pending delayed reveal and show PowerCanvas + Table now */
-  if (window.PCReveal && window.PCReveal.timer) { clearTimeout(window.PCReveal.timer); window.PCReveal.timer = null; }
-  const leftForAnchor = document.getElementById('leftChartContainer') || hostBucket;
-  const resultNow = pcRender({ type: 'table' }, leftForAnchor); // ensures table is present immediately
-  const canvasNow = resultNow && resultNow.canvas ? resultNow.canvas : document.getElementById('powerCanvas');
-  if (canvasNow) {
-    const right = document.getElementById('rightChartContainer');
-    const childH = Math.round(((right && right.clientHeight) || leftForAnchor.clientHeight) * 0.4);
-    canvasNow.style.setProperty('--pc-child-h', String(childH) + 'px');
-  }
-
-  // (continue with existing logic below)
-
-
-  // Ensure PowerCanvas exists; do NOT clear existing content
-  const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
-
-  // Give children a consistent height (one third of right bucket height)
-  const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) *0.4);
-  canvas.style.setProperty('--pc-child-h', `${childH}px`);
-
-  // Find existing trend host (top slot) if any
-  let trendHost = contentHost.querySelector('.pc-trend');
-
-  // Determine the desired state (role + vessel)
-  const vessel = window.activeVesselName ?? null;
-
-// INSERT HERE 👉 set layout by role (no numeric scenes)
-const rightBucketEl = document.getElementById('rightChartContainer');
-
-
-if (rightBucketEl && rightBucketEl.classList.contains('focused')) {
-  if (role === 'usage')      window.Scene.set('right-usage');
-  else if (role === 'kwh')   window.Scene.set('right-impact');
-  else if (role === 'connections') window.Scene.set('right-connections');
-  else                        window.Scene.set('right');
-}
-
-
-
-  const desiredRole   = role;
-  const desiredVessel = vessel ?? '';
-
-  // If a trend is already showing and matches this role+vessel → TOGGLE OFF
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Toggle OFF: fade the chart and (if it will be empty) the canvas, then remove both */
-if (trendHost && trendHost.dataset.role === role && trendHost.dataset.vessel === (window.activeVesselName ?? '')) {
-  const canvas = document.getElementById('powerCanvas');
-  const willBeEmpty =
-    !contentHost.querySelector('.pc-chart') &&
-    !contentHost.querySelector('.pc-table-host .pc-table'); // only trend is present
-
-  // 1) Start chart fade (always)
-  trendHost.classList.add('is-fading');
-
-  // 2) If canvas will be empty after this removal, start canvas fade too
-  if (canvas && willBeEmpty) {
-    canvas.classList.add('is-fading');     // drive opacity → 0
-    canvas.classList.remove('is-visible'); // ensure we're not holding it at 1
-  }
-
-  // Force a reflow so transitions actually run before we remove anything
-  void trendHost.offsetWidth;
-
-  // 3) When the chart fade completes, remove the chart
-  const onChartFadeEnd = () => {
-    trendHost.remove();
-
-    // 4) If canvas was set to fade (empty after removal), remove it after its fade completes
-    if (canvas && willBeEmpty) {
-      const onCanvasFadeEnd = () => canvas.remove();
-      canvas.addEventListener('transitionend', onCanvasFadeEnd, { once: true });
-
-      // Safety timeout: remove even if transitionend doesn’t fire
-      setTimeout(onCanvasFadeEnd, 400);
-    }
-  };
-
-  trendHost.addEventListener('transitionend', onChartFadeEnd, { once: true });
-
-  // Safety timeout for the chart as well
-  setTimeout(onChartFadeEnd, 400);
-
-  return;
-}
-
-
-  // Otherwise ensure there is a trend host and draw/refresh for the new role
-  if (!trendHost) {
-    trendHost = document.createElement('div');
-    trendHost.className = 'pc-trend';
-    contentHost.insertBefore(trendHost, contentHost.firstChild); // always top
-  }
-
-  // Track what's being displayed for robust toggling next time
-  trendHost.dataset.role   = desiredRole;
-  trendHost.dataset.vessel = desiredVessel;
-
-  // Map rotor role → series key + legend label
-  const cfg = {
-    usage:       { key: 'usageRate',   label: 'Usage Rate' },
-    connections: { key: 'connections', label: 'Connections' },
-    kwh:         { key: 'kwh',         label: 'kWh Provided' }
-  }[desiredRole];
-  if (!cfg) return;
-
-  // Draw chart for this role (respect vessel filter)
-  await drawT12TrendChart(trendHost, cfg.key, cfg.label, vessel);
-
-  // Refresh canvas sizing/placement after content changes
-  pcSizeFor(canvas, { type: 'chart' }, hostBucket);
-  pcPlace(canvas, hostBucket);
-}
 
 
 
@@ -4596,6 +3286,7 @@ if (trendHost && trendHost.dataset.role === role && trendHost.dataset.vessel ===
    - Title: "T12 Trend"; Legend: pill (usage-chart spacing) with measure + vessel.
    - Neutral black line; distinct dots with hover tooltips including T12 period window.
 */
+/* REMOVE THIS BLOCK AFTER TESTING MIGRATION TO CHARTS.JS
 async function drawT12TrendChart(hostEl, seriesKey, legendLabel, vesselName = null) {
   if (!hostEl) return;
   hostEl.innerHTML = '';
@@ -4715,5 +3406,1092 @@ async function drawT12TrendChart(hostEl, seriesKey, legendLabel, vesselName = nu
       return `${val}\n${periodLabel(d.i)}`;
     });
 }
+*/
+
+/////////////////////////////////////////////////////////////
+//
+//  LAYOUT DIRECTOR
+//  THE LD ADJUSTS THE AMOUNT OF SCREEN HEIGHT GIVEN TO ANY PARTICULAR SECTION OF THE DATASPACE
+//
+/////////////////////////////////////////////////////////////
+
+/* my code recommendation: REPLACEMENT — LayoutDirector without IIFE */
+
+const LayoutDirector = {
+  VALID_LAYOUTS: new Set(['overview', 'kpi', 'vessel']),
+  TRANSITION_MS: 500,
+
+  isTransitioning: false,
+  currentLayout: null,
+
+  init() {
+    const dataSpace = document.getElementById('dataSpace');
+    if (!dataSpace) {
+      console.warn('LayoutDirector: #dataSpace not found');
+      return;
+    }
+    this.dataSpace = dataSpace;
+    this.currentLayout = dataSpace.dataset.layout || null;
+  },
+
+  requestLayout(mode, source = 'unknown') {
+    if (!this.VALID_LAYOUTS.has(mode)) return;
+    if (!this.dataSpace) return;
+
+    if (this.isTransitioning) return;
+    if (this.currentLayout === mode) return;
+
+    this.isTransitioning = true;
+    this.currentLayout = mode;
+    this.dataSpace.dataset.layout = mode;
+
+    setTimeout(() => {
+      this.isTransitioning = false;
+    }, this.TRANSITION_MS);
+  }
+};
+
+window.LayoutDirector = LayoutDirector;
+
+LayoutDirector.init();
 
 
+window.Scene.set('overview');
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  END LAYOUT DIRECTOR
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  ELEMENT DEFINITIONS
+//  ELEMENTS INCLUDED IN SCENE CHOREOGRAPHY NEED SPECIFIC INFORMATION TO BE DRAWN CORRECTLY
+//
+////////////////////////////////////////////////////////////////////////////////
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* kWh rotor: use T12 trend + SVG arrow */
+async function dR_kWh() {
+  const bucketId = 'ospChartContainer';
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+
+  const existing = bucket.querySelector('.baseStats[data-role="kwh"]');
+  if (existing) return existing;
+
+  
+// const trend = await window.ensureT12Trend();
+const trend = await charts.getT12Trend({});
+
+
+  const kwhT = trend.series.kwh;
+
+  return setupRotor({
+    role: 'kwh',
+    bucketId,
+    labelText: 'kWh Provided',
+    pillText: (val) => {
+      const fmt = formatKwhCompact(val ?? 0);
+      return fmt?.unit ? (unitFull(fmt.unit) + ' kWh') : '';
+    },
+    valueGetter: window.cruncher.getT12KwhTotal,
+
+    // build + arrow (SVG concave sides; color via trend mapping)
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* dR_kWh digitsRenderer: render digits, draw arrow, toggle trend on click */
+digitsRenderer: (speedEl, val) => {
+  // Render compact kWh (three digits; may include tenths depending on magnitude)
+  const fmt = formatKwhCompact(val ?? 0);
+  buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
+
+  // Draw the arrow with direction/color from the T12 trend
+  attachTrendArrow(speedEl, kwhT.dir, kwhT.color);
+
+  // Precise click handler on the arrow (wrapper & SVG), capture phase
+  const arrowWrap = speedEl.querySelector('.trendArrow');
+  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
+
+  const onArrow = (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    handleTrendArrowClick('kwh');     // toggles the kWh Provided trend chart
+  };
+
+  //arrowWrap?.addEventListener('click', onArrow, { capture: true });
+  //arrowSvg ?.addEventListener('click', onArrow, { capture: true });
+},
+
+
+
+    // roll the three stacks to target digits
+    digitsRoller: (speedEl, val) => {
+      const fmt = formatKwhCompact(val ?? 0);
+      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
+    },
+
+    appearWhen: 'focus',
+    hideWhen: 'blur',
+    startHidden: true,
+    syncReveal: 'transitionEnd',
+    positions: { 'osp': 2, 'osp-impact': 5 }
+  });
+}
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Usage Rate rotor: use T12 trend + SVG arrow */
+async function dR_usage() {
+  const bucketId = 'ospChartContainer';
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+
+  const existing = bucket.querySelector('.baseStats[data-role="usage"]');
+  if (existing) return existing;
+
+  
+// const trend = await window.ensureT12Trend();
+const trend = await charts.getT12Trend({});
+
+  const useT = trend.series.usageRate; // 0..1.25 (rate)
+
+  return setupRotor({
+    role: 'usage',
+    bucketId,
+    labelText: 'Shore Power Usage',
+    pillText: 'Usage Rate',
+    valueGetter: window.cruncher.getT12UsageRatePercent,
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* dR_usage digitsRenderer: render digits, draw arrow, toggle trend on click */
+digitsRenderer: (speedEl, val) => {
+  // Render 2 integer digits + tenths
+  const fmt = formatPercentCompact(val ?? 0);
+  buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
+
+  // Draw the arrow with direction/color from the T12 trend
+  attachTrendArrow(speedEl, useT.dir, useT.color);
+
+  // Precise click handler on the arrow (wrapper & SVG), capture phase
+  const arrowWrap = speedEl.querySelector('.trendArrow');
+  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
+
+  const onArrow = (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    handleTrendArrowClick('usage');   // toggles the Usage Rate trend chart
+  };
+
+  //arrowWrap?.addEventListener('click', onArrow, { capture: true });
+  //arrowSvg ?.addEventListener('click', onArrow, { capture: true });
+},
+
+
+
+    // roll the three stacks to target digits
+    digitsRoller: (speedEl, val) => {
+      const fmt = formatPercentCompact(val ?? 0);
+      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
+    },
+
+    appearWhen: 'focus',
+    hideWhen: 'blur',
+    startHidden: true,
+    syncReveal: 'transitionEnd',
+    positions: { 'osp': 4, 'osp-usage': 2 }
+  });
+}
+
+
+/* my code recommendation: */
+// Connections count rotor (T12), 3-digit, no fractional — RIGHT bucket
+async function dR_connections() {
+  const bucketId = 'ospChartContainer';
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+
+  const existing = bucket.querySelector('.baseStats[data-role="connections"]');
+  if (existing) return existing;
+
+  /* my code recommendation: */
+  const { t12ConnectionsCount } = await window.fillBuckets();
+  const connCount = t12ConnectionsCount;
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Replace ONLY the setupRotor(...) block inside dR_connections(...) */
+
+// const trend = await window.ensureT12Trend();
+const trend = await charts.getT12Trend({});
+
+const connT = trend.series.connections;
+
+return setupRotor({
+  role: 'connections',
+  bucketId,
+  labelText: 'Connections',
+  pillText: 'Connections',
+  valueGetter: window.cruncher.getT12ConnectionCount,
+
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* dR_connections digitsRenderer: render digits, draw arrow, toggle trend on click */
+digitsRenderer: (speedEl, val) => {
+  // Render 3 fixed digits (no fractional)
+  const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
+  buildFixed3Odometer(speedEl, s, -1);
+
+  // Draw the arrow with direction/color from the T12 trend
+  attachTrendArrow(speedEl, connT.dir, connT.color);
+
+  // Precise click handler on the arrow (wrapper & SVG), capture phase
+  const arrowWrap = speedEl.querySelector('.trendArrow');
+  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
+
+
+
+const onArrow = (e) => {
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  e.stopPropagation();
+
+  const rightBucket = document.getElementById('ospChartContainer');
+  const isRightFocused = !!rightBucket && rightBucket.classList.contains('focused');
+
+  if (!isRightFocused) {
+    // Ignore until the KPI bucket is focused
+    return;
+  }
+
+  // Proceed: toggle the Connections trend chart
+  handleTrendArrowClick('connections');
+};
+
+
+  //arrowWrap?.addEventListener('click', onArrow, { capture: true });
+  //arrowSvg ?.addEventListener('click', onArrow, { capture: true });
+},
+
+
+  digitsRoller: (speedEl, val) => {
+    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
+    window.setRotorValue(speedEl, s);
+  },
+  appearWhen: 'always',
+  hideWhen: 'never',
+  startHidden: false, syncReveal: 'transitionEnd',
+  
+positions: {
+  "": 1,
+  "osp": 5,
+  "osp-usage": 5,
+  "osp-impact": 5
+}
+
+});
+
+
+}
+
+
+/* my code recommendation: */
+// Ship calls count rotor (T12), 3-digit, no fractional — LEFT bucket
+async function dR_calls() {
+  const bucketId = 'callsChartContainer';
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+
+  const existing = bucket.querySelector('.baseStats[data-role="calls"]');
+  if (existing) return existing;
+
+  /* my code recommendation: */
+  const { t12Calls } = await window.fillBuckets(); // arrival ∈ T12
+  const callCount = t12Calls.length;
+
+const trend = await charts.getT12Trend({});
+
+const callsT = trend.series.calls;
+
+return setupRotor({
+  role: 'calls',
+  bucketId,
+  labelText: 'Ship Calls (T12)',
+  pillText: 'Ship Calls',
+  valueGetter: window.cruncher.getT12CallCount,
+
+  digitsRenderer: (speedEl, val) => {
+    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
+    buildFixed3Odometer(speedEl, s, -1);
+    attachTrendArrow(speedEl, callsT.dir, callsT.color);
+  },
+  digitsRoller: (speedEl, val) => {
+    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
+    window.setRotorValue(speedEl, s);
+  },
+  appearWhen: 'always',
+  hideWhen: 'never',
+  startHidden: false, syncReveal: 'transitionEnd',
+  positions: { 0: 1, 1: 1, 2: 1 }
+});
+
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  END ELEMENT DEFINITIONS
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+function setupRotor({
+  // identity / placement
+  role,                      // e.g., 'kwh'
+  bucketId,                  // e.g., 'ospChartContainer'
+  id,                        // optional element id; default: 'rotor-' + role
+  adoptSelector,             // optional: adopt an existing element instead of creating a new one
+
+  // content
+  labelText,                 // e.g., 'kWh Provided'
+  valueGetter,               // async () => number; supplies odometer value
+
+ // STANDARD OPTIONS (no role-specific logic inside setup):
+  pillText,                         // string or (value) => string
+  digitsRenderer,                   // (speedEl, value) => void
+  digitsRoller,                     // (speedEl, value) => void
+
+
+  appearWhen,
+  appearAt,
+  moveAfterAppearTo,
+  positions = null,
+  scales = { 1: 1.8, 2: 0.5, 3: 0.5, 4: 0.5, 5: 0.8 },
+  hideWhen,
+  hideTo,
+  startHidden = true,        // start hidden until rule is met
+
+  // timing
+  syncReveal = 'instant'     // 'instant' | 'transitionEnd' (wait for bucket focus transition)
+}) {
+
+// Wait for bucket's transition and one extra frame so geometry is current
+async function afterGeometrySettles() {
+  // If caller asked to sync with transitionEnd, await it
+  if (syncReveal === 'transitionEnd') {
+    await waitForTransitionEndOnce(bucket);
+  }
+  // Then give the browser one more paint to update clientWidth/clientHeight
+  await new Promise(r => requestAnimationFrame(() => r()));
+}
+
+  // resolve bucket
+  const bucket = document.getElementById(bucketId);
+  if (!bucket) return null;
+
+  // create or adopt rotor element
+const rotorEl = adoptSelector
+  ? RotorFactory.adopt(bucket, adoptSelector, role, appearAt)
+  : RotorFactory.create(bucket, { role, id: id ?? `rotor-${role}` }, appearAt);
+
+if (!rotorEl) return null;
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Harden renderer: if digitsRenderer throws, fall back to odometer */
+function buildContent(el, value) {
+  el.innerHTML = '';
+  const speed = document.createElement('div');
+  speed.className = 'speedRead';
+  speed.id = `rotor-${role}-value`;
+
+  const label = document.createElement('div');
+  label.className = 'baseLabel';
+  label.textContent = labelText ?? '';
+
+  el.appendChild(speed);
+  el.appendChild(label);
+
+  const v = Number(value ?? 0);
+
+  if (typeof digitsRenderer === 'function') {
+    try {
+      digitsRenderer(speed, v);
+    } catch (err) {
+      console.error(`digitsRenderer(${role}) failed:`, err);
+      // Safe fallback: plain odometer
+      window.Helpers.initOdometer(speed, Math.round(v));
+      window.Helpers.rollOdometer(speed, Math.round(v));
+    }
+  } else {
+    window.Helpers.initOdometer(speed, Math.round(v));
+    window.Helpers.rollOdometer(speed, Math.round(v));
+  }
+
+  // Attach pill using provided pillText (string or function)
+  const pill = typeof pillText === 'function' ? pillText(v) : pillText;
+  attachRotorPill(speed, pill);
+}
+
+
+
+/* my code recommendation: */
+
+
+// INSERT HERE 👉 read canonical (maps left/right* → calls/osp*)
+function getFocusLevel(bucket) {
+  return readLayoutCanonical(bucket);
+}
+
+
+
+  /* my code recommendation: */
+  function applyScaleForProbe(humanPoint) {
+    const scale = (scales && scales[humanPoint]) ?? null;
+    if (scale != null) RotorFactory.scale(rotorEl, scale);  // sets --rotor-scale inline
+  }
+
+
+
+  /* my code recommendation: */
+  // REPLACEMENT — resolve probe by *layout name* (no numeric scenes)
+  function resolveProbeForLevel(layoutName) {
+    // INSERT HERE 👉 positions is now an object keyed by descriptors: { 'right': 4, 'right-usage': 2, ... }
+    if (!positions || Array.isArray(positions)) return null; // numeric maps no longer supported
+    return positions[layoutName] ?? null;
+  }
+
+  /* my code recommendation: */
+  // REPLACEMENT — position rotor using descriptor layout, then scale
+  async function setToLevelPositionAsync(layoutName) {
+    const human = resolveProbeForLevel(layoutName);
+    if (human == null) return;
+    await afterGeometrySettles();
+    RotorFactory.toProbe(bucket, rotorEl, Math.max(0, Math.min(4, (human - 1) || 0)));
+    applyScaleForProbe(human);
+    rotorEl.dataset.probe = String(human);
+    positionProbeDots(bucket);
+  }
+
+
+
+
+  // load the value once (initial build only)
+  (async () => {
+    try {
+      const val = await Promise.resolve().then(valueGetter);
+      buildContent(rotorEl, val);
+    } catch (e) {
+      console.error(`setupRotor(${role}) failed to populate:`, e);
+      buildContent(rotorEl, 0);
+    }
+  })();
+
+  // helper: human point → index
+  const toIdx = (human) => Math.max(0, Math.min(4, (human ?? 1) - 1));
+
+  // initial placement
+  
+  if (startHidden) {
+    rotorEl.classList.add('is-hidden'); // CSS controls opacity/pointer-events
+  }
+
+  // visibility predicate
+  const appearPredicate = (b) => {
+    if (typeof appearWhen === 'function') return !!appearWhen(b);
+    if (appearWhen === 'always') return true;
+    if (appearWhen === 'focus') return b.classList.contains('focused');
+    return false;
+  };
+
+  // hide rule
+  const shouldHide = (b) => {
+    if (hideWhen === 'never') return false;
+    return !b.classList.contains('focused'); // default: blur
+  };
+
+  
+
+  // Initial spawn: prefer positions[0] if provided; else appearAt
+  const initialLevel = 0;
+  const initialHuman = resolveProbeForLevel(initialLevel) ?? appearAt;
+  RotorFactory.toProbe(bucket, rotorEl, Math.max(0, Math.min(4, (initialHuman - 1) || 0)));
+
+
+  /* my code recommendation: */
+  applyScaleForProbe(initialHuman);
+rotorEl.dataset.probe = String(initialHuman);
+
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Harden roller: if digitsRoller throws, fall back to plain roll */
+async function revealAndMove() {
+  if (syncReveal === 'transitionEnd') {
+    await waitForTransitionEndOnce(bucket);
+  }
+  rotorEl.classList.remove('is-hidden');
+
+  // One frame so the fade/roll overlap cleanly
+  await new Promise(r => requestAnimationFrame(() => r()));
+
+  const s = rotorEl.querySelector('.speedRead');
+  if (s) {
+    try {
+      const v = await Promise.resolve().then(valueGetter);
+      if (typeof digitsRoller === 'function') {
+        digitsRoller(s, Number(v ?? 0));
+      } else {
+        window.Helpers.rollOdometer(s, Math.round(Number(v ?? 0)));
+      }
+    } catch (err) {
+      console.error(`digitsRoller(${role}) failed:`, err);
+      // Minimal fallback if getter/roller fails
+      window.Helpers.rollOdometer(s, 0);
+    }
+  }
+
+  positionProbeDots(bucket);
+  // (no movement on reveal; we already spawn at appearAt)
+}
+
+
+
+
+
+// hide & reset
+function hideAndReset() {
+  rotorEl.classList.add('is-hidden');
+
+  // Reset digit stacks to "000" so next reveal rolls from zero
+  const s = rotorEl.querySelector('.speedRead');
+  if (s) window.setRotorValue(s, '000');
+}
+
+
+/* my code recommendation: */
+
+  /* my code recommendation: */
+  // REPLACEMENT — observe class + data-layout (no data-focus)
+  const obs = new MutationObserver((muts) => {
+    for (const m of muts) {
+      if (m.type !== 'attributes') continue;
+      if (m.attributeName !== 'class' && m.attributeName !== 'data-layout') continue;
+      const layout = getFocusLevel(bucket); // descriptor string
+      // INSERT HERE 👉 move rotor for this layout after geometry settles
+      void setToLevelPositionAsync(layout);
+      if (appearPredicate(bucket)) {
+        void revealAndMove();
+      } else if (shouldHide(bucket)) {
+        hideAndReset();
+      }
+    }
+  });
+  obs.observe(bucket, { attributes: true, attributeFilter: ['class','data-layout'] });
+
+
+
+/* my code recommendation: */
+// In case page loads with focus pre-set
+void setToLevelPositionAsync(getFocusLevel(bucket));
+
+
+  // in case the page loads with bucket already focused
+  if (appearPredicate(bucket)) void revealAndMove();
+
+  return rotorEl;
+}  // ← CLOSES setupRotor PROPERLY
+
+
+// INSERT HERE 👉 batch digit transforms to one RAF for smoother updates
+window.setRotorValue = function (speedReadEl, value) {
+  const s = String(value);
+  const stacks = speedReadEl.querySelectorAll('.digit .stack');
+  const pad = s.padStart(stacks.length, '0');
+
+  // Queue a single-frame batch of DOM writes
+  window.TickBatch.queue(function () {
+    for (let i = 0; i < stacks.length; i++) {
+      const stack = stacks[i];
+      const d = Number(pad[i]);
+      // Guard against NaN and missing nodes
+      if (!stack || Number.isNaN(d)) continue;
+      stack.style.transform = `translateY(-${d}em)`;
+    }
+  });
+};
+
+function formatKwhCompact(n) {
+  const abs = Math.max(0, Number(n) || 0);
+
+  // 1) Determine magnitude group and unit
+  let base = 1, unit = '';
+  if (abs >= 1_000 && abs < 1_000_000) { base = 1_000; unit = 'k'; }
+  else if (abs >= 1_000_000 && abs < 1_000_000_000) { base = 1_000_000; unit = 'M'; }
+  else if (abs >= 1_000_000_000) { base = 1_000_000_000; unit = 'B'; }
+
+  // 2) Scale to the group and pick exactly three digits
+  const scaled = abs / base;                // e.g., 207.89 (k), 1.37 (M), 13.478 (M)
+  const i = Math.floor(scaled);
+  const frac = scaled - i;
+
+  if (scaled >= 100) {
+    // Has hundreds → show hundreds, tens, ones (no fractional)
+    const hundreds = Math.floor(i / 100) % 10;
+    const tens     = Math.floor(i / 10)  % 10;
+    const ones     = i % 10;
+    return {
+      digitsOnly: '' + hundreds + tens + ones,  // e.g., "207"
+      dotIndex: -1,                              // no fractional digit
+      unit,
+      fracDigits: 0
+    };
+  } else {
+    // No hundreds → show tens, ones, tenths (last digit is fractional)
+    const tens   = Math.floor(i / 10) % 10;     // keep leading 0 if needed
+    const ones   = i % 10;
+    const tenths = Math.floor(frac * 10) % 10;
+    return {
+      digitsOnly: '' + tens + ones + tenths,    // e.g., "013", "134"
+      dotIndex: 2,                               // fractional starts at index 2 (third digit)
+      unit,
+      fracDigits: 1
+    };
+  }
+}
+
+
+function formatPercentCompact(n) {
+  const v = Math.max(0, Math.min(125, Number(n) || 0)); // clamp 0..125
+  const i = Math.floor(v);
+  const frac = v - i;
+  const tens   = Math.floor(i / 10) % 10;
+  const ones   = i % 10;
+  const tenths = Math.floor(frac * 10) % 10;            // always present (0..9)
+  return { digitsOnly: '' + tens + ones + tenths, dotIndex: 2 };
+}
+
+function unitFull(u) {
+  switch (u) {
+    case 'k': return 'Thousand';
+    case 'M': return 'Million';
+    case 'B': return 'Billion';
+    default:  return '';
+  }
+}
+
+function buildFixed3Odometer(speedEl, digits3, dotIndex = -1) {
+  if (!speedEl) return;
+
+  // Clear and prepare container
+  speedEl.innerHTML = '';
+
+  // Helper: one rolling digit with 0..9 stack
+  const makeDigit = () => {
+    const d = document.createElement('span');
+    d.className = 'digit';
+    const stack = document.createElement('span');
+    stack.className = 'stack';
+    for (let i = 0; i < 10; i++) {
+      const s = document.createElement('span');
+      s.textContent = String(i);
+      stack.appendChild(s);
+    }
+    d.appendChild(stack);
+    return d;
+  };
+
+  // Ensure exactly 3 characters; pad left with 0 if shorter
+  const s = String(digits3 ?? '').padStart(3, '0');
+  const chars = s.split('');
+
+  // Create .int wrapper so a pill can be centered on non-fractional digits
+  const intWrap = document.createElement('span');
+  intWrap.className = 'int';
+  speedEl.appendChild(intWrap);
+
+
+  // Build three digit stacks
+  for (let i = 0; i < 3; i++) {
+    const d = makeDigit();
+    // Tag fractional digits (>= dotIndex) if any
+    if (dotIndex >= 0 && i >= dotIndex) d.classList.add('is-frac');
+    (dotIndex >= 0 && i >= dotIndex ? speedEl : intWrap).appendChild(d);
+  }
+
+  window.setRotorValue(speedEl, '000');
+}
+
+function buildCompactOdometer(speedEl, fmt) {
+  if (!speedEl || !fmt) return;
+  speedEl.innerHTML = '';
+
+  // helper: one rolling digit with 0..9 stack
+  const makeDigit = () => {
+    const d = document.createElement('span');
+    d.className = 'digit';
+    const stack = document.createElement('span');
+    stack.className = 'stack';
+    for (let i = 0; i < 10; i++) {
+      const s = document.createElement('span');
+      s.textContent = String(i);
+      stack.appendChild(s);
+    }
+    d.appendChild(stack);
+    return d;
+  };
+
+  const digits = String(fmt.digitsOnly || '').split(''); // e.g., "137"
+  const hasFrac = typeof fmt.dotIndex === 'number' && fmt.dotIndex >= 0;
+  const intLen = hasFrac ? fmt.dotIndex : digits.length;
+
+
+// Create a wrapper for the integer digits so we can center the pill on them
+const intWrap = document.createElement('span');
+intWrap.className = 'int';
+speedEl.appendChild(intWrap);
+
+// Build digits: integers go in .int; fractional digits follow in the main container
+for (let i = 0; i < digits.length; i++) {
+  const d = makeDigit();
+  if (hasFrac && i >= intLen) d.classList.add('is-frac'); // mark decimal part
+  (i < intLen ? intWrap : speedEl).appendChild(d);
+}
+
+/* my code recommendation: */
+// Add the spelled-out magnitude pill (hide if < 1,000 => unit '')
+if (fmt.unit) {
+  const tag = document.createElement('span');
+  tag.className = 'magnitudeTag';
+  tag.textContent = unitFull(fmt.unit);  // thousand / million / billion
+  intWrap.appendChild(tag);              // centered on integer digits
+}
+
+  // roll stacks to the target number
+  window.setRotorValue(speedEl, '000');
+}
+
+function attachRotorPill(speedEl, pillText) {
+  if (!speedEl || !pillText) return;
+
+  // Create or reuse the pill directly under .speedRead (full-width anchor)
+  let tag = speedEl.querySelector('.magnitudeTag');
+  if (!tag) {
+    tag = document.createElement('span');
+    tag.className = 'magnitudeTag';
+    speedEl.appendChild(tag);
+  }
+  tag.textContent = String(pillText);
+}
+
+function attachTrendArrow(speedEl, dir, color) {
+  if (!speedEl) return;
+
+  // host element (above digits)
+  let wrap = speedEl.querySelector('.trendArrow');
+  if (!wrap) {
+    wrap = document.createElement('span');
+    wrap.className = 'trendArrow'; // positioned by CSS
+    speedEl.appendChild(wrap);
+  }
+
+  // svg element (reused if present)
+  let svg = wrap.querySelector('svg.trendArrowSvg');
+  if (!svg) {
+    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+svg.setAttribute('class', 'trendArrowSvg');
+svg.setAttribute('viewBox', '0 0 100 30');             // ↓ half-height box
+svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+svg.setAttribute('aria-hidden', 'true');
+
+const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+path.setAttribute('class', 'arrow-shape');
+
+
+    /* Concave-sided UP arrow shape:
+       - Tip at (50,0)
+       - Side curves bow inward using cubic Beziers
+       - Base is a gentle arc (quadratic) */
+
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Concave-sided UP arrow with a straight horizontal base */
+
+
+path.setAttribute(
+  'd',
+  'M50,0 ' +                  // tip
+  'A 70 70 0 0 0 88,30 ' +    // right side arc (bows inward toward center)
+  'L 12,30 ' +                // base: perfectly horizontal
+  'A 70 70 0 0 0 50,0 Z'      // left side arc back to tip
+);
+
+    svg.appendChild(path);
+    wrap.appendChild(svg);
+  }
+
+  // orientation
+  svg.classList.toggle('is-down', dir === 'down');
+  svg.classList.toggle('is-up',   dir !== 'down'); // 'up' or 'flat' treated as up orientation
+
+  // color via CSS variable (no inline fill)
+  speedEl.style.setProperty('--trend-color', String(color ?? '#2b4d7d'));
+};
+
+async function handleTrendArrowClick(role) {
+//4th insertion
+
+window.emitIntent('TOGGLE_T12_TREND', { role, vessel: window.activeVesselName ?? null });
+window.onToggleTrend({ role, vessel: window.activeVesselName ?? null });
+
+//end 4th insertion
+
+
+  const leftBucket  = document.getElementById('callsChartContainer');
+  const rightBucket = document.getElementById('ospChartContainer');
+  const hostBucket  = leftBucket ?? rightBucket;
+  if (!hostBucket) return;
+
+  
+  /* my code recommendation: INSERTION — focus.js */
+  /* Instant reveal hook: cancel any pending delayed reveal and show PowerCanvas + Table now */
+  if (window.PCReveal && window.PCReveal.timer) { clearTimeout(window.PCReveal.timer); window.PCReveal.timer = null; }
+  const leftForAnchor = document.getElementById('callsChartContainer') || hostBucket;
+  const resultNow = pcRender({ type: 'table' }, leftForAnchor); // ensures table is present immediately
+  const canvasNow = resultNow && resultNow.canvas ? resultNow.canvas : document.getElementById('powerCanvas');
+  if (canvasNow) {
+    const right = document.getElementById('ospChartContainer');
+    const childH = Math.round(((right && right.clientHeight) || leftForAnchor.clientHeight) * 0.4);
+    canvasNow.style.setProperty('--pc-child-h', String(childH) + 'px');
+  }
+
+  // (continue with existing logic below)
+
+
+  // Ensure PowerCanvas exists; do NOT clear existing content
+  const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
+
+  // Give children a consistent height (one third of right bucket height)
+  const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) *0.4);
+  canvas.style.setProperty('--pc-child-h', `${childH}px`);
+
+  // Find existing trend host (top slot) if any
+  let trendHost = contentHost.querySelector('.pc-trend');
+
+  // Determine the desired state (role + vessel)
+  const vessel = window.activeVesselName ?? null;
+
+// INSERT HERE 👉 set layout by role (no numeric scenes)
+const rightBucketEl = document.getElementById('ospChartContainer');
+
+
+
+if (rightBucketEl && rightBucketEl.classList.contains('focused')) {
+  if (role === 'usage')       window.Scene.set('osp-usage');
+  else if (role === 'kwh')    window.Scene.set('osp-impact');
+  else if (role === 'connections') window.Scene.set('osp'); // no separate "connections" layout
+  else                         window.Scene.set('osp');
+}
+
+
+
+
+  const desiredRole   = role;
+  const desiredVessel = vessel ?? '';
+refreshOpenTrendFor(window.activeVesselName ?? null);
+  // If a trend is already showing and matches this role+vessel → TOGGLE OFF
+
+/* my code recommendation: REPLACEMENT — focus.js */
+/* Toggle OFF: fade the chart and (if it will be empty) the canvas, then remove both */
+if (trendHost && trendHost.dataset.role === role && trendHost.dataset.vessel === (window.activeVesselName ?? '')) {
+  const canvas = document.getElementById('powerCanvas');
+  const willBeEmpty =
+    !contentHost.querySelector('.pc-chart') &&
+    !contentHost.querySelector('.pc-table-host .pc-table'); // only trend is present
+
+  // 1) Start chart fade (always)
+  trendHost.classList.add('is-fading');
+
+  // 2) If canvas will be empty after this removal, start canvas fade too
+  if (canvas && willBeEmpty) {
+    canvas.classList.add('is-fading');     // drive opacity → 0
+    canvas.classList.remove('is-visible'); // ensure we're not holding it at 1
+  }
+
+  // Force a reflow so transitions actually run before we remove anything
+  void trendHost.offsetWidth;
+
+  // 3) When the chart fade completes, remove the chart
+  const onChartFadeEnd = () => {
+    trendHost.remove();
+
+    // 4) If canvas was set to fade (empty after removal), remove it after its fade completes
+    if (canvas && willBeEmpty) {
+      const onCanvasFadeEnd = () => canvas.remove();
+      canvas.addEventListener('transitionend', onCanvasFadeEnd, { once: true });
+
+      // Safety timeout: remove even if transitionend doesn’t fire
+      setTimeout(onCanvasFadeEnd, 400);
+    }
+  };
+
+  trendHost.addEventListener('transitionend', onChartFadeEnd, { once: true });
+
+  // Safety timeout for the chart as well
+  setTimeout(onChartFadeEnd, 400);
+
+  return;
+}
+
+
+  // Otherwise ensure there is a trend host and draw/refresh for the new role
+  if (!trendHost) {
+    trendHost = document.createElement('div');
+    trendHost.className = 'pc-trend';
+    contentHost.insertBefore(trendHost, contentHost.firstChild); // always top
+  }
+
+  // Track what's being displayed for robust toggling next time
+  trendHost.dataset.role   = desiredRole;
+  trendHost.dataset.vessel = desiredVessel;
+
+  // Map rotor role → series key + legend label
+  const cfg = {
+    usage:       { key: 'usageRate',   label: 'Usage Rate' },
+    connections: { key: 'connections', label: 'Connections' },
+    kwh:         { key: 'kwh',         label: 'kWh Provided' }
+  }[desiredRole];
+  if (!cfg) return;
+
+  // Draw chart for this role (respect vessel filter)
+
+  await charts.getT12Trend({ vesselName: desiredVessel }); // ensure cache is ready
+  charts.drawT12Trend(trendHost, {
+    seriesKey:   cfg.key,
+    legendLabel: cfg.label,
+    vesselName:  desiredVessel
+  });
+
+  // Refresh canvas sizing/placement after content changes
+  pcSizeFor(canvas, { type: 'chart' }, hostBucket);
+  pcPlace(canvas, hostBucket);
+}
+
+document.addEventListener('click', (e) => {
+  console.log("you poked my heart 3");
+  const kwhEl = e.target.closest('.baseStats[data-role="kwh"]');
+  if (!kwhEl) {console.log('you missed the kwh rotor!'); return};
+  const bucket = kwhEl.closest('.kpiBucket');
+  if (!bucket) return;
+  
+  if (bucket.classList.contains('focused')) {
+    e.stopPropagation();         // avoid double-handling
+    bucket.click();              // triggers the existing "unfocus + reset" behavior
+    return;
+  }
+
+  // Otherwise, do nothing (no escalation to level 2).
+  // Future: re-enable by setting bucket.dataset.focus = '2' when level-2 is supported.
+});
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  END ROTOR FACTORY
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  PROBES
+//  FOR TESTING PURPOSES ONLY. PROBES INDICATE ANCHOR POINTS ON SCREEN
+//
+////////////////////////////////////////////////////////////////////////////////
+
+// === CONFIG for KPI probe points ===
+window.KPIProbeConfig = {
+  innerRatio: 0.60,    // (2) inner circle diameter vs. bucket diameter; tweakable
+  deltaDeg: 45,       // (3-4) +/- degrees around 6 o’clock; default 4 & 8 positions
+  betweenFraction: 0.50, // (5) fraction from center toward the 6-point; tweakable
+  sixDeg: 90          // 6 o’clock angle (0° = 3 o’clock, +CW with screen coords)
+};
+
+// Ensure we have exactly 5 dot elements per bucket
+function ensureProbeDots(bucket) {
+  const N = 5;
+  const existing = bucket.querySelectorAll('.probe-dot');
+  if (existing.length === N) return Array.from(existing);
+
+  existing.forEach(d => d.remove());
+  const dots = [];
+  for (let i = 0; i < N; i++) {
+    const dot = document.createElement('span');
+    dot.className = 'probe-dot';
+    bucket.appendChild(dot);
+    dots.push(dot);
+  }
+  return dots;
+}
+
+// Compute the five points given the bucket's current size
+function computeProbePositions(bucket) {
+  const rimPx = parseFloat(getComputedStyle(bucket).getPropertyValue('--instrument-rim')) || 0;
+  const bounds = bucket.getBoundingClientRect();
+  const diameter = Math.min(bounds.width - rimPx * 2, bounds.height - rimPx * 2);
+  const R = diameter / 2;
+
+  // Center of the bucket (in its own coordinate space)
+  const cx = bucket.clientWidth / 2;
+  const cy = bucket.clientHeight / 2;
+
+  const cfg = window.KPIProbeConfig;
+  const rInner = R * cfg.innerRatio;
+  const toRad = d => (d * Math.PI) / 180;
+
+  // (1) center
+  const p1 = { x: cx, y: cy };
+
+  // (2–4) three points on inner circle: 6 o’clock centered, +/- delta around it
+  const a6 = toRad(cfg.sixDeg);
+  const aBefore = toRad(cfg.sixDeg - cfg.deltaDeg);
+  const aAfter  = toRad(cfg.sixDeg + cfg.deltaDeg);
+
+  const p2 = { x: cx + rInner * Math.cos(aBefore), y: cy + rInner * Math.sin(aBefore) };
+  const p3 = { x: cx + rInner * Math.cos(a6),      y: cy + rInner * Math.sin(a6)      }; // 6 o’clock
+  const p4 = { x: cx + rInner * Math.cos(aAfter),  y: cy + rInner * Math.sin(aAfter)  };
+
+  // (5) between center and the 6-point, fractional distance f (default 0.5)
+  const f = cfg.betweenFraction;
+  const p5 = { x: cx + (p3.x - cx) * f, y: cy + (p3.y - cy) * f };
+
+  return [p1, p2, p3, p4, p5];
+}
+
+// Position (or re-position) the dots
+function positionProbeDots(bucket) {
+  const dots = ensureProbeDots(bucket);
+  const pts = computeProbePositions(bucket);
+  dots.forEach((dot, i) => {
+    const { x, y } = pts[i];
+    dot.style.left = `${x}px`;
+    dot.style.top  = `${y}px`;
+  });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//  END PROBES
+//
+////////////////////////////////////////////////////////////////////////////////

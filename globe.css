@@ -28,6 +28,9 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+
+
+
 i {
     font-size: xx-large;
     color: var(--cp5);
@@ -227,6 +230,48 @@ body {
     container-type: size;
 }
 
+
+/* my code recommendation: INSERTION — layout modes */
+/* INSERT HERE 👉 layout director contract */
+
+#dataSpace[data-layout="overview"] #cardSpace {
+  flex: 2;
+}
+
+#dataSpace[data-layout="overview"] #D3andME {
+  flex: 3;
+}
+
+#dataSpace[data-layout="kpi"] #cardSpace {
+  flex: 0;
+}
+
+#dataSpace[data-layout="kpi"] #D3andME {
+  flex: 1;
+}
+
+#dataSpace[data-layout="vessel"] #cardSpace {
+  flex: 3;
+}
+
+#dataSpace[data-layout="vessel"] #D3andME {
+  flex: 1;
+}
+
+/* layout transitions */
+#cardSpace,
+#D3andME {
+  transition: flex 500ms ease;
+}
+
+/* LOAD scene: both KPI buckets fully visible */
+#D3andME.load .kpiBucket {
+    transform: translateX(var(--focus-shift-x)) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
 .kpiBucket {
     container-type: size;
     --bucket-h: 0px;
@@ -239,12 +284,17 @@ body {
     overflow: visible;
     margin: 25px;
     position: relative;
-    transition: 
-      transform 500ms ease-in-out, 
+
+    transition:
+      transform 500ms ease-in-out,
       opacity 500ms ease-in-out;
---focus-shift-x: 0px;
+
+    --focus-shift-x: 0px;
     transform: translateX(var(--focus-shift-x)) scale(1);
+    opacity: 1;
+    pointer-events: auto;
     will-change: transform;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -253,17 +303,16 @@ body {
     background-blend-mode: normal, screen, multiply, normal;
 
     background: radial-gradient(closest-side, #fbfbfb 0%, #ededed 55%, #dddddd 100%) content-box;
- 
     background-clip: content-box;
-    
+
     border-radius: 50%;
-    box-shadow: 
+    box-shadow:
         0 8px 20px rgba(0,0,0,0.35),
         inset 0 0 0 2px rgba(255,255,255,0.15),
         inset 0 -6px 12px rgba(0,0,0,0.35);
-    
-
 }
+
+
 
 
 .kpiBucket::before {
@@ -317,26 +366,25 @@ body {
   display: none;
 }
 
-.kpiBucket.focused {
-    transform: scale(1);
-    aspect-ratio: 1 / 1;
-    z-index: 10;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    
+
+/* Buckets shrink ONLY when this class is added */
+.kpiBucket.shrunk {
+    transform: translateX(var(--focus-shift-x)) scale(0.25);
+    opacity: 0;
+    pointer-events: none;
 }
+
+
+
+
+
 
 .kpiBucket.focused .baseStats {
   --base-offset-y: 0px;
   --rotor-scale: 0.38;
 }
 
-.kpiBucket.shrunk {
-    transform: scale(.25);
-    opacity: 0.0;
-    pointer-events: none;
-}
+
 
 
 
@@ -454,7 +502,7 @@ font-variant-numeric: tabular-nums;
     color: var(--kpi-fg, #0f172a);
 }
 
-#leftChartContainer::after {
+#callsChartContainer::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -465,11 +513,11 @@ font-variant-numeric: tabular-nums;
     pointer-events: none;
 }
 
-#leftRadialChart, #rightRadialChart {
+#leftRadialChart, #callsRadialChart, #rightRadialChart, #ospRadialChart  {
     position: absolute;
     inset: 0;
     overflow: visible;
-    pointer-events: none;
+    pointer-events: auto;
     z-index: 40;  
 }
 
@@ -534,7 +582,7 @@ font-variant-numeric: tabular-nums;
 }
 
 
-#leftCentralChart, #rightCentralChart {
+#leftCentralChart,  #callsCentralChart, #rightCentralChart, #ospCentralChart {
   position: absolute;
   inset: 0;          /* fill the bucket; SVG will be centered via viewBox */
   overflow: visible;
@@ -543,7 +591,7 @@ font-variant-numeric: tabular-nums;
   min-height: 200px;
 }
 
-#rightChartContainer::after {
+#rightChartContainer::after, #ospChartContainer::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -554,20 +602,26 @@ font-variant-numeric: tabular-nums;
     pointer-events: none;
 }
 
-#rightCentralChart .call-span {
+#rightCentralChart .call-span, 
+#ospCentralChart .call-span 
+{
   stroke: var(--brass-mid, #b78a3d);
   stroke-width: 1px;              
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;          
 }
 
-#rightCentralChart g.call .call-span.multi-day {
+
+#rightCentralChart g.call .call-span.multi-day,
+#ospCentralChart g.call .call-span.multi-day
+{
   stroke: var(--cp2, #cd2435);   /* red */
   stroke-width: 3px;             /* slightly bolder for visibility */
 }
 
 
-#rightCentralChart .call-90 {
+#rightCentralChart .call-90,
+#ospCentralChart .call-90 {
   stroke: var(--brass-mid, #b78a3d);
   stroke-width: 1px;
   vector-effect: non-scaling-stroke;
@@ -575,102 +629,174 @@ font-variant-numeric: tabular-nums;
 }
 
 
-#rightCentralChart .power-span {
+
+
+#rightCentralChart .call-90,
+#ospCentralChart .call-90
+{
   stroke: var(--cp3, #e56335);
   stroke-width: 2px;        
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
 }
 
-#rightCentralChart .month-sep {
-  stroke: var(--ink-300, #999);
-  stroke-width: 1px;
+
+#rightCentralChart .month-sep,
+#ospCentralChart .month-sep {
+    stroke: var(--ink-300, #999);
+    stroke-width: 1px;
+}
+
+
+.call-seg.is-hovered {
+  fill: var(--hover-call-arc, #7a5c2b); /* fallback to radial.stroke token */
+  fill-opacity: 1;
 }
 
 
 
 /* my code recommendation: */
-#rightCentralChart .glass { pointer-events: none; } /* so hover reaches the lines */
 
-#rightCentralChart g.call .call-span {
+#rightCentralChart .glass,
+#ospCentralChart .glass {
+  pointer-events: none;
+}
+
+
+#rightCentralChart .power-span,
+#ospCentralChart .power-span 
+ {
   stroke: var(--brass-mid, #b78a3d);
   stroke-width: 1px;
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
 }
 
-#rightCentralChart g.call .power-span {
-  stroke: var(--cp3, #e56335);
-  stroke-width: 3px;
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
+
+#rightCentralChart g.call .call-span,
+#ospCentralChart g.call .call-span {
+    stroke: var(--brass-mid, #b78a3d);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
 }
 
-#rightCentralChart g.call .call-90 {
-  stroke: var(--brass-mid, #b78a3d);
-  stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
+
+#rightCentralChart g.call .power-span,
+#ospCentralChart g.call .power-span {
+    stroke: var(--cp3, #e56335);
+    stroke-width: 3px;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
 }
 
-#rightCentralChart g.call .hit-span {
-  stroke: #000;
-  stroke-width: 12px;         /* wide, forgiving */
-  stroke-opacity: 0;          /* invisible but hoverable */
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
-  pointer-events: auto;
-  cursor: pointer;
+
+
+#rightCentralChart g.call .call-90,
+#ospCentralChart g.call .call-90 {
+    stroke: var(--brass-mid, #b78a3d);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
 }
 
-/* === Hover state: make it unambiguous which call is hot === */
-#rightCentralChart g.call:hover .hit-span {
-  stroke-opacity: 0.15;       /* faint highlight of the hover column */
+
+
+#rightCentralChart g.call .hit-span,
+#ospCentralChart g.call .hit-span {
+    stroke: #000;
+    stroke-width: 12px;
+    stroke-opacity: 0;
+    vector-effect: non-scaling-stroke;
+    stroke-linecap: round;
+    pointer-events: auto;
+    cursor: pointer;
 }
 
-#rightCentralChart g.call:hover .call-span {
-  stroke-width: 3px;
-  stroke: var(--cp4, #2b4d7d); /* contrasts with brass */
-  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+
+
+#rightCentralChart g.call:hover .hit-span,
+#ospCentralChart g.call:hover .hit-span {
+    stroke-opacity: 0.15;
 }
 
-#rightCentralChart g.call:hover .power-span {
-  stroke-width: 5px;          /* emphasize connection if present */
-  filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
+
+
+#rightCentralChart g.call:hover .call-span,
+#ospCentralChart g.call:hover .call-span {
+    stroke-width: 3px;
+    stroke: var(--cp4, #2b4d7d);
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
 
-#rightCentralChart g.call:hover .call-90 {
-  stroke-width: 2px;
+
+
+#rightCentralChart g.call:hover .power-span,
+#ospCentralChart g.call:hover .power-span {
+    stroke-width: 5px;
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
+
+
+#rightCentralChart g.call:hover .call-90,
+#ospCentralChart g.call:hover .call-90 {
+    stroke-width: 2px;
+}
+
 
 
 /* my code recommendation: */
 /* Right gauge styles */
-#rightRadialChart .gauge-track { pointer-events: none; }
-#rightRadialChart .gauge-value { pointer-events: none; }
-#rightRadialChart .gauge-label { font-weight: 600; }
+
+#rightRadialChart .gauge-track,
+#ospRadialChart .gauge-track {
+  pointer-events: none;
+}
+
+
+#rightRadialChart .gauge-value,
+#ospRadialChart .gauge-value {
+  pointer-events: none;
+}
+
+
+#rightRadialChart .gauge-label,
+#ospRadialChart .gauge-label {
+  font-weight: 600;
+}
+
 
 /* my code recommendation: */
-/* Right radial gauge styles */
-#rightRadialChart .conn-gauge .gauge-tick.minor {
+
+#rightRadialChart .conn-gauge .gauge-tick.minor,
+#ospRadialChart .conn-gauge .gauge-tick.minor {
   stroke: rgba(0,0,0,0.25);
   stroke-width: 1px;
   vector-effect: non-scaling-stroke;
 }
 
-#rightRadialChart .conn-gauge .gauge-tick.major {
+
+
+#rightRadialChart .conn-gauge .gauge-tick.major,
+#ospRadialChart .conn-gauge .gauge-tick.major {
   stroke: var(--brass-deep, #7a5c2b);
   stroke-width: 2px;
   vector-effect: non-scaling-stroke;
 }
 
-#rightRadialChart .conn-gauge .gauge-label {
+
+
+#rightRadialChart .conn-gauge .gauge-label,
+#ospRadialChart .conn-gauge .gauge-label {
   fill: var(--brass-deep, #7a5c2b);
   font-size: .75rem;
   font-weight: 600;
 }
 
-#rightRadialChart .conn-gauge .gauge-needle {
+
+
+#rightRadialChart .conn-gauge .gauge-needle,
+#ospRadialChart .conn-gauge .gauge-needle {
   stroke: var(--cp4, #b78a3d);
   stroke-width: 2.5px;
   vector-effect: non-scaling-stroke;
@@ -678,22 +804,44 @@ font-variant-numeric: tabular-nums;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
 
-#rightRadialChart .conn-gauge .gauge-hub {
+
+
+#rightRadialChart .conn-gauge .gauge-hub,
+#ospRadialChart .conn-gauge .gauge-hub {
   fill: var(--brass-mid, #b78a3d);
   stroke: var(--brass-deep, #7a5c2b);
   stroke-width: 1px;
 }
 
-#rightRadialChart .conn-gauge .gauge-readout {
+
+
+#rightRadialChart .conn-gauge .gauge-readout,
+#ospRadialChart .conn-gauge .gauge-readout {
   fill: var(--cp4, #2b4d7d);
   font-size: 11px;
   font-weight: 600;
 }
 
+
 /* my code recommendation: */
-#rightRadialChart .conn-gauge { --gauge-minor: rgba(0,0,0,0.25); }
-#rightRadialChart .conn-gauge .gauge-tick.minor { stroke: var(--gauge-minor); }
-#rightRadialChart .conn-gauge .gauge-rail { fill: var(--gauge-minor); }
+
+#rightRadialChart .conn-gauge,
+#ospRadialChart .conn-gauge {
+  --gauge-minor: rgba(0,0,0,0.25);
+}
+
+
+#rightRadialChart .conn-gauge .gauge-tick.minor,
+#ospRadialChart .conn-gauge .gauge-tick.minor {
+  stroke: var(--gauge-minor);
+}
+
+
+#rightRadialChart .conn-gauge .gauge-rail,
+#ospRadialChart .conn-gauge .gauge-rail {
+  fill: var(--gauge-minor);
+}
+
 
 /* INSERT HERE 👉 lightweight grid styling for charts */
 /* my code recommendation: */
@@ -1050,99 +1198,151 @@ opacity: 0;                /* start invisible */
 */
 
 /* Use the SAME outline/filters as your current hover state for SELECTED calls */
+
 #leftRadialChart g.power-item.is-selected-call .power-stay,
-#rightRadialChart g.power-item.is-selected-call .power-stay {
+#callsRadialChart g.power-item.is-selected-call .power-stay,
+#rightRadialChart g.power-item.is-selected-call .power-stay,
+#ospRadialChart g.power-item.is-selected-call .power-stay {
   stroke: var(--cp4, #2b4d7d);
   stroke-width: 4px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
+
 
 
 /* INSERT HERE 👉 Selection v2: .is-selected/.is-related × .is-alpha/.is-bravo */
 
 /* Alpha highlights (use --series-alpha for call “stay” lines) */
-#leftRadialChart  g.power-item.is-selected.is-alpha .power-stay,
-#rightRadialChart g.power-item.is-selected.is-alpha .power-stay {
+
+#leftRadialChart g.power-item.is-selected.is-alpha .power-stay,
+#callsRadialChart g.power-item.is-selected.is-alpha .power-stay,
+#rightRadialChart g.power-item.is-selected.is-alpha .power-stay,
+#ospRadialChart g.power-item.is-selected.is-alpha .power-stay {
   stroke: var(--series-alpha);
   stroke-width: 4px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
-#leftRadialChart  g.power-item.is-related.is-alpha .power-stay,
-#rightRadialChart g.power-item.is-related.is-alpha .power-stay {
+
+
+#leftRadialChart g.power-item.is-related.is-alpha .power-stay,
+#callsRadialChart g.power-item.is-related.is-alpha .power-stay,
+#rightRadialChart g.power-item.is-related.is-alpha .power-stay,
+#ospRadialChart g.power-item.is-related.is-alpha .power-stay {
   stroke: var(--series-alpha);
   stroke-width: 3px;
   filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.20));
 }
+
 
 /* Bravo highlights (use --series-bravo for call “stay” lines) */
-#leftRadialChart  g.power-item.is-selected.is-bravo .power-stay,
-#rightRadialChart g.power-item.is-selected.is-bravo .power-stay {
+
+#leftRadialChart g.power-item.is-selected.is-bravo .power-stay,
+#callsRadialChart g.power-item.is-selected.is-bravo .power-stay,
+#rightRadialChart g.power-item.is-selected.is-bravo .power-stay,
+#ospRadialChart g.power-item.is-selected.is-bravo .power-stay {
   stroke: var(--series-bravo);
   stroke-width: 4px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
-#leftRadialChart  g.power-item.is-related.is-bravo .power-stay,
-#rightRadialChart g.power-item.is-related.is-bravo .power-stay {
+
+
+#leftRadialChart g.power-item.is-related.is-bravo .power-stay,
+#callsRadialChart g.power-item.is-related.is-bravo .power-stay,
+#rightRadialChart g.power-item.is-related.is-bravo .power-stay,
+#ospRadialChart g.power-item.is-related.is-bravo .power-stay {
   stroke: var(--series-bravo);
   stroke-width: 3px;
   filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.20));
 }
 
-/* For connection lines, keep the per-visit color; just thicken on selection */
-#leftRadialChart  g.power-item.is-selected .power-conn,
-#rightRadialChart g.power-item.is-selected .power-conn {
-  stroke-width: 5px; /* color remains var(--conn-color) set by JS */
+
+
+#leftRadialChart g.power-item.is-selected .power-conn,
+#callsRadialChart g.power-item.is-selected .power-conn,
+#rightRadialChart g.power-item.is-selected .power-conn,
+#ospRadialChart g.power-item.is-selected .power-conn {
+  stroke-width: 5px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
-#leftRadialChart  g.power-item.is-related .power-conn,
-#rightRadialChart g.power-item.is-related .power-conn {
+
+
+#leftRadialChart g.power-item.is-related .power-conn,
+#callsRadialChart g.power-item.is-related .power-conn,
+#rightRadialChart g.power-item.is-related .power-conn,
+#ospRadialChart g.power-item.is-related .power-conn {
   stroke-width: 4px;
   filter: drop-shadow(0 0 1.5px rgba(0,0,0,0.20));
 }
 
+
 /* Optional: faint arc-slot glow (like your hover) */
-#leftRadialChart  g.power-item.is-selected .power-hit,
+
+#leftRadialChart g.power-item.is-selected .power-hit,
+#callsRadialChart g.power-item.is-selected .power-hit,
 #rightRadialChart g.power-item.is-selected .power-hit,
-#leftRadialChart  g.power-item.is-related .power-hit,
-#rightRadialChart g.power-item.is-related .power-hit {
+#ospRadialChart g.power-item.is-selected .power-hit,
+#leftRadialChart g.power-item.is-related .power-hit,
+#callsRadialChart g.power-item.is-related .power-hit,
+#rightRadialChart g.power-item.is-related .power-hit,
+#ospRadialChart g.power-item.is-related .power-hit {
   stroke: currentColor;
   stroke-opacity: 0.12;
 }
 
 
+
+
 #leftRadialChart g.power-item.is-selected-call .power-conn,
-#rightRadialChart g.power-item.is-selected-call .power-conn {
+#callsRadialChart g.power-item.is-selected-call .power-conn,
+#rightRadialChart g.power-item.is-selected-call .power-conn,
+#ospRadialChart g.power-item.is-selected-call .power-conn {
   stroke-width: 5px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
 
+
 /* SAME faint radial highlight for the hit area, matching hover behavior */
+
 #leftRadialChart g.power-item.is-selected-call .power-hit,
-#rightRadialChart g.power-item.is-selected-call .power-hit {
+#callsRadialChart g.power-item.is-selected-call .power-hit,
+#rightRadialChart g.power-item.is-selected-call .power-hit,
+#ospRadialChart g.power-item.is-selected-call .power-hit {
   stroke: currentColor;
-  stroke-opacity: 0.12; /* subtle arc-slot glow identical to hover */
+  stroke-opacity: 0.12;
 }
 
-/* Apply the SAME hover outline/filters to RELATED calls (same vessel) */
+
+
+
 #leftRadialChart g.power-item.is-related-call .power-stay,
-#rightRadialChart g.power-item.is-related-call .power-stay {
+#callsRadialChart g.power-item.is-related-call .power-stay,
+#rightRadialChart g.power-item.is-related-call .power-stay,
+#ospRadialChart g.power-item.is-related-call .power-stay {
   stroke: var(--cp4, #2b4d7d);
   stroke-width: 4px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
 
+
 #leftRadialChart g.power-item.is-related-call .power-conn,
-#rightRadialChart g.power-item.is-related-call .power-conn {
+#callsRadialChart g.power-item.is-related-call .power-conn,
+#rightRadialChart g.power-item.is-related-call .power-conn,
+#ospRadialChart g.power-item.is-related-call .power-conn {
   stroke-width: 5px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
 
+
 /* Faint highlight band for related calls too */
+
 #leftRadialChart g.power-item.is-related-call .power-hit,
-#rightRadialChart g.power-item.is-related-call .power-hit {
+#callsRadialChart g.power-item.is-related-call .power-hit,
+#rightRadialChart g.power-item.is-related-call .power-hit,
+#ospRadialChart g.power-item.is-related-call .power-hit {
   stroke: currentColor;
   stroke-opacity: 0.12;
 }
+
 
 
 /* my code recommendation: INSERTION — globe.css (optional, local table polish) */
