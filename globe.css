@@ -216,7 +216,6 @@ body {
 
 }
 
-
 .kpiBucket::before {
     content: "";
     position: absolute;
@@ -263,7 +262,6 @@ body {
         radial-gradient(closest-side, transparent calc(100% - var(--instrument-rim)), black 0);
 }
 
-
 .glass {
   display: none;
 }
@@ -290,7 +288,6 @@ body {
 }
 
 
-
 /* my code recommendation: */
 /* Rotor anchored at bucket center; allow fade-in via opacity */
 .baseStats {
@@ -312,7 +309,6 @@ body {
   transition: transform 500ms ease-in-out, opacity 750ms ease;
   backface-visibility: hidden;
 }
-
 
 
 .trendingBox {
@@ -387,13 +383,11 @@ font-variant-numeric: tabular-nums;
   opacity: 0.45;
 }
 
-
 .baseLabel {
   font-weight: 300;
   font-size: clamp(0.9rem, 1.4vw, 1.1rem);
   color: var(--kpi-fg, #0f172a);
 }
-
 
 .baseTrend {
     flex: 0 1 auto;
@@ -433,7 +427,6 @@ font-variant-numeric: tabular-nums;
   pointer-events: none;
 }
 
-
 /* INSERT HERE 👉 PowerCanvas compare: call “stay” lines in series colors */
 #powerCanvas .series.alpha .power-stay { stroke: var(--series-alpha); }
 #powerCanvas .series.bravo .power-stay { stroke: var(--series-bravo); }
@@ -441,7 +434,6 @@ font-variant-numeric: tabular-nums;
 #powerCanvas .chart-legend .legend-pill { 
   fill: var(--brass-deep, #7a5c2b); rx: 12; ry: 12;
 }
-
 
 
 
@@ -456,7 +448,6 @@ font-variant-numeric: tabular-nums;
           drop-shadow(0 0 0.6px rgba(255,255,255,0.15));
   pointer-events: none;
 }
-
 
 .power-hit {
   pointer-events: all;
@@ -483,7 +474,6 @@ font-variant-numeric: tabular-nums;
   stroke: currentColor;         /* uses inherited color if desired */
   stroke-opacity: 0.12;         /* subtle radial highlight */
 }
-
 
 #leftCentralChart, #rightCentralChart {
   position: absolute;
@@ -517,14 +507,12 @@ font-variant-numeric: tabular-nums;
   stroke-width: 3px;             /* slightly bolder for visibility */
 }
 
-
 #rightCentralChart .call-90 {
   stroke: var(--brass-mid, #b78a3d);
   stroke-width: 1px;
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
 }
-
 
 #rightCentralChart .power-span {
   stroke: var(--cp3, #e56335);
@@ -537,7 +525,6 @@ font-variant-numeric: tabular-nums;
   stroke: var(--ink-300, #999);
   stroke-width: 1px;
 }
-
 
 
 /* my code recommendation: */
@@ -594,7 +581,6 @@ font-variant-numeric: tabular-nums;
   stroke-width: 2px;
 }
 
-
 /* my code recommendation: */
 /* Right gauge styles */
 #rightRadialChart .gauge-track { pointer-events: none; }
@@ -646,7 +632,6 @@ font-variant-numeric: tabular-nums;
 #rightRadialChart .conn-gauge .gauge-tick.minor { stroke: var(--gauge-minor); }
 #rightRadialChart .conn-gauge .gauge-rail { fill: var(--gauge-minor); }
 
-
 /* Probe dots inside each bucket */
 .kpiBucket .probe-dot {
   display: none;
@@ -668,7 +653,6 @@ font-variant-numeric: tabular-nums;
 
 
 
-
 /* Programmatic states (optional) */
 .baseStats.rotor.is-hidden {
   opacity: 0;
@@ -684,13 +668,11 @@ font-variant-numeric: tabular-nums;
 
 
 
-
 /* my code recommendation: */
 .baseStats.is-hidden {
   opacity: 0;
   pointer-events: none;
 }
-
 
 
 /* my code recommendation: */
@@ -722,7 +704,6 @@ font-variant-numeric: tabular-nums;
   z-index: 30;
 }
 
-
 /* my code recommendation: */
 /* Generic: invert colors for any fractional (decimal) digit */
 .baseStats .speedRead .digit.is-frac {
@@ -732,11 +713,9 @@ font-variant-numeric: tabular-nums;
   color: var(--kpi-bg, #f8fafc);
 }
 
-
 .baseStats .baseLabel {
   display: none !important;
 }
-
 
 
 /* my code recommendation: */
@@ -767,7 +746,6 @@ font-variant-numeric: tabular-nums;
 
 
 
-
 /* Solid needle-color circle with metallic rim — behind the digits at probe 2 or 4 */
 .kpiBucket .baseStats[data-probe="2"] .speedRead::before,
 .kpiBucket .baseStats[data-probe="4"] .speedRead::before {
@@ -782,11 +760,9 @@ font-variant-numeric: tabular-nums;
   height: calc(3 * var(--odometerFontWidth) + .5em);
   border-radius: 50%;
 
-
   background: radial-gradient(closest-side,
               #fbfbfb 0%, #ededed 55%, #dddddd 100%);
   background-clip: content-box;
-
 
 
   /* Metallic rim via shadows (no reflow) */
@@ -797,12 +773,10 @@ font-variant-numeric: tabular-nums;
     0 0 0 2px var(--brass-base, #c4933a),     /* thin rim */
     0 0 0 4px var(--brass-deep, #7a5c2b);     /* deeper rim */
 
-
   /* Crucial: draw behind the digits within .speedRead */
   z-index: -1;
   pointer-events: none;
 }
-
 
 /* my code recommendation: */
 /* PowerCanvas: floating info panel for call details */
@@ -827,7 +801,6 @@ opacity: 0;                /* start invisible */
 
 }
 
-
 #powerCanvas.is-visible {
   opacity: 1;                /* fade to fully visible */
   transform: scale(1);
@@ -842,7 +815,6 @@ opacity: 0;                /* start invisible */
   overflow: auto;
 }
 
-
 /* my code recommendation: */
 
 /* my code recommendation: REPLACEMENT — visit appearance (geometry handled in JS) */
@@ -851,7 +823,6 @@ opacity: 0;                /* start invisible */
   stroke: var(--brass-deep, #7a5c2b);
   stroke-width: 0.75px;
 }
-
 
 /* my code recommendation: REPLACEMENT — connections as stroked lines with rounded caps */
 #powerCanvas .conn {
@@ -870,7 +841,6 @@ opacity: 0;                /* start invisible */
 #powerCanvas .chart-legend .legend-pill.alpha { fill: var(--series-alpha); }
 #powerCanvas .chart-legend .legend-pill.bravo { fill: var(--series-bravo); }
 
-
 #powerCanvas .chart-legend .legend-text { fill: #fff; font-weight: 600; }
 
 #powerCanvas svg .hit {
@@ -884,7 +854,6 @@ opacity: 0;                /* start invisible */
   stroke: #9f0c0c;
   stroke-dasharray: none;
 }
-
 
 .y-axis text {
   fill: #7a5c2b; /* explicit theme color for labels */
@@ -903,7 +872,6 @@ opacity: 0;                /* start invisible */
 }
 
 
-
 /* my code recommendation: INSERTION — globe.css */
 /* Remove axis domain paths (baseline lines) for PowerCanvas chart */
 #powerCanvas svg .y-axis .domain,
@@ -912,7 +880,6 @@ opacity: 0;                /* start invisible */
   stroke: none !important;   /* no color */
   display: none !important;  /* hide the path entirely */
 }
-
 
 /* my code recommendation: INSERTION — globe.css (apply existing hover outline to selected/related)
 /* Reference point: insert this block immediately AFTER the existing radial hover rules:
@@ -928,7 +895,6 @@ opacity: 0;                /* start invisible */
   stroke-width: 4px;
   filter: drop-shadow(0 0 2px rgba(0,0,0,0.25));
 }
-
 
 /* INSERT HERE 👉 Selection v2: .is-selected/.is-related × .is-alpha/.is-bravo */
 
@@ -981,7 +947,6 @@ opacity: 0;                /* start invisible */
   stroke-opacity: 0.12;
 }
 
-
 #leftRadialChart g.power-item.is-selected-call .power-conn,
 #rightRadialChart g.power-item.is-selected-call .power-conn {
   stroke-width: 5px;
@@ -1016,7 +981,6 @@ opacity: 0;                /* start invisible */
   stroke-opacity: 0.12;
 }
 
-
 /* my code recommendation: INSERTION — globe.css (optional, local table polish) */
 #powerCanvas .pc-table-host {
   padding: 8px 12px;
@@ -1028,7 +992,6 @@ opacity: 0;                /* start invisible */
   border-collapse: collapse;
   font-size: 0.95rem;
 }
-
 
 /* my code recommendation: INSERTION — globe.css */
 /* General rule: center + wrap any table cell (header or body)
@@ -1050,12 +1013,10 @@ table tbody td.numberColumn {
 
 
 
-
 table th.textColumn,
 table td.textColumn {
   text-align: left;
 }
-
 
 
 #powerCanvas .pc-table thead th {
@@ -1075,7 +1036,6 @@ table td.textColumn {
 
 
 
-
 /* my code recommendation: INSERTION — globe.css */
 /* Trend chart host: fixed height; PowerCanvas already adapts to sum of children */
 #powerCanvas .pc-trend {
@@ -1085,7 +1045,6 @@ table td.textColumn {
 /* Optional: tune axis/line/dots for readability (neutral black line already set inline) */
 #powerCanvas .trend-chart .x-axis text { fill: var(--brass-deep, #7a5c2b); }
 #powerCanvas .trend-chart .y-axis text { fill: var(--brass-deep, #7a5c2b); }
-
 
 /* my code recommendation: REPLACEMENT — globe.css */
 /* Arrow host: precise hit-box (same digit width; ~1/3 height); no baseline drift */
@@ -1136,7 +1095,6 @@ table td.textColumn {
 .baseStats .speedRead .trendArrowSvg.is-down { transform: rotate(180deg); }
 .baseStats .speedRead .trendArrowSvg.is-up   { transform: none; }
 
-
 /* my code recommendation: INSERTION — globe.css */
 /* PowerCanvas fade behavior */
 #powerCanvas {
@@ -1169,7 +1127,6 @@ table td.textColumn {
 .btn { padding: 10px; border-radius: 6px; cursor: pointer; }
 .exportExcelBtn { background: #2b4d7d; color: #d69f9f; }
 .exportPdfBtn { background: #7a5c2b; color: #330707; }
-
 
 /* my code recommendation: */
 /* REPLACEMENT: compact tutorial UI styles */
@@ -1289,7 +1246,6 @@ table td.textColumn {
 .tut-actions .tut-next::before,
 .tut-actions .tut-done::before { content: none !important; }
 
-
 /* my code recommendation: */
 /* INSERTION: stronger hover + custom focus ring for tutorial buttons */
 
@@ -1334,3 +1290,121 @@ table td.textColumn {
   outline: none;
 }
 
+/* --- Calendar styles --- */
+:root {
+  --primary: #0d6efd;
+  --muted: #6c757d;
+  --border: rgba(0,0,0,0.12);
+  --today: #ffe08a;
+}
+
+.calendar {
+  width: 100%;
+  background: #fff;
+}
+.calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.calendar__nav-btn {
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.calendar__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 12px;
+}
+.calendar__dow {
+  text-align: center;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.calendar__cell {
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 8px;
+  min-height: 34px;
+  font-size: 0.95rem;
+}
+.calendar__cell--empty {
+  color: transparent;
+}
+.calendar__cell:hover {
+  background: #f1f3f5;
+  cursor: pointer;
+}
+.calendar__cell--today {
+  background: var(--today);
+  font-weight: 700;
+  border: 1px solid #e3b221;
+}
+
+/* Optional: style the toolbar button */
+.toolbar .btn.btn-primary {
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Make day cells contain positioned elements */
+.calendar__cell { position: relative; }
+
+/* The dot indicator for days that have upcoming calls */
+.calendar__dot {
+  position: absolute;
+  bottom: 6px;          /* place near bottom of cell */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2b6cb0; /* you can tweak the color */
+}
+
+/* Optional highlight if a cell has calls */
+.calendar__cell--has-call {
+  /* subtle styling if you want */
+   font-weight: 600; 
+}
+
+/* Selected date (BLUE) */
+.calendar__cell--selected {
+  background: #1e90ff;       /* dodger blue */
+  box-shadow: 0 0 0 2px #1e90ff inset;
+}
+
+/* If a day is both "today" and "selected", make selected win */
+.calendar__cell--today.calendar__cell--selected {
+  background: #1e90ff;
+  color: #fff;
+}
+
+
+.button-group {
+  display: flex;
+  gap: 10px; /* space between buttons */
+  margin-top: 20px; /* push downward */
+}
+
+.open-btn {
+  width: 120px; /* optional fixed size */
+  background: #c4933a;
+}
