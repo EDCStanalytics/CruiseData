@@ -1,3 +1,25 @@
+/* ============================================================================================
+   APP LOAD BLACKOUT — TIMED REVEAL
+   ============================================================================================ */
+/* INSERT AT THE VERY BOTTOM OF focus.js (after Scene bootstrap code) */
+
+(function revealAfterLayoutStabilizes() {
+  const cover = document.getElementById('appBootCover');
+  if (!cover) return;
+
+  // allow layout, fonts, JS-driven positioning to settle
+  setTimeout(() => {
+    cover.classList.add('is-hidden');
+
+    // optional cleanup once transition completes
+    cover.addEventListener('transitionend', () => {
+      cover.remove();
+    }, { once: true });
+
+  }, 500); // adjust if needed
+})();
+
+
 /* my code recommendation: INSERTION — initialize global callsSelection + renderer */
 
 // --- Global Calls Selection State -------------------------------------------
@@ -52,18 +74,96 @@ window.TickBatch = window.TickBatch || (function () {
   };
 })();
 
+/* ============================================================================================
+   FIX — HOIST window.fillBuckets TO GLOBAL SCOPE (so rotors/cruncher can call it anytime)
+   ============================================================================================ */
+
+/* INSERT THIS BLOCK IN focus.js at TOP LEVEL (outside DOMContentLoaded),
+   ideally RIGHT AFTER your promises are defined (callsPromise/connectionsPromise/connectionNotesPromise)
+   and BEFORE any Scene.set('overview') can run. */
+
+window.fillBuckets = window.fillBuckets || (async () => {
+  const [calls, connections, NotesMap] = await Promise.all([
+    window.callsPromise,
+    window.connectionsPromise,
+    window.connectionNotesPromise
+  ]);
+
+  const { lastStart, lastEnd } = window.Helpers.getT24();
+  const t12Calls = calls.filter(c => window.Helpers.rangeCheck(c.arrival, lastStart, lastEnd));
+  const t12Connections = connections.filter(c => window.Helpers.rangeCheck(c.connect, lastStart, lastEnd));
+
+  const sortedCalls = t12Calls
+    .slice()
+    .sort((a, b) => a.arrival - b.arrival);
+
+  const callsById = new Map();
+  t12Calls.forEach(call => {
+    if (call.id != null) callsById.set(call.id, call);
+  });
+
+  const connById = new Map();
+  t12Connections.forEach(conn => {
+    if (conn.id != null) {
+      const connNote = window.getConnectionNote ? window.getConnectionNote(conn.id) : null;
+      conn.note = connNote ?? null;
+      connById.set(conn.id, conn);
+    }
+  });
+
+  sortedCalls.forEach(call => {
+    const mappedConnection = connById.get(call.id) ?? null;
+    call.connection = mappedConnection;
+
+    const noteFromMap = NotesMap?.get ? NotesMap.get(call.id) : NotesMap?.[call.id];
+    const finalNote =
+      noteFromMap ??
+      (window.getConnectionNote ? window.getConnectionNote(call.id) : null) ??
+      null;
+
+    call.note = finalNote;
+  });
+
+  const labels = window.Helpers.monthLabels();
+  const firstY = lastStart.getFullYear();
+  const firstM = lastStart.getMonth();
+
+  const monthStart = (y, m) => { const d = new Date(y, m, 1); d.setHours(0,0,0,0); return d; };
+  const monthEnd   = (y, m) => { const d = new Date(y, m + 1, 1); d.setMilliseconds(-1); return d; };
+
+  const byMonth = Array.from({ length: 12 }, (_, i) => {
+    const y = firstY + Math.floor((firstM + i) / 12);
+    const m = (firstM + i) % 12;
+    return { i, y, m, start: monthStart(y, m), end: monthEnd(y, m), calls: [] };
+  });
+
+  sortedCalls.forEach(c => {
+    const mi = (c.arrival.getFullYear() - firstY) * 12 + (c.arrival.getMonth() - firstM);
+    if (mi >= 0 && mi < 12) byMonth[mi].calls.push(c);
+  });
+
+  return {
+    lastStart,
+    lastEnd,
+    labels,
+    connById,
+    t12Calls: sortedCalls,
+    byMonth,
+    t12ConnectionsCount: t12Connections.length
+  };
+});
 
 document.addEventListener("DOMContentLoaded", () => {
 
 //with the dom fully loaded, add click listeners to the kpibuckets
-document.getElementById('ospChartContainer')
+document.getElementById('frame-connections')
   .addEventListener('click', () => {
     console.log("cue OSP bucket focus");
     CueDirector.emit('CLICK_BUCKET_OSP');
   });
 
   
-document.getElementById('callsChartContainer')
+document.getElementById('frame-calls')
   .addEventListener('click', () => {
     console.log("cue calls bucket focus");
     CueDirector.emit('CLICK_BUCKET_CALLS');
@@ -118,11 +218,11 @@ window.scheduleDelayedReveal = function (opts) {
     });
       
   // Build the calls rotor on the next frame (non-blocking; no await)
-  requestAnimationFrame(() => { void dR_calls(); });
-  requestAnimationFrame(() => { void dR_connections(); });
+  //requestAnimationFrame(() => { void dR_calls(); });
+  //requestAnimationFrame(() => { void dR_connections(); });
 
   const shipCards = document.getElementById("cardSpace");
-
+/*
   //this is a function to load up and bucket the data for purposes of graphing it to the radial charts
   window.fillBuckets = async () => {
 
@@ -227,6 +327,7 @@ const callsWithNotesCount = sortedCalls.filter(call => call.note && call.note.tr
   return { lastStart, lastEnd, labels, connById, t12Calls: sortedCalls, byMonth, t12ConnectionsCount: t12Connections.length };
 
 }
+*/
 
 
 
@@ -1042,8 +1143,8 @@ activeCallId = callId;
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Host the PowerCanvas off the LEFT bucket to keep it on the left half */
 const hostBucket =
-  document.getElementById('callsChartContainer') ??
-  document.getElementById('ospChartContainer');
+  document.getElementById('frame-calls') ??
+  document.getElementById('frame-connections');
 
   if (!hostBucket) return;
 
@@ -1054,7 +1155,7 @@ const hostBucket =
 
 /* my code recommendation: REPLACEMENT — focus.js */
 /* Use RIGHT bucket height so child elements are exactly one third of it */
-const rightBucket = document.getElementById('ospChartContainer');
+const rightBucket = document.getElementById('frame-connections');
 const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
 canvas.style.setProperty('--pc-child-h', `${childH}px`);
 
@@ -1317,131 +1418,10 @@ svg.append('g')
 
 
 
-/* my code recommendation: */
-// Set rotor to a specific (x,y) within the bucket coordinate space
-function setRotorXY(bucket, x, y) {
-  const rotor = bucket.querySelector('.baseStats');
-  if (!rotor) return;
-  const cx = bucket.clientWidth / 2;
-  const cy = bucket.clientHeight / 2;
-  rotor.style.setProperty('--rotor-x', `${x - cx}px`);
-  rotor.style.setProperty('--rotor-y', `${y - cy}px`);
-}
-
-// Snap rotor to one of our 5 probe points (indices: 0..4 per computeProbePositions)
-async function setRotorToProbe(bucket, index, timeoutMs = 600) {
-  const pts = computeProbePositions(bucket);         // already added earlier
-  const p = pts[index];
-  setRotorXY(bucket, p.x, p.y);
-  const rotor = bucket.querySelector('.baseStats');
-  if (rotor) await waitForTransitionEndOnce(rotor, timeoutMs); // you already have this
-}
-
-
-(() => {
-  function rf_setXY(bucket, x, y, rotorEl) {
-    if (!rotorEl) return;
-    const cx = bucket.clientWidth / 2;
-    const cy = bucket.clientHeight / 2;
-    rotorEl.style.setProperty('--rotor-x', `${x - cx}px`);
-    rotorEl.style.setProperty('--rotor-y', `${y - cy}px`);
-  }
-
-
-/* my code recommendation: */
-const toIdx = h => Math.max(0, Math.min(4, (h ?? 1) - 1));
-
-
-  function rf_toProbe(bucket, rotorEl, index = 0) {
-    const pts = window.computeProbePositions(bucket);
-    const p = pts[index] || pts[0];
-    rf_setXY(bucket, p.x, p.y, rotorEl);
-  }
-
-  function rf_toCenter(bucket, rotorEl) { rf_toProbe(bucket, rotorEl, 0); }
-  function rf_show(el)  { el?.classList.remove('is-hidden'); }
-  function rf_hide(el)  { el?.classList.add('is-hidden'); }
-  function rf_scale(el, s) { el?.style.setProperty('--rotor-scale', String(s)); }
-
-
-
-/* my code recommendation: */
-function rf_adopt(bucket, selOrEl, role, startAtHuman = 1) {
-  const el = typeof selOrEl === 'string' ? bucket.querySelector(selOrEl) : selOrEl;
-  if (!el) return null;
-  el.classList.add('baseStats');
-  if (role) el.dataset.role = role;
-
-  // PRE-SET POSITION VARS before reveal
-  const pts = window.computeProbePositions(bucket);
-  const cx = bucket.clientWidth / 2;
-  const cy = bucket.clientHeight / 2;
-  const idx = Math.max(0, Math.min(4, (startAtHuman ?? 1) - 1));
-  const p   = pts[idx] ?? pts[0];
-  el.style.setProperty('--rotor-x', `${p.x - cx}px`);
-  el.style.setProperty('--rotor-y', `${p.y - cy}px`);
-
-  return el;
-}
 
 
 
 
-/* my code recommendation: */
-function rf_create(bucket, { role, id } = {}, startAtHuman = 1) {
-  const el = document.createElement('div');
-  el.className = 'baseStats';
-  if (role) el.dataset.role = role;
-  if (id) el.id = id;
-
-  // PRE-SET POSITION VARS *before* appending to the DOM
-  const pts = window.computeProbePositions(bucket);
-  const cx = bucket.clientWidth / 2;
-  const cy = bucket.clientHeight / 2;
-  const idx = Math.max(0, Math.min(4, (startAtHuman ?? 1) - 1));
-  const p   = pts[idx] ?? pts[0];
-  el.style.setProperty('--rotor-x', `${p.x - cx}px`);
-  el.style.setProperty('--rotor-y', `${p.y - cy}px`);
-
-  bucket.appendChild(el);          // append AFTER vars are set
-  return el;
-}
-
-
-
-  window.RotorFactory = {
-    adopt:  rf_adopt,
-    create: rf_create,
-    toProbe: rf_toProbe,
-    toCenter: rf_toCenter,
-    show: rf_show,
-    hide: rf_hide,
-    scale: rf_scale,
-    setXY: rf_setXY
-  };
-})();
-
-
-/* my code recommendation: */
-// Build the kWh rotor markup (odometer + label)
-function buildKwhRotorContent(rotorEl, kwhValue) {
-  // Odometer container
-  const speed = document.createElement('div');
-  speed.className = 'speedRead';
-  speed.id = 'kwhRotorValue';
-
-  // Label under the odometer
-  const label = document.createElement('div');
-  label.className = 'baseLabel';
-  label.textContent = 'kWh Provided';
-
-  rotorEl.appendChild(speed);
-  rotorEl.appendChild(label);
-
-  // Initialize & roll odometer to the provided value
-  window.Helpers.initOdometer(speed, Math.round(kwhValue));
-  window.Helpers.rollOdometer(speed, Math.round(kwhValue));
-}
 
 
 
@@ -1466,142 +1446,18 @@ async function getKwhT12Value() {
 
 
 
-/* my code recommendation: */
-// Magnitude-driven compact formatter with exactly 3 displayed digits.
-// Returns { digitsOnly, dotIndex, unit, fracDigits }.
-// Groups: <1k (''), <1e6 ('k'), <1e9 ('M'), >=1e9 ('B').
-
-
-
-/* my code recommendation: */
-/**
- * Percent compact formatter: two integer digits + tenths (one fractional).
- * Input: n (e.g., 87 for 87%).
- * Returns: { digitsOnly: "875", dotIndex: 2, unit: "", fracDigits: 1 }
- *          where the third digit ("5") is tenths => tagged .is-frac by builder.
- */
-
-
-
-
-
-/* my code recommendation: */
-function unitFull(u) {
-  switch (u) {
-    case 'k': return 'Thousand';
-    case 'M': return 'Million';
-    case 'B': return 'Billion';
-    default:  return '';
-  }
-}
-
-
-/* my code recommendation: */
-// Build rolling odometer markup for compact display (no decimal section)
-// Example: "137" + unit "M" → shows 137M
-
-/* my code recommendation: */
-// Build rolling odometer markup; mark fractional digits with .is-frac (no wrapper)
-/**
- * Expects fmt from formatKwhCompact(...):
- *   { digitsOnly: "137", dotIndex: 1, unit: "M", ... }
- * -> digits at indices >= dotIndex are fractional ("37")
- */
-
-
-
-/* my code recommendation: */
-/**
- * Build a fixed, 3-digit odometer.
- * - digits3: string with length==3, e.g., "875" or "207" (leading zeros OK)
- * - dotIndex: number in [0..2] for first fractional digit; -1 for none
- *      e.g., 2 => only the 3rd digit (index 2) is fractional
- */
-
-
-
-
-
-
-/* my code recommendation: */
-/**
- * Ensures non-fractional digits are wrapped in .int, then appends a pill.
- * - speedEl: the .speedRead container inside the rotor
- * - pillText: string to render in the pill ('' or null => no pill)
- */
-/*
-function attachRotorPill(speedEl, pillText) {
-  if (!speedEl || !pillText) return;
-
-  // Collect digit nodes and split into integer vs fractional
-  const allDigits = Array.from(speedEl.querySelectorAll('.digit'));
-  const intDigits = allDigits.filter(d => !d.classList.contains('is-frac'));
-
-  if (!intDigits.length) return;
-
-  // Create (or reuse) the .int wrapper
-  let intWrap = speedEl.querySelector('.int');
-  if (!intWrap) {
-    intWrap = document.createElement('span');
-    intWrap.className = 'int';
-    speedEl.insertBefore(intWrap, intDigits[0]); // place wrapper before first int digit
-    // Move only the integer digits into the wrapper
-    intDigits.forEach(d => intWrap.appendChild(d));
-  }
-
-  // If a pill exists, update its text; otherwise create it
-  let tag = intWrap.querySelector('.magnitudeTag');
-  if (!tag) {
-    tag = document.createElement('span');
-    tag.className = 'magnitudeTag';
-    intWrap.appendChild(tag);
-  }
-  tag.textContent = String(pillText);
-}
-*/
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Center the pill under the full 3-digit block by attaching it to .speedRead */
-
-
-
-
-
-
 
 /* my code recommendation: */
 // Track currently selected call
 let activeCallId = null;
-//removing original powercanvas render  
-/*
-function createPowerCanvas(bucket) {
-  const canvas = document.createElement('div');
-  canvas.id = 'powerCanvas';
 
-  // Position & size only — styling lives in CSS
-  const left = bucket.offsetLeft;
-  
-  const w = Math.round(bucket.clientWidth * 1.10);
-  const h = Math.round(bucket.clientHeight * 0.75);
-  const top = bucket.offsetTop + Math.round((bucket.clientHeight - h) / 2); // vertically center within bucket
-
-  canvas.style.position = 'absolute';
-  canvas.style.left = `${left}px`;
-  canvas.style.top = `${top}px`;
-  canvas.style.width = `${w}px`;
-  canvas.style.height = `${h}px`;
-
-  return canvas;
-}
-  */
 
 // Attach click handler to each call segment in the LEFT radial chart
 document.querySelectorAll('#leftRadialChart g.power-item').forEach(item => {
   item.addEventListener('click', () => {
     console.log("you poked my heart 4");
     const callId = item.__data__?.call?.id;
-    const bucket = document.getElementById('callsChartContainer');
+    const bucket = document.getElementById('frame-calls');
     if (!bucket || callId == null) return;
 
     const existing = document.getElementById('powerCanvas');
@@ -1619,16 +1475,7 @@ if (existing && (activeCallId === callId || !bucket.classList.contains('focused'
   return;
 }
 
-//removing original powercanvas render  
-/*
-    // Replace any existing canvas
-    if (existing) existing.remove();
 
-    // Create new canvas
-    const canvas = createPowerCanvas(bucket);
-    document.body.appendChild(canvas);
-    activeCallId = callId;
-    */
   });
 });
 
@@ -1655,10 +1502,10 @@ document.addEventListener('click', function onOspHitClick(e) {
   if (!vessel) {console.log('no vessel selected!'); return};;
 
   // Ensure PowerCanvas exists and size the child slot; keep chart anchored to LEFT bucket per your convention
-  const leftHost = document.getElementById('callsChartContainer') ?? document.getElementById('ospChartContainer');
+  const leftHost = document.getElementById('frame-calls') ?? document.getElementById('frame-connections');
   if (typeof window.pcRender === 'function' && leftHost) {
     const { canvas } = pcRender({ type: 'chart' }, leftHost);
-    const rightBucket = document.getElementById('ospChartContainer');
+    const rightBucket = document.getElementById('frame-connections');
     const childH = Math.round((rightBucket?.clientHeight ?? leftHost.clientHeight) * 0.40);
     if (canvas?.style) canvas.style.setProperty('--pc-child-h', `${childH}px`);
   }
@@ -1682,10 +1529,10 @@ document.addEventListener('click', function onOspHitClick(e) {
 
 
 /* my code recommendation: REPLACEMENT — focus.js (left bucket observer) */
-const leftBucket = document.getElementById('callsChartContainer');
+const leftBucket = document.getElementById('frame-calls');
 if (leftBucket) {
   const obs = new MutationObserver(() => {
-    const rightBucket = document.getElementById('ospChartContainer');
+    const rightBucket = document.getElementById('frame-connections');
     const leftFocused  = leftBucket.classList.contains('focused');
     const rightFocused = !!rightBucket && rightBucket.classList.contains('focused');
 
@@ -1990,8 +1837,8 @@ gCalls.append('rect')
 
   // After draw: refresh canvas sizing/placement
   const hostBucket =
-    document.getElementById('callsChartContainer') ??
-    document.getElementById('ospChartContainer');
+    document.getElementById('frame-calls') ??
+    document.getElementById('frame-connections');
   if (hostBucket) {
     pcSizeFor(canvas, { type: 'chart' }, hostBucket);
     pcPlace(canvas, hostBucket);
@@ -2083,8 +1930,8 @@ window.updateRadialHighlightsForSelections = function ({ alpha, bravo }) {
 /* my code recommendation: INSERTION — promote DOM helpers to global scope */
 // INSERT HERE 👉 make helpers visible to Scene.set and others outside DOMContentLoaded
 window.getBucketEl = window.getBucketEl || function (which) {
-  if (which === 'calls') return document.getElementById('callsChartContainer') || document.getElementById('callsChartContainer');
-  if (which === 'osp')   return document.getElementById('ospChartContainer')   || document.getElementById('ospChartContainer');
+  if (which === 'calls') return document.getElementById('frame-calls') || document.getElementById('frame-calls');
+  if (which === 'osp')   return document.getElementById('frame-connections')   || document.getElementById('frame-connections');
   return null;
 };
 window.getRadialEl = window.getRadialEl || function (which) {
@@ -2115,7 +1962,7 @@ window.readLayoutCanonical = window.readLayoutCanonical || function (bucket) {
 
 // INSERT HERE 👉 sync Usage gauge on right radial with current descriptor layout
 function updateRightUsageGauge() {
-  const rightBucket = document.getElementById('ospChartContainer');
+  const rightBucket = document.getElementById('frame-connections');
   const layout = (rightBucket?.dataset?.layout || '').trim();
   const chartSel = '#ospRadialChart';
   const svg = document.querySelector(chartSel + ' svg') || document.querySelector(chartSel);
@@ -2358,8 +2205,8 @@ function pcEnsureCanvas(hostBucket) {
 /* PowerCanvas: size to fit children (trend + chart + table) + top/bottom margins */
 function pcSizeFor(canvas, spec, hostBucket) {
   // Width anchored to RIGHT bucket so canvas is just a bit wider than the right KPI bucket
-  const leftBucket = document.getElementById('callsChartContainer') || hostBucket;
-  const rightBucket = document.getElementById('ospChartContainer') || hostBucket;
+  const leftBucket = document.getElementById('frame-calls') || hostBucket;
+  const rightBucket = document.getElementById('frame-connections') || hostBucket;
 
   // Use right-bucket width as reference; aim ~+5%, but clamp so it never crosses center line
   const refW = rightBucket?.clientWidth || leftBucket?.clientWidth || Math.round(window.innerWidth / 2);
@@ -2406,7 +2253,7 @@ function pcSizeFor(canvas, spec, hostBucket) {
 
 /* Place the PowerCanvas relative to the LEFT KPI bucket (never cross center line) */
 function pcPlace(canvas, hostBucket) {
-  const leftHost = document.getElementById('callsChartContainer') || hostBucket;
+  const leftHost = document.getElementById('frame-calls') || hostBucket;
   // Align the canvas’ RIGHT edge to the leftHost’s RIGHT edge (i.e., the screen center line)
   // so it won’t overlap the right radial chart.
   const leftEdge = leftHost.offsetLeft + (leftHost.clientWidth - canvas.clientWidth);
@@ -2617,116 +2464,256 @@ emit(cueName, payload = {}) {
 })();
 
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-//  THE DIRECTOR
-//  THIS FUNCTION RESPONDS TO USER INTERACTIONS BY MOVING TO THE APPROPRIATE SCENE
+//  THE DIRECTOR (FINAL ARCHITECTURE)
+//  Builds the DOM tree for each scene using declarative scene definitions + Wrangler metadata.
+//  - Elements listed in include[] MUST exist and appear at their correct hierarchical parent.
+//  - Elements not listed MUST be cleanly removed.
+//  - No fading, no scene-hidden, no guessing, no bespoke rules.
+//
+//  Wrangler.describe(id) supplies:
+//    • parentId  → where the element belongs
+//    • dataset   → attributes required for Wrangler lifecycle
+//  Wrangler.onReveal/onHide supply behavior.
+//
+//  Director is PURE STRUCTURE.
+//
+//  This is the correct architecture.
 //
 /////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 window.Scene = (function () {
 
   const registry = new Map();
   let currentScene = null;
 
-  // ---------------------------------------------------------------
-  // API: Scene.register(name, { include, mount, unmount })
-  // ---------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Scene.register(name, { include, mount, unmount, transitions })
+  // ---------------------------------------------------------------------------
   function register(name, def) {
     if (!def || !Array.isArray(def.include)) {
-      throw new Error(`Scene "${name}" must define an include:[] array`);
+      throw new Error(`Scene "${name}" must define include:[].`);
     }
+
     registry.set(name, {
       include: def.include,
       mount: def.mount || (async () => {}),
       unmount: def.unmount || (() => {}),
-      transitions: def.transitions || {} 
+      transitions: def.transitions || {}
     });
   }
 
-  // ---------------------------------------------------------------
-  // API: Scene.get()
-  // ---------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Scene.get()
+  // ---------------------------------------------------------------------------
   function get() {
     return currentScene;
   }
 
-  // ---------------------------------------------------------------
-  // API: Scene.set(name)
-  //   Drives scene transitions: unmount old, diff DOM, mount new
-  // ---------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Scene.set(name)
+  //   Structural reconciliation + Wrangler lifecycle + scene mount
+  // ---------------------------------------------------------------------------
   async function set(name) {
     if (!registry.has(name)) {
       console.warn(`Scene "${name}" is not registered.`);
       return;
     }
-    if (currentScene === name) {
-      return; // no-op
-    }
+    if (currentScene === name) return;
+
+    
 
     const oldDef = currentScene ? registry.get(currentScene) : null;
     const newDef = registry.get(name);
 
-    // 1. UNMOUNT OLD SCENE
-    if (oldDef && typeof oldDef.unmount === 'function') {
-      try {
-        await oldDef.unmount();
-      } catch (err) {
+    /* ====================== DEBUG: STRUCTURAL INSPECTION ====================== */
+
+(function debugStructure() {
+
+  function pretty(descriptor, level = 0) {
+    const pad = "  ".repeat(level);
+    if (typeof descriptor === "string") return pad + descriptor;
+    if (!descriptor || !descriptor.id) return pad + "<unknown>";
+    let out = pad + descriptor.id;
+    if (descriptor.children && descriptor.children.length) {
+      out += "\n" + descriptor.children.map(c => pretty(c, level+1)).join("\n");
+    }
+    return out;
+  }
+
+  // ----------------------------------------------------------
+  // Build DESIRED structure from scene + Wrangler.describe
+  // ----------------------------------------------------------
+  const desired = [];
+
+  for (const id of newDef.include) {
+    const meta = window.Wrangler?.describe?.(id) || {};
+    const parentId = meta.parentId || "D3andME";
+
+    // Build a flat list first
+    desired.push({
+      id,
+      parentId
+    });
+  }
+
+  // Convert the flat list into a hierarchical tree
+  const desiredTree = { id: "D3andME", children: [] };
+  const nodes = { "D3andME": desiredTree };
+
+  // Create node entries
+  for (const d of desired) {
+    nodes[d.id] = { id: d.id, parentId: d.parentId, children: [] };
+  }
+
+  // Link children into tree
+  for (const d of desired) {
+    const parent = nodes[d.parentId] || desiredTree;
+    parent.children.push(nodes[d.id]);
+  }
+
+  // ----------------------------------------------------------
+  // Build EXISTING structure from current DOM
+  // ----------------------------------------------------------
+  function buildActualTree(rootEl) {
+    const obj = { id: rootEl.id || "(no-id)", children: [] };
+    for (const child of rootEl.children) {
+      if (child.id) {
+        obj.children.push(buildActualTree(child));
+      }
+    }
+    return obj;
+  }
+
+  const rootEl = document.getElementById("D3andME");
+  const actualTree = buildActualTree(rootEl);
+
+  // ----------------------------------------------------------
+  // Print both trees
+  // ----------------------------------------------------------
+  console.group("DIRECTOR DEBUG — DOM STRUCTURE");
+  console.log("DESIRED STRUCTURE:");
+  console.log(pretty(desiredTree));
+
+  console.log("\nACTUAL DOM STRUCTURE:");
+  console.log(pretty(actualTree));
+  console.groupEnd();
+
+})();
+
+    // -------------------------------------------------------------------------
+    // 1. Scene-level unmount (logical only; no DOM)
+    // -------------------------------------------------------------------------
+    if (oldDef && typeof oldDef.unmount === "function") {
+      try { await oldDef.unmount(); }
+      catch (err) {
         console.error(`Error during unmount of scene "${currentScene}":`, err);
       }
     }
 
+    // =========================================================================================
+    // 2. STRUCTURAL DOM RECONCILIATION — PURE TREE SHAPING
+    // =========================================================================================
+    const root = document.getElementById("D3andME");
+    const needed = new Set(newDef.include);
 
-/* REPLACEMENT — Scene.set() DOM composition using fade‑hide
-   ---------------------------------------------------------
-   Removes NO DOM. Only toggles .scene-hidden on top‑level
-   scene-managed elements under #D3andME. Prevents flash,
-   preserves nested rotors, charts, SVG, and avoids layout
-   jumps.
-*/
+    // -------------------------------------------------------------------------
+    // REMOVE elements that are NOT in the new scene
+    // -------------------------------------------------------------------------
+    for (const el of root.querySelectorAll('[id]')) {
+      const id = el.id;
+      if (!needed.has(id)) {
 
-const newSet = new Set(newDef.include);
+        // Behavior teardown first (Wrangler)
+        try {
+          if (window.Wrangler?.onHide) {
+            await window.Wrangler.onHide(el);
+          }
+        } catch (err) {
+          console.error(`Wrangler.onHide failed for "${id}"`, err);
+        }
 
-// 2. HIDE elements not in the new guest list (fade‑out only)
-for (const el of document.querySelectorAll('#D3andME [id]')) {
-  const id = el.id;
-  if (!newSet.has(id)) {
-    el.classList.add('scene-hidden');
-  }
-}
+        // Now remove from DOM
+        try { el.remove(); } catch {}
+      }
+    }
 
-// 3. SHOW required elements (fade‑in only)
-//    Create missing containers only if truly absent.
-for (const id of newDef.include) {
-  let el = document.getElementById(id);
-  if (!el) {
-    el = document.createElement('div');
-    el.id = id;
-    document.getElementById('D3andME').appendChild(el);
-  }
-  el.classList.remove('scene-hidden');
-}
+    // -------------------------------------------------------------------------
+    // CREATE / REPOSITION all required elements
+    // -------------------------------------------------------------------------
+    for (const id of newDef.include) {
+      let el = document.getElementById(id);
 
+      // Always ask Wrangler for structure
+      const meta = window.Wrangler?.describe?.(id) || null;
+      const dataset = meta?.dataset || null;
+      const parentId = meta?.parentId || null;
 
-    // Set the new scene
-    currentScene = name;
+      // Determine correct parent node
+      let parent = root;
+      if (parentId) {
+        const p = document.getElementById(parentId);
+        if (p) parent = p;
+      }
 
+      // CREATE if missing
+      if (!el) {
+        el = document.createElement("div");
+        el.id = id;
 
-if (typeof window.CueDirector?.registerTransitions === 'function') {
-  window.CueDirector.registerTransitions(
-    name,
-    newDef.transitions || {}
-  );
-}
+        // Assign dataset attributes prior to mount
+        if (dataset) {
+          for (const [k, v] of Object.entries(dataset)) {
+            el.dataset[k] = v;
+          }
+        }
 
+        parent.appendChild(el);
+      }
 
-    // 4. MOUNT NEW SCENE
-    if (typeof newDef.mount === 'function') {
+      // If element already exists, ensure correct hierarchical placement
+      else {
+        if (el.parentNode !== parent) {
+          parent.appendChild(el);
+        }
+
+        // Refresh dataset on existing nodes
+        if (dataset) {
+          for (const [k, v] of Object.entries(dataset)) {
+            el.dataset[k] = v;
+          }
+        }
+      }
+
+      // Behavior mount
       try {
-        await newDef.mount();
+        if (window.Wrangler?.onReveal) {
+          await window.Wrangler.onReveal(el);
+        }
       } catch (err) {
+        console.error(`Wrangler.onReveal failed for "${id}"`, err);
+      }
+    }
+
+    // =========================================================================================
+    // END STRUCTURAL DOM RECONCILIATION
+    // =========================================================================================
+
+    // -------------------------------------------------------------------------
+    // Update scene state + transitions
+    // -------------------------------------------------------------------------
+    currentScene = name;
+    if (window.CueDirector?.registerTransitions) {
+      window.CueDirector.registerTransitions(name, newDef.transitions);
+    }
+
+    // -------------------------------------------------------------------------
+    // Scene-level mount
+    // -------------------------------------------------------------------------
+    if (typeof newDef.mount === "function") {
+      try { await newDef.mount(); }
+      catch (err) {
         console.error(`Error during mount of scene "${name}":`, err);
       }
     }
@@ -2751,7 +2738,7 @@ if (typeof window.CueDirector?.registerTransitions === 'function') {
 //  ELEMENTS NOT INCLUDED IN A SCENE REGISTRATION ARE REMOVED
 //
 //  CURRENT LIST OF SCENES:
-//    LOAD:         THIS IS THE SCENE THAT IS SET WHEN THE PAGE LOADS
+//    OVERVIEW:         THIS IS THE SCENE THAT IS SET WHEN THE PAGE LOADS
 //    CALLS:        FIRST LEVEL EXPANSION OF CALL METRIC FROM LOAD SCENE
 //    CALLS-CAP:    EXPANSION OF PASSENGER VOLUMES RELATED TO CALLS (UNDEVELOPED)
 //    OSP:          FIRST LEVEL EXPANSION OF CONNECTION METRIC FROM LOAD SCENE
@@ -2765,14 +2752,16 @@ if (typeof window.CueDirector?.registerTransitions === 'function') {
 
 window.Scene.register('overview', {
   include: [
-    'callsChartContainer',
-    'ospChartContainer'
+    'frame-calls',
+    'frame-connections',
+    'rotor-calls',
+    'rotor-connections'
   ],
 
   async mount() {
     LayoutDirector.requestLayout('overview', 'scene:load')
-    document.getElementById('callsChartContainer').classList.remove('shrunk');
-    document.getElementById('ospChartContainer').classList.remove('shrunk');
+    document.getElementById('frame-calls').classList.remove('shrunk');
+    document.getElementById('frame-connections').classList.remove('shrunk');
   },
 
   transitions: {
@@ -2785,24 +2774,15 @@ window.Scene.register('overview', {
 
 window.Scene.register('calls', {
   include: [
-    'callsChartContainer',
-    //'ospChartContainer',
+    'frame-calls',
     'rotor-calls',
-    'callsRadialChart',
-    'callsCentralChart'
+    'callsRadialChart'
   ],
 
   async mount() {
     LayoutDirector.requestLayout('kpi', 'scene:calls')
-    document.getElementById('callsChartContainer').classList.remove('shrunk');
-    document.getElementById('ospChartContainer').classList.add('shrunk');
-
-    // Draw CALLS radial (this scene owns it)
-    const callsRadial = document.getElementById('callsRadialChart');
-    if (callsRadial) {
-      await charts.drawRadialCalendar(callsRadial, {});
-      await charts.drawCallArcs(callsRadial);
-    }
+    document.getElementById('frame-calls').classList.remove('shrunk');
+    document.getElementById('frame-connections').classList.add('shrunk');
   },
 
   transitions: {
@@ -2818,8 +2798,8 @@ window.Scene.register('calls', {
 window.Scene.register('osp', {
 
   include: [
-    'callsChartContainer',
-    'ospChartContainer',
+    'frame-calls',
+    'frame-connections',
     'rotor-connections',
     'rotor-usage',
     'rotor-kwh',
@@ -2830,8 +2810,8 @@ window.Scene.register('osp', {
 
   async mount() {
     LayoutDirector.requestLayout('kpi', 'scene:osp')
-    document.getElementById('callsChartContainer').classList.add('shrunk');
-    document.getElementById('ospChartContainer').classList.remove('shrunk');
+    document.getElementById('frame-calls').classList.add('shrunk');
+    document.getElementById('frame-connections').classList.remove('shrunk');
 
     // Draw OSP radial for this scene
     const ospRadial = document.getElementById('ospRadialChart');
@@ -2844,7 +2824,7 @@ window.Scene.register('osp', {
     document.getElementById('ospCentralChart')?.replaceChildren();
 
     // Prepare PowerCanvas (hidden) — reveal is done in osp‑usage / osp‑impact
-    const bucket = document.getElementById('ospChartContainer');
+    const bucket = document.getElementById('frame-connections');
     if (bucket && typeof window.pcRender === 'function') {
       window.pcRender({ type: 'chart' }, bucket);
     }
@@ -2898,7 +2878,7 @@ window.Scene.register('right-cruise-connections-chart', {
   scenes: {
     'right': {
       mount: async () => {
-        const bucket = document.getElementById('ospChartContainer');
+        const bucket = document.getElementById('frame-connections');
         if (!bucket) return;
 
         // Ensure/position host so its *bottom center* sits on probe point 5
@@ -2968,9 +2948,9 @@ window.Scene.register('pc-trend', {
   scenes: {
     'right-usage': {
       mount: async () => {
-        const hostBucket = document.getElementById('callsChartContainer') || document.getElementById('ospChartContainer');
+        const hostBucket = document.getElementById('frame-calls') || document.getElementById('frame-connections');
         const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
-        const rightBucket = document.getElementById('ospChartContainer');
+        const rightBucket = document.getElementById('frame-connections');
         const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
         canvas.style.setProperty('--pc-child-h', `${childH}px`);
         // ensure trend host at TOP
@@ -2997,9 +2977,9 @@ charts.drawT12Trend(trendHost, {
     },
     'right-impact': {
       mount: async () => {
-        const hostBucket = document.getElementById('callsChartContainer') || document.getElementById('ospChartContainer');
+        const hostBucket = document.getElementById('frame-calls') || document.getElementById('frame-connections');
         const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
-        const rightBucket = document.getElementById('ospChartContainer');
+        const rightBucket = document.getElementById('frame-connections');
         const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
         canvas.style.setProperty('--pc-child-h', `${childH}px`);
         let trendHost = contentHost.querySelector('.pc-trend');
@@ -3028,9 +3008,9 @@ charts.drawT12Trend(trendHost, {
     },
     'right-connections': {
       mount: async () => {
-        const hostBucket = document.getElementById('callsChartContainer') || document.getElementById('ospChartContainer');
+        const hostBucket = document.getElementById('frame-calls') || document.getElementById('frame-connections');
         const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
-        const rightBucket = document.getElementById('ospChartContainer');
+        const rightBucket = document.getElementById('frame-connections');
         const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) * 0.40);
         canvas.style.setProperty('--pc-child-h', `${childH}px`);
         let trendHost = contentHost.querySelector('.pc-trend');
@@ -3456,7 +3436,7 @@ window.LayoutDirector = LayoutDirector;
 LayoutDirector.init();
 
 
-window.Scene.set('overview');
+//window.Scene.set('overview');
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -3464,953 +3444,304 @@ window.Scene.set('overview');
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+/* ============================================================================================
+   WRANGLER: UNIFIED PARTICIPANT LIFECYCLE MANAGER (with describe())
+   ============================================================================================ */
 
+window.Wrangler = (function () {
 
-////////////////////////////////////////////////////////////////////////////////
-//
-//  ELEMENT DEFINITIONS
-//  ELEMENTS INCLUDED IN SCENE CHOREOGRAPHY NEED SPECIFIC INFORMATION TO BE DRAWN CORRECTLY
-//
-////////////////////////////////////////////////////////////////////////////////
+  // Registry: type → { structure(), mount(), unmount() }
+  const types = new Map();
 
-/* my code recommendation: REPLACEMENT — focus.js */
-/* kWh rotor: use T12 trend + SVG arrow */
-async function dR_kWh() {
-  const bucketId = 'ospChartContainer';
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
+  // Track mounted state so we don’t double-mount
+  const mounted = new WeakSet();
 
-  const existing = bucket.querySelector('.baseStats[data-role="kwh"]');
-  if (existing) return existing;
-
-  
-// const trend = await window.ensureT12Trend();
-const trend = await charts.getT12Trend({});
-
-
-  const kwhT = trend.series.kwh;
-
-  return setupRotor({
-    role: 'kwh',
-    bucketId,
-    labelText: 'kWh Provided',
-    pillText: (val) => {
-      const fmt = formatKwhCompact(val ?? 0);
-      return fmt?.unit ? (unitFull(fmt.unit) + ' kWh') : '';
-    },
-    valueGetter: window.cruncher.getT12KwhTotal,
-
-    // build + arrow (SVG concave sides; color via trend mapping)
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* dR_kWh digitsRenderer: render digits, draw arrow, toggle trend on click */
-digitsRenderer: (speedEl, val) => {
-  // Render compact kWh (three digits; may include tenths depending on magnitude)
-  const fmt = formatKwhCompact(val ?? 0);
-  buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
-
-  // Draw the arrow with direction/color from the T12 trend
-  attachTrendArrow(speedEl, kwhT.dir, kwhT.color);
-
-  // Precise click handler on the arrow (wrapper & SVG), capture phase
-  const arrowWrap = speedEl.querySelector('.trendArrow');
-  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
-
-  const onArrow = (e) => {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    handleTrendArrowClick('kwh');     // toggles the kWh Provided trend chart
-  };
-
-  //arrowWrap?.addEventListener('click', onArrow, { capture: true });
-  //arrowSvg ?.addEventListener('click', onArrow, { capture: true });
-},
-
-
-
-    // roll the three stacks to target digits
-    digitsRoller: (speedEl, val) => {
-      const fmt = formatKwhCompact(val ?? 0);
-      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
-    },
-
-    appearWhen: 'focus',
-    hideWhen: 'blur',
-    startHidden: true,
-    syncReveal: 'transitionEnd',
-    positions: { 'osp': 2, 'osp-impact': 5 }
-  });
-}
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Usage Rate rotor: use T12 trend + SVG arrow */
-async function dR_usage() {
-  const bucketId = 'ospChartContainer';
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
-
-  const existing = bucket.querySelector('.baseStats[data-role="usage"]');
-  if (existing) return existing;
-
-  
-// const trend = await window.ensureT12Trend();
-const trend = await charts.getT12Trend({});
-
-  const useT = trend.series.usageRate; // 0..1.25 (rate)
-
-  return setupRotor({
-    role: 'usage',
-    bucketId,
-    labelText: 'Shore Power Usage',
-    pillText: 'Usage Rate',
-    valueGetter: window.cruncher.getT12UsageRatePercent,
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* dR_usage digitsRenderer: render digits, draw arrow, toggle trend on click */
-digitsRenderer: (speedEl, val) => {
-  // Render 2 integer digits + tenths
-  const fmt = formatPercentCompact(val ?? 0);
-  buildFixed3Odometer(speedEl, fmt.digitsOnly, fmt.dotIndex);
-
-  // Draw the arrow with direction/color from the T12 trend
-  attachTrendArrow(speedEl, useT.dir, useT.color);
-
-  // Precise click handler on the arrow (wrapper & SVG), capture phase
-  const arrowWrap = speedEl.querySelector('.trendArrow');
-  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
-
-  const onArrow = (e) => {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    handleTrendArrowClick('usage');   // toggles the Usage Rate trend chart
-  };
-
-  //arrowWrap?.addEventListener('click', onArrow, { capture: true });
-  //arrowSvg ?.addEventListener('click', onArrow, { capture: true });
-},
-
-
-
-    // roll the three stacks to target digits
-    digitsRoller: (speedEl, val) => {
-      const fmt = formatPercentCompact(val ?? 0);
-      window.setRotorValue(speedEl, fmt.digitsOnly ?? '');
-    },
-
-    appearWhen: 'focus',
-    hideWhen: 'blur',
-    startHidden: true,
-    syncReveal: 'transitionEnd',
-    positions: { 'osp': 4, 'osp-usage': 2 }
-  });
-}
-
-
-/* my code recommendation: */
-// Connections count rotor (T12), 3-digit, no fractional — RIGHT bucket
-async function dR_connections() {
-  const bucketId = 'ospChartContainer';
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
-
-  const existing = bucket.querySelector('.baseStats[data-role="connections"]');
-  if (existing) return existing;
-
-  /* my code recommendation: */
-  const { t12ConnectionsCount } = await window.fillBuckets();
-  const connCount = t12ConnectionsCount;
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Replace ONLY the setupRotor(...) block inside dR_connections(...) */
-
-// const trend = await window.ensureT12Trend();
-const trend = await charts.getT12Trend({});
-
-const connT = trend.series.connections;
-
-return setupRotor({
-  role: 'connections',
-  bucketId,
-  labelText: 'Connections',
-  pillText: 'Connections',
-  valueGetter: window.cruncher.getT12ConnectionCount,
-
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* dR_connections digitsRenderer: render digits, draw arrow, toggle trend on click */
-digitsRenderer: (speedEl, val) => {
-  // Render 3 fixed digits (no fractional)
-  const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
-  buildFixed3Odometer(speedEl, s, -1);
-
-  // Draw the arrow with direction/color from the T12 trend
-  attachTrendArrow(speedEl, connT.dir, connT.color);
-
-  // Precise click handler on the arrow (wrapper & SVG), capture phase
-  const arrowWrap = speedEl.querySelector('.trendArrow');
-  const arrowSvg  = speedEl.querySelector('.trendArrowSvg');
-
-
-
-const onArrow = (e) => {
-  e.preventDefault();
-  e.stopImmediatePropagation();
-  e.stopPropagation();
-
-  const rightBucket = document.getElementById('ospChartContainer');
-  const isRightFocused = !!rightBucket && rightBucket.classList.contains('focused');
-
-  if (!isRightFocused) {
-    // Ignore until the KPI bucket is focused
-    return;
+  // -----------------------------------------------------------------------
+  // REGISTER PARTICIPANT TYPE
+  // -----------------------------------------------------------------------
+  function registerType(typeName, handlers) {
+    if (!typeName || typeof handlers !== 'object') return;
+    const mount   = handlers.mount   || (() => {});
+    const unmount = handlers.unmount || (() => {});
+    const structure = handlers.structure || null;
+    types.set(typeName, { mount, unmount, structure });
   }
 
-  // Proceed: toggle the Connections trend chart
-  handleTrendArrowClick('connections');
-};
+  // -----------------------------------------------------------------------
+  // DESCRIBE(id)
+  // -----------------------------------------------------------------------
+  // Extracts:
+  //   - inferred type from id (e.g. "rotor-calls" → "rotor")
+  //   - passes full context to type.structure() if available
+  //   - returns structural metadata for Director
+  // -----------------------------------------------------------------------
+function describe(id) {
+  if (!id) return null;
 
+  const [type, role] = id.split('-');
+  const entry = types.get(type);
 
-  //arrowWrap?.addEventListener('click', onArrow, { capture: true });
-  //arrowSvg ?.addEventListener('click', onArrow, { capture: true });
-},
-
-
-  digitsRoller: (speedEl, val) => {
-    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
-    window.setRotorValue(speedEl, s);
-  },
-  appearWhen: 'always',
-  hideWhen: 'never',
-  startHidden: false, syncReveal: 'transitionEnd',
-  
-positions: {
-  "": 1,
-  "osp": 5,
-  "osp-usage": 5,
-  "osp-impact": 5
-}
-
-});
-
-
-}
-
-
-/* my code recommendation: */
-// Ship calls count rotor (T12), 3-digit, no fractional — LEFT bucket
-async function dR_calls() {
-  const bucketId = 'callsChartContainer';
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
-
-  const existing = bucket.querySelector('.baseStats[data-role="calls"]');
-  if (existing) return existing;
-
-  /* my code recommendation: */
-  const { t12Calls } = await window.fillBuckets(); // arrival ∈ T12
-  const callCount = t12Calls.length;
-
-const trend = await charts.getT12Trend({});
-
-const callsT = trend.series.calls;
-
-return setupRotor({
-  role: 'calls',
-  bucketId,
-  labelText: 'Ship Calls (T12)',
-  pillText: 'Ship Calls',
-  valueGetter: window.cruncher.getT12CallCount,
-
-  digitsRenderer: (speedEl, val) => {
-    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
-    buildFixed3Odometer(speedEl, s, -1);
-    attachTrendArrow(speedEl, callsT.dir, callsT.color);
-  },
-  digitsRoller: (speedEl, val) => {
-    const s = String(Math.max(0, Math.floor(val ?? 0))).padStart(3, '0');
-    window.setRotorValue(speedEl, s);
-  },
-  appearWhen: 'always',
-  hideWhen: 'never',
-  startHidden: false, syncReveal: 'transitionEnd',
-  positions: { 0: 1, 1: 1, 2: 1 }
-});
-
-}
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  END ELEMENT DEFINITIONS
-//
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-function setupRotor({
-  // identity / placement
-  role,                      // e.g., 'kwh'
-  bucketId,                  // e.g., 'ospChartContainer'
-  id,                        // optional element id; default: 'rotor-' + role
-  adoptSelector,             // optional: adopt an existing element instead of creating a new one
-
-  // content
-  labelText,                 // e.g., 'kWh Provided'
-  valueGetter,               // async () => number; supplies odometer value
-
- // STANDARD OPTIONS (no role-specific logic inside setup):
-  pillText,                         // string or (value) => string
-  digitsRenderer,                   // (speedEl, value) => void
-  digitsRoller,                     // (speedEl, value) => void
-
-
-  appearWhen,
-  appearAt,
-  moveAfterAppearTo,
-  positions = null,
-  scales = { 1: 1.8, 2: 0.5, 3: 0.5, 4: 0.5, 5: 0.8 },
-  hideWhen,
-  hideTo,
-  startHidden = true,        // start hidden until rule is met
-
-  // timing
-  syncReveal = 'instant'     // 'instant' | 'transitionEnd' (wait for bucket focus transition)
-}) {
-
-// Wait for bucket's transition and one extra frame so geometry is current
-async function afterGeometrySettles() {
-  // If caller asked to sync with transitionEnd, await it
-  if (syncReveal === 'transitionEnd') {
-    await waitForTransitionEndOnce(bucket);
+  // ✔ If the participant type is registered, ask it normally
+  if (entry && typeof entry.structure === "function") {
+    const meta = entry.structure({ id, type, role });
+    if (meta) return meta;
   }
-  // Then give the browser one more paint to update clientWidth/clientHeight
-  await new Promise(r => requestAnimationFrame(() => r()));
-}
 
-  // resolve bucket
-  const bucket = document.getElementById(bucketId);
-  if (!bucket) return null;
+  // ✔ FALLBACK ONLY DURING INITIAL PAGE LOAD
+  // If Scene is not initialized, we are in the pre-scene default view.
+  const sceneNotInitialized =
+    !window.Scene?.get || window.Scene.get() === null;
 
-  // create or adopt rotor element
-const rotorEl = adoptSelector
-  ? RotorFactory.adopt(bucket, adoptSelector, role, appearAt)
-  : RotorFactory.create(bucket, { role, id: id ?? `rotor-${role}` }, appearAt);
-
-if (!rotorEl) return null;
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Harden renderer: if digitsRenderer throws, fall back to odometer */
-function buildContent(el, value) {
-  el.innerHTML = '';
-  const speed = document.createElement('div');
-  speed.className = 'speedRead';
-  speed.id = `rotor-${role}-value`;
-
-  const label = document.createElement('div');
-  label.className = 'baseLabel';
-  label.textContent = labelText ?? '';
-
-  el.appendChild(speed);
-  el.appendChild(label);
-
-  const v = Number(value ?? 0);
-
-  if (typeof digitsRenderer === 'function') {
-    try {
-      digitsRenderer(speed, v);
-    } catch (err) {
-      console.error(`digitsRenderer(${role}) failed:`, err);
-      // Safe fallback: plain odometer
-      window.Helpers.initOdometer(speed, Math.round(v));
-      window.Helpers.rollOdometer(speed, Math.round(v));
+  if (sceneNotInitialized) {
+    // Hard-coded fallback for default pre-overview screen:
+    if (id === "rotor-calls") {
+      return {
+        parentId: "frame-calls",
+        dataset: {
+          participant: "rotor",
+          role: "calls",
+          bucket: "frame-calls"
+        }
+      };
     }
-  } else {
-    window.Helpers.initOdometer(speed, Math.round(v));
-    window.Helpers.rollOdometer(speed, Math.round(v));
-  }
 
-  // Attach pill using provided pillText (string or function)
-  const pill = typeof pillText === 'function' ? pillText(v) : pillText;
-  attachRotorPill(speed, pill);
-}
-
-
-
-/* my code recommendation: */
-
-
-// INSERT HERE 👉 read canonical (maps left/right* → calls/osp*)
-function getFocusLevel(bucket) {
-  return readLayoutCanonical(bucket);
-}
-
-
-
-  /* my code recommendation: */
-  function applyScaleForProbe(humanPoint) {
-    const scale = (scales && scales[humanPoint]) ?? null;
-    if (scale != null) RotorFactory.scale(rotorEl, scale);  // sets --rotor-scale inline
-  }
-
-
-
-  /* my code recommendation: */
-  // REPLACEMENT — resolve probe by *layout name* (no numeric scenes)
-  function resolveProbeForLevel(layoutName) {
-    // INSERT HERE 👉 positions is now an object keyed by descriptors: { 'right': 4, 'right-usage': 2, ... }
-    if (!positions || Array.isArray(positions)) return null; // numeric maps no longer supported
-    return positions[layoutName] ?? null;
-  }
-
-  /* my code recommendation: */
-  // REPLACEMENT — position rotor using descriptor layout, then scale
-  async function setToLevelPositionAsync(layoutName) {
-    const human = resolveProbeForLevel(layoutName);
-    if (human == null) return;
-    await afterGeometrySettles();
-    RotorFactory.toProbe(bucket, rotorEl, Math.max(0, Math.min(4, (human - 1) || 0)));
-    applyScaleForProbe(human);
-    rotorEl.dataset.probe = String(human);
-    positionProbeDots(bucket);
-  }
-
-
-
-
-  // load the value once (initial build only)
-  (async () => {
-    try {
-      const val = await Promise.resolve().then(valueGetter);
-      buildContent(rotorEl, val);
-    } catch (e) {
-      console.error(`setupRotor(${role}) failed to populate:`, e);
-      buildContent(rotorEl, 0);
-    }
-  })();
-
-  // helper: human point → index
-  const toIdx = (human) => Math.max(0, Math.min(4, (human ?? 1) - 1));
-
-  // initial placement
-  
-  if (startHidden) {
-    rotorEl.classList.add('is-hidden'); // CSS controls opacity/pointer-events
-  }
-
-  // visibility predicate
-  const appearPredicate = (b) => {
-    if (typeof appearWhen === 'function') return !!appearWhen(b);
-    if (appearWhen === 'always') return true;
-    if (appearWhen === 'focus') return b.classList.contains('focused');
-    return false;
-  };
-
-  // hide rule
-  const shouldHide = (b) => {
-    if (hideWhen === 'never') return false;
-    return !b.classList.contains('focused'); // default: blur
-  };
-
-  
-
-  // Initial spawn: prefer positions[0] if provided; else appearAt
-  const initialLevel = 0;
-  const initialHuman = resolveProbeForLevel(initialLevel) ?? appearAt;
-  RotorFactory.toProbe(bucket, rotorEl, Math.max(0, Math.min(4, (initialHuman - 1) || 0)));
-
-
-  /* my code recommendation: */
-  applyScaleForProbe(initialHuman);
-rotorEl.dataset.probe = String(initialHuman);
-
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Harden roller: if digitsRoller throws, fall back to plain roll */
-async function revealAndMove() {
-  if (syncReveal === 'transitionEnd') {
-    await waitForTransitionEndOnce(bucket);
-  }
-  rotorEl.classList.remove('is-hidden');
-
-  // One frame so the fade/roll overlap cleanly
-  await new Promise(r => requestAnimationFrame(() => r()));
-
-  const s = rotorEl.querySelector('.speedRead');
-  if (s) {
-    try {
-      const v = await Promise.resolve().then(valueGetter);
-      if (typeof digitsRoller === 'function') {
-        digitsRoller(s, Number(v ?? 0));
-      } else {
-        window.Helpers.rollOdometer(s, Math.round(Number(v ?? 0)));
-      }
-    } catch (err) {
-      console.error(`digitsRoller(${role}) failed:`, err);
-      // Minimal fallback if getter/roller fails
-      window.Helpers.rollOdometer(s, 0);
+    if (id === "rotor-connections") {
+      return {
+        parentId: "frame-connections",
+        dataset: {
+          participant: "rotor",
+          role: "connections",
+          bucket: "frame-connections"
+        }
+      };
     }
   }
 
-  positionProbeDots(bucket);
-  // (no movement on reveal; we already spawn at appearAt)
+  // Nothing else to apply
+  return null;
 }
 
+  // -----------------------------------------------------------------------
+  // BEHAVIOR REVEAL (mount)
+  // -----------------------------------------------------------------------
+  async function onReveal(el) {
+    if (!el) return;
 
+    const type = el.dataset.participant;
+    if (!type) return;
 
+    const entry = types.get(type);
+    if (!entry) return;
 
-
-// hide & reset
-function hideAndReset() {
-  rotorEl.classList.add('is-hidden');
-
-  // Reset digit stacks to "000" so next reveal rolls from zero
-  const s = rotorEl.querySelector('.speedRead');
-  if (s) window.setRotorValue(s, '000');
-}
-
-
-/* my code recommendation: */
-
-  /* my code recommendation: */
-  // REPLACEMENT — observe class + data-layout (no data-focus)
-  const obs = new MutationObserver((muts) => {
-    for (const m of muts) {
-      if (m.type !== 'attributes') continue;
-      if (m.attributeName !== 'class' && m.attributeName !== 'data-layout') continue;
-      const layout = getFocusLevel(bucket); // descriptor string
-      // INSERT HERE 👉 move rotor for this layout after geometry settles
-      void setToLevelPositionAsync(layout);
-      if (appearPredicate(bucket)) {
-        void revealAndMove();
-      } else if (shouldHide(bucket)) {
-        hideAndReset();
+    if (!mounted.has(el)) {
+      mounted.add(el);
+      try {
+        await entry.mount(el);
+      } catch (err) {
+        console.error(`Wrangler mount error for type "${type}"`, err);
       }
     }
-  });
-  obs.observe(bucket, { attributes: true, attributeFilter: ['class','data-layout'] });
+  }
 
+  // -----------------------------------------------------------------------
+  // BEHAVIOR HIDE (unmount)
+  // -----------------------------------------------------------------------
+  async function onHide(el) {
+    if (!el) return;
 
+    const type = el.dataset.participant;
+    if (!type) return;
 
-/* my code recommendation: */
-// In case page loads with focus pre-set
-void setToLevelPositionAsync(getFocusLevel(bucket));
+    const entry = types.get(type);
+    if (!entry) return;
 
-
-  // in case the page loads with bucket already focused
-  if (appearPredicate(bucket)) void revealAndMove();
-
-  return rotorEl;
-}  // ← CLOSES setupRotor PROPERLY
-
-
-// INSERT HERE 👉 batch digit transforms to one RAF for smoother updates
-window.setRotorValue = function (speedReadEl, value) {
-  const s = String(value);
-  const stacks = speedReadEl.querySelectorAll('.digit .stack');
-  const pad = s.padStart(stacks.length, '0');
-
-  // Queue a single-frame batch of DOM writes
-  window.TickBatch.queue(function () {
-    for (let i = 0; i < stacks.length; i++) {
-      const stack = stacks[i];
-      const d = Number(pad[i]);
-      // Guard against NaN and missing nodes
-      if (!stack || Number.isNaN(d)) continue;
-      stack.style.transform = `translateY(-${d}em)`;
+    if (mounted.has(el)) {
+      mounted.delete(el);
+      try {
+        await entry.unmount(el);
+      } catch (err) {
+        console.error(`Wrangler unmount error for type "${type}"`, err);
+      }
     }
-  });
-};
+  }
 
-function formatKwhCompact(n) {
-  const abs = Math.max(0, Number(n) || 0);
+  // Return API
+  return {
+    registerType,
+    describe,    // <-- THIS WAS MISSING
+    onReveal,
+    onHide
+  };
 
-  // 1) Determine magnitude group and unit
-  let base = 1, unit = '';
-  if (abs >= 1_000 && abs < 1_000_000) { base = 1_000; unit = 'k'; }
-  else if (abs >= 1_000_000 && abs < 1_000_000_000) { base = 1_000_000; unit = 'M'; }
-  else if (abs >= 1_000_000_000) { base = 1_000_000_000; unit = 'B'; }
+})();
+/* ============================================================================================
+   WRANGLER PARTICIPANT TYPE: FRAME
+   --------------------------------------------------------------------------------------------
+   Frames are structural container nodes (no drawing logic).
+   They exist purely to establish DOM hierarchy so that child
+   participants (rotors, charts, etc.) mount correctly.
 
-  // 2) Scale to the group and pick exactly three digits
-  const scaled = abs / base;                // e.g., 207.89 (k), 1.37 (M), 13.478 (M)
-  const i = Math.floor(scaled);
-  const frac = scaled - i;
+   ID CONVENTION:
+     frame-calls        → calls KPI bucket
+     frame-connections  → osp / connections KPI bucket
+   ============================================================================================ */
 
-  if (scaled >= 100) {
-    // Has hundreds → show hundreds, tens, ones (no fractional)
-    const hundreds = Math.floor(i / 100) % 10;
-    const tens     = Math.floor(i / 10)  % 10;
-    const ones     = i % 10;
-    return {
-      digitsOnly: '' + hundreds + tens + ones,  // e.g., "207"
-      dotIndex: -1,                              // no fractional digit
-      unit,
-      fracDigits: 0
+window.Wrangler.registerType("frame", {
+
+  // -------------------------------------------------------------------
+  // structure({ id, role })
+  // -------------------------------------------------------------------
+  // Supplies Director with correct parent + dataset
+  structure({ id, role }) {
+
+    // Map logical frame roles to their parent container
+    const FRAME_PARENTS = {
+      calls:        "D3andME",
+      connections:  "D3andME"
     };
-  } else {
-    // No hundreds → show tens, ones, tenths (last digit is fractional)
-    const tens   = Math.floor(i / 10) % 10;     // keep leading 0 if needed
-    const ones   = i % 10;
-    const tenths = Math.floor(frac * 10) % 10;
+
+    if (!FRAME_PARENTS[role]) return null;
+
     return {
-      digitsOnly: '' + tens + ones + tenths,    // e.g., "013", "134"
-      dotIndex: 2,                               // fractional starts at index 2 (third digit)
-      unit,
-      fracDigits: 1
+      parentId: FRAME_PARENTS[role],
+      dataset: {
+        participant: "frame",
+        role
+      }
     };
-  }
-}
-
-
-function formatPercentCompact(n) {
-  const v = Math.max(0, Math.min(125, Number(n) || 0)); // clamp 0..125
-  const i = Math.floor(v);
-  const frac = v - i;
-  const tens   = Math.floor(i / 10) % 10;
-  const ones   = i % 10;
-  const tenths = Math.floor(frac * 10) % 10;            // always present (0..9)
-  return { digitsOnly: '' + tens + ones + tenths, dotIndex: 2 };
-}
-
-function unitFull(u) {
-  switch (u) {
-    case 'k': return 'Thousand';
-    case 'M': return 'Million';
-    case 'B': return 'Billion';
-    default:  return '';
-  }
-}
-
-function buildFixed3Odometer(speedEl, digits3, dotIndex = -1) {
-  if (!speedEl) return;
-
-  // Clear and prepare container
-  speedEl.innerHTML = '';
-
-  // Helper: one rolling digit with 0..9 stack
-  const makeDigit = () => {
-    const d = document.createElement('span');
-    d.className = 'digit';
-    const stack = document.createElement('span');
-    stack.className = 'stack';
-    for (let i = 0; i < 10; i++) {
-      const s = document.createElement('span');
-      s.textContent = String(i);
-      stack.appendChild(s);
-    }
-    d.appendChild(stack);
-    return d;
-  };
-
-  // Ensure exactly 3 characters; pad left with 0 if shorter
-  const s = String(digits3 ?? '').padStart(3, '0');
-  const chars = s.split('');
-
-  // Create .int wrapper so a pill can be centered on non-fractional digits
-  const intWrap = document.createElement('span');
-  intWrap.className = 'int';
-  speedEl.appendChild(intWrap);
-
-
-  // Build three digit stacks
-  for (let i = 0; i < 3; i++) {
-    const d = makeDigit();
-    // Tag fractional digits (>= dotIndex) if any
-    if (dotIndex >= 0 && i >= dotIndex) d.classList.add('is-frac');
-    (dotIndex >= 0 && i >= dotIndex ? speedEl : intWrap).appendChild(d);
-  }
-
-  window.setRotorValue(speedEl, '000');
-}
-
-function buildCompactOdometer(speedEl, fmt) {
-  if (!speedEl || !fmt) return;
-  speedEl.innerHTML = '';
-
-  // helper: one rolling digit with 0..9 stack
-  const makeDigit = () => {
-    const d = document.createElement('span');
-    d.className = 'digit';
-    const stack = document.createElement('span');
-    stack.className = 'stack';
-    for (let i = 0; i < 10; i++) {
-      const s = document.createElement('span');
-      s.textContent = String(i);
-      stack.appendChild(s);
-    }
-    d.appendChild(stack);
-    return d;
-  };
-
-  const digits = String(fmt.digitsOnly || '').split(''); // e.g., "137"
-  const hasFrac = typeof fmt.dotIndex === 'number' && fmt.dotIndex >= 0;
-  const intLen = hasFrac ? fmt.dotIndex : digits.length;
-
-
-// Create a wrapper for the integer digits so we can center the pill on them
-const intWrap = document.createElement('span');
-intWrap.className = 'int';
-speedEl.appendChild(intWrap);
-
-// Build digits: integers go in .int; fractional digits follow in the main container
-for (let i = 0; i < digits.length; i++) {
-  const d = makeDigit();
-  if (hasFrac && i >= intLen) d.classList.add('is-frac'); // mark decimal part
-  (i < intLen ? intWrap : speedEl).appendChild(d);
-}
-
-/* my code recommendation: */
-// Add the spelled-out magnitude pill (hide if < 1,000 => unit '')
-if (fmt.unit) {
-  const tag = document.createElement('span');
-  tag.className = 'magnitudeTag';
-  tag.textContent = unitFull(fmt.unit);  // thousand / million / billion
-  intWrap.appendChild(tag);              // centered on integer digits
-}
-
-  // roll stacks to the target number
-  window.setRotorValue(speedEl, '000');
-}
-
-function attachRotorPill(speedEl, pillText) {
-  if (!speedEl || !pillText) return;
-
-  // Create or reuse the pill directly under .speedRead (full-width anchor)
-  let tag = speedEl.querySelector('.magnitudeTag');
-  if (!tag) {
-    tag = document.createElement('span');
-    tag.className = 'magnitudeTag';
-    speedEl.appendChild(tag);
-  }
-  tag.textContent = String(pillText);
-}
-
-function attachTrendArrow(speedEl, dir, color) {
-  if (!speedEl) return;
-
-  // host element (above digits)
-  let wrap = speedEl.querySelector('.trendArrow');
-  if (!wrap) {
-    wrap = document.createElement('span');
-    wrap.className = 'trendArrow'; // positioned by CSS
-    speedEl.appendChild(wrap);
-  }
-
-  // svg element (reused if present)
-  let svg = wrap.querySelector('svg.trendArrowSvg');
-  if (!svg) {
-    svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-
-svg.setAttribute('class', 'trendArrowSvg');
-svg.setAttribute('viewBox', '0 0 100 30');             // ↓ half-height box
-svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-svg.setAttribute('aria-hidden', 'true');
-
-const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-path.setAttribute('class', 'arrow-shape');
-
-
-    /* Concave-sided UP arrow shape:
-       - Tip at (50,0)
-       - Side curves bow inward using cubic Beziers
-       - Base is a gentle arc (quadratic) */
-
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Concave-sided UP arrow with a straight horizontal base */
-
-
-path.setAttribute(
-  'd',
-  'M50,0 ' +                  // tip
-  'A 70 70 0 0 0 88,30 ' +    // right side arc (bows inward toward center)
-  'L 12,30 ' +                // base: perfectly horizontal
-  'A 70 70 0 0 0 50,0 Z'      // left side arc back to tip
-);
-
-    svg.appendChild(path);
-    wrap.appendChild(svg);
-  }
-
-  // orientation
-  svg.classList.toggle('is-down', dir === 'down');
-  svg.classList.toggle('is-up',   dir !== 'down'); // 'up' or 'flat' treated as up orientation
-
-  // color via CSS variable (no inline fill)
-  speedEl.style.setProperty('--trend-color', String(color ?? '#2b4d7d'));
-};
-
-async function handleTrendArrowClick(role) {
-//4th insertion
-
-window.emitIntent('TOGGLE_T12_TREND', { role, vessel: window.activeVesselName ?? null });
-window.onToggleTrend({ role, vessel: window.activeVesselName ?? null });
-
-//end 4th insertion
-
-
-  const leftBucket  = document.getElementById('callsChartContainer');
-  const rightBucket = document.getElementById('ospChartContainer');
-  const hostBucket  = leftBucket ?? rightBucket;
-  if (!hostBucket) return;
-
-  
-  /* my code recommendation: INSERTION — focus.js */
-  /* Instant reveal hook: cancel any pending delayed reveal and show PowerCanvas + Table now */
-  if (window.PCReveal && window.PCReveal.timer) { clearTimeout(window.PCReveal.timer); window.PCReveal.timer = null; }
-  const leftForAnchor = document.getElementById('callsChartContainer') || hostBucket;
-  const resultNow = pcRender({ type: 'table' }, leftForAnchor); // ensures table is present immediately
-  const canvasNow = resultNow && resultNow.canvas ? resultNow.canvas : document.getElementById('powerCanvas');
-  if (canvasNow) {
-    const right = document.getElementById('ospChartContainer');
-    const childH = Math.round(((right && right.clientHeight) || leftForAnchor.clientHeight) * 0.4);
-    canvasNow.style.setProperty('--pc-child-h', String(childH) + 'px');
-  }
-
-  // (continue with existing logic below)
-
-
-  // Ensure PowerCanvas exists; do NOT clear existing content
-  const { canvas, contentHost } = pcRender({ type: 'chart' }, hostBucket);
-
-  // Give children a consistent height (one third of right bucket height)
-  const childH = Math.round((rightBucket?.clientHeight ?? hostBucket.clientHeight) *0.4);
-  canvas.style.setProperty('--pc-child-h', `${childH}px`);
-
-  // Find existing trend host (top slot) if any
-  let trendHost = contentHost.querySelector('.pc-trend');
-
-  // Determine the desired state (role + vessel)
-  const vessel = window.activeVesselName ?? null;
-
-// INSERT HERE 👉 set layout by role (no numeric scenes)
-const rightBucketEl = document.getElementById('ospChartContainer');
-
-
-
-if (rightBucketEl && rightBucketEl.classList.contains('focused')) {
-  if (role === 'usage')       window.Scene.set('osp-usage');
-  else if (role === 'kwh')    window.Scene.set('osp-impact');
-  else if (role === 'connections') window.Scene.set('osp'); // no separate "connections" layout
-  else                         window.Scene.set('osp');
-}
-
-
-
-
-  const desiredRole   = role;
-  const desiredVessel = vessel ?? '';
-refreshOpenTrendFor(window.activeVesselName ?? null);
-  // If a trend is already showing and matches this role+vessel → TOGGLE OFF
-
-/* my code recommendation: REPLACEMENT — focus.js */
-/* Toggle OFF: fade the chart and (if it will be empty) the canvas, then remove both */
-if (trendHost && trendHost.dataset.role === role && trendHost.dataset.vessel === (window.activeVesselName ?? '')) {
-  const canvas = document.getElementById('powerCanvas');
-  const willBeEmpty =
-    !contentHost.querySelector('.pc-chart') &&
-    !contentHost.querySelector('.pc-table-host .pc-table'); // only trend is present
-
-  // 1) Start chart fade (always)
-  trendHost.classList.add('is-fading');
-
-  // 2) If canvas will be empty after this removal, start canvas fade too
-  if (canvas && willBeEmpty) {
-    canvas.classList.add('is-fading');     // drive opacity → 0
-    canvas.classList.remove('is-visible'); // ensure we're not holding it at 1
-  }
-
-  // Force a reflow so transitions actually run before we remove anything
-  void trendHost.offsetWidth;
-
-  // 3) When the chart fade completes, remove the chart
-  const onChartFadeEnd = () => {
-    trendHost.remove();
-
-    // 4) If canvas was set to fade (empty after removal), remove it after its fade completes
-    if (canvas && willBeEmpty) {
-      const onCanvasFadeEnd = () => canvas.remove();
-      canvas.addEventListener('transitionend', onCanvasFadeEnd, { once: true });
-
-      // Safety timeout: remove even if transitionend doesn’t fire
-      setTimeout(onCanvasFadeEnd, 400);
-    }
-  };
-
-  trendHost.addEventListener('transitionend', onChartFadeEnd, { once: true });
-
-  // Safety timeout for the chart as well
-  setTimeout(onChartFadeEnd, 400);
-
-  return;
-}
-
-
-  // Otherwise ensure there is a trend host and draw/refresh for the new role
-  if (!trendHost) {
-    trendHost = document.createElement('div');
-    trendHost.className = 'pc-trend';
-    contentHost.insertBefore(trendHost, contentHost.firstChild); // always top
-  }
-
-  // Track what's being displayed for robust toggling next time
-  trendHost.dataset.role   = desiredRole;
-  trendHost.dataset.vessel = desiredVessel;
-
-  // Map rotor role → series key + legend label
-  const cfg = {
-    usage:       { key: 'usageRate',   label: 'Usage Rate' },
-    connections: { key: 'connections', label: 'Connections' },
-    kwh:         { key: 'kwh',         label: 'kWh Provided' }
-  }[desiredRole];
-  if (!cfg) return;
-
-  // Draw chart for this role (respect vessel filter)
-
-  await charts.getT12Trend({ vesselName: desiredVessel }); // ensure cache is ready
-  charts.drawT12Trend(trendHost, {
-    seriesKey:   cfg.key,
-    legendLabel: cfg.label,
-    vesselName:  desiredVessel
-  });
-
-  // Refresh canvas sizing/placement after content changes
-  pcSizeFor(canvas, { type: 'chart' }, hostBucket);
-  pcPlace(canvas, hostBucket);
-}
-
-document.addEventListener('click', (e) => {
-  console.log("you poked my heart 3");
-  const kwhEl = e.target.closest('.baseStats[data-role="kwh"]');
-  if (!kwhEl) {console.log('you missed the kwh rotor!'); return};
-  const bucket = kwhEl.closest('.kpiBucket');
-  if (!bucket) return;
-  
-  if (bucket.classList.contains('focused')) {
-    e.stopPropagation();         // avoid double-handling
-    bucket.click();              // triggers the existing "unfocus + reset" behavior
-    return;
-  }
-
-  // Otherwise, do nothing (no escalation to level 2).
-  // Future: re-enable by setting bucket.dataset.focus = '2' when level-2 is supported.
+  },
+
+  // -------------------------------------------------------------------
+  // mount(el)
+  // -------------------------------------------------------------------
+  // Frames are passive containers — nothing to build
+  mount(el) {
+    el.classList.add("kpiBucket");
+  },
+
+  // -------------------------------------------------------------------
+  // unmount(el)
+  // -------------------------------------------------------------------
+  // No teardown required beyond Director removal
+  unmount(el) {}
 });
 
-////////////////////////////////////////////////////////////////////////////////
-//
-//  END ROTOR FACTORY
-//
-////////////////////////////////////////////////////////////////////////////////
+/* ============================================================================================
+   END WRANGLER PARTICIPANT TYPE: FRAME
+   ============================================================================================ */
 
 
+/* ============================================================================================
+   WRANGLER PARTICIPANT TYPE: ROTOR  (FINAL, WITH STRUCTURE METADATA)
+   ============================================================================================ */
+
+window.Wrangler.registerType("rotor", {
+
+  // --------------------------------------------------------------
+  // structure({ id, type, role })
+  // --------------------------------------------------------------
+  // Director calls this BEFORE creating the element.
+  // It returns the correct parent node and dataset attributes.
+  //
+  // Example:
+  //   id: "rotor-calls"
+  //   role: "calls"
+  //   parentId: "frame-calls"
+  // --------------------------------------------------------------
+  structure({ id, role }) {
+    const def = window.RotorDefinitions?.[role];
+    if (!def) {
+      console.warn(`Wrangler.structure: No RotorDefinition for role "${role}"`);
+      return null;
+    }
+
+    return {
+      parentId: def.bucket,
+      dataset: {
+        participant: "rotor",
+        role: role,
+        bucket: def.bucket
+      }
+    };
+  },
+
+  // --------------------------------------------------------------
+  // mount(el)
+  // --------------------------------------------------------------
+  async mount(el) {
+    const role = el.dataset.role;
+    const bucketId = el.dataset.bucket;
+    if (!role || !bucketId) return;
+
+    const bucket = document.getElementById(bucketId);
+    if (!bucket) return;
+
+    // Prevent duplicates
+    if (bucket.querySelector(`.baseStats[data-role="${role}"]`)) return;
+
+    // Build config
+    const def = window.RotorDefinitions?.[role];
+    if (!def) return;
+
+    let cfg;
+    try {
+      cfg = await window.RotorConfigFactory.build(def);
+    } catch (err) {
+      console.error(`RotorConfigFactory.build failed for "${role}"`, err);
+      return;
+    }
+
+    // Build UI node
+    let rotorEl;
+    try {
+      rotorEl = await window.Rotors.setup(cfg);
+    } catch (err) {
+      console.error(`window.Rotors.setup failed for "${role}"`, err);
+      return;
+    }
+
+    // Insert into correct bucket
+    bucket.appendChild(rotorEl);
+
+    // Initial roll
+    try {
+      await rotorEl.reRoll?.();
+    } catch (err) {
+      console.error(`Re-roll failed for rotor "${role}"`, err);
+    }
+  },
+
+  // --------------------------------------------------------------
+  // unmount(el)
+  // --------------------------------------------------------------
+  async unmount(el) {
+    const role = el.dataset.role;
+    const bucketId = el.dataset.bucket;
+    if (!role || !bucketId) return;
+
+    const bucket = document.getElementById(bucketId);
+    if (!bucket) return;
+
+    const rotorEl = bucket.querySelector(`.baseStats[data-role="${role}"]`);
+    if (!rotorEl) return;
+
+    //rotorEl.classList.add("is-hidden");
+
+    await new Promise(resolve => {
+      let done = false;
+      const finish = () => { if (!done) { done = true; resolve(); } };
+      rotorEl.addEventListener("transitionend", finish, { once: true });
+      setTimeout(finish, 300);
+    });
+
+    rotorEl.remove();
+  }
+
+});
+
+/* ============================================================================================
+   END ROTOR PARTICIPANT TYPE
+   ============================================================================================ */
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -4495,3 +3826,5 @@ function positionProbeDots(bucket) {
 //  END PROBES
 //
 ////////////////////////////////////////////////////////////////////////////////
+
+

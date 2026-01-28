@@ -24,6 +24,26 @@
 
 }
 
+/* ============================================================================================
+   APP LOAD BLACKOUT — INITIAL RENDER MASK
+   ============================================================================================ */
+/* INSERT INTO YOUR GLOBAL CSS (or an existing global stylesheet) */
+
+#appBootCover {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9999;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 400ms ease;
+}
+
+#appBootCover.is-hidden {
+  opacity: 0;
+}
+
+
 * {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -502,7 +522,7 @@ font-variant-numeric: tabular-nums;
     color: var(--kpi-fg, #0f172a);
 }
 
-#callsChartContainer::after {
+#frame-calls::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -591,7 +611,7 @@ font-variant-numeric: tabular-nums;
   min-height: 200px;
 }
 
-#rightChartContainer::after, #ospChartContainer::after {
+#rightChartContainer::after, #frame-connections::after {
     content: '';
     position: absolute;
     top: 50%;
